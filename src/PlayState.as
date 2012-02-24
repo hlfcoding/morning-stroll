@@ -103,7 +103,7 @@ package
         }
         
       });
-      add(autoAltBtn);
+//      add(autoAltBtn);
       
       resetBtn = new FlxButton(8 + autoAltBtn.width, FlxG.height - 24, "Reset", function():void
       {
@@ -128,14 +128,14 @@ package
             break;
         }
       });
-      add(resetBtn);
+//      add(resetBtn);
       
       quitBtn = new FlxButton(FlxG.width - resetBtn.width - 4, FlxG.height - 24, "Quit",
         function():void { FlxG.fade(0xff000000, 0.22, function():void { FlxG.switchState(new MenuState()); } ); } );
-      add(quitBtn);
+//      add(quitBtn);
       
       helperTxt = new FlxText(12 + autoAltBtn.width*2, FlxG.height - 30, 150, "Click to place tiles\nShift-Click to remove tiles\nArrow keys to move");
-      add(helperTxt);
+//      add(helperTxt);
     }
     
     override public function update():void
@@ -167,7 +167,7 @@ package
     
     private function setupPlayer():void
     {
-      player = new FlxSprite(64, 220);
+      player = new FlxSprite(FlxG.width/2, FlxG.height/2);
       player.loadGraphic(ImgSpaceman, true, true, 16);
       
       //bounding box tweaks
@@ -226,19 +226,19 @@ package
         player.play("run");
       }
       
-      FlxG.camera.shake();
+      //FlxG.camera.shake();
       
     }
     
     private function setupPanning():void
     {
       FlxG.camera.follow(player);
+      collisionMap.follow();
     }
     
     private function wrap(obj:FlxObject):void
     {
-      obj.x = (obj.x + obj.width / 2 + FlxG.width) % FlxG.width - obj.width / 2;
-      obj.y = (obj.y + obj.height / 2) % FlxG.height - obj.height / 2;
+      obj.x = Math.min(Math.max(obj.x, 0), (collisionMap.width - obj.width));
     }
   }
 }
