@@ -1,6 +1,7 @@
 package
 {
   import flash.display.BlendMode;
+  
   import org.flixel.*;
   
   public class PlayState extends FlxState
@@ -33,6 +34,8 @@ package
     
     // Player modified from "Mode" demo
     private var player:FlxSprite;
+    
+    private var camera:FlxCamera;
     
     // Some interface buttons and text
     private var autoAltBtn:FlxButton;
@@ -72,12 +75,13 @@ package
       highlightBox = new FlxObject(0, 0, TILE_WIDTH, TILE_HEIGHT);
       
       setupPlayer();
+      setupPanning();
       
       // When switching between modes here, the map is reloaded with it's own data, so the positions of tiles are kept the same
       // Notice that different tilesets are used when the auto mode is switched
       autoAltBtn = new FlxButton(4, FlxG.height - 24, "AUTO", function():void
       {
-        switch(collisionMap.auto)
+        switch (collisionMap.auto)
         {
           case FlxTilemap.AUTO:
             collisionMap.loadMap(FlxTilemap.arrayToCSV(collisionMap.getData(true), collisionMap.widthInTiles),
@@ -192,28 +196,28 @@ package
       
       //MOVEMENT
       player.acceleration.x = 0;
-      if(FlxG.keys.LEFT)
+      if (FlxG.keys.LEFT)
       {
         player.facing = FlxObject.LEFT;
         player.acceleration.x -= player.drag.x;
       }
-      else if(FlxG.keys.RIGHT)
+      else if (FlxG.keys.RIGHT)
       {
         player.facing = FlxObject.RIGHT;
         player.acceleration.x += player.drag.x;
       }
-      if(FlxG.keys.justPressed("UP") && player.velocity.y == 0)
+      if (FlxG.keys.justPressed("UP") && player.velocity.y == 0)
       {
         player.y -= 1;
         player.velocity.y = -200;
       }
       
       //ANIMATION
-      if(player.velocity.y != 0)
+      if (player.velocity.y != 0)
       {
         player.play("jump");
       }
-      else if(player.velocity.x == 0)
+      else if (player.velocity.x == 0)
       {
         player.play("idle");
       }
@@ -221,6 +225,14 @@ package
       {
         player.play("run");
       }
+      
+      FlxG.camera.shake();
+      
+    }
+    
+    private function setupPanning():void
+    {
+      FlxG.camera.follow(player);
     }
     
     private function wrap(obj:FlxObject):void
