@@ -9,7 +9,7 @@ package
   {
     public function MorningStroll()
     {
-      super(400, 600, MenuState, 1, 20, 20);
+      super(400, 600, MenuState, 1, 24, 24);
     }
   }
 }

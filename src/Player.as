@@ -18,6 +18,8 @@ package
       this.falling = false;
     }
     
+    // This check can only be done once, for now.
+    // TODO - Fix bugs.
     public function justFell():Boolean 
     {
       this.fallDist = this.y - this.fallDist;

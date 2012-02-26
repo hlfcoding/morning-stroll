@@ -3,6 +3,7 @@ package
   import flash.display.BlendMode;
   
   import org.flixel.*;
+  import org.flixel.FlxPoint;
   
   public class PlayState extends FlxState
   {
@@ -20,17 +21,23 @@ package
     [Embed(source = 'default_alt.txt', mimeType = 'application/octet-stream')]private static var default_alt:Class;
     [Embed(source = 'default_empty.txt', mimeType = 'application/octet-stream')]private static var default_empty:Class;
     
-    [Embed(source="spaceman.png")] private static var ImgSpaceman:Class;
+    [Embed(source="player.png")] private static var ImgPlayer:Class;
+    
+    [Embed(source="background.jpg")] private static var ImgBg:Class;
     
     // Some static constants for the size of the tilemap tiles
     private const TILE_WIDTH:uint = 16;
     private const TILE_HEIGHT:uint = 16;
+    private const PLAYER_WIDTH:uint = 16;
+    private const PLAYER_HEIGHT:uint = 16;
     
     // The FlxTilemap we're using
     private var collisionMap:FlxTilemap;
     
     // Player modified from "Mode" demo
     private var player:Player;
+    
+    private var bg:FlxSprite;
     
     private var fallChecking:Boolean;
     
@@ -44,23 +51,19 @@ package
       FlxG.flashFramerate = 50;
       fallChecking = false;
       
-      // Creates a new tilemap with no arguments.
-      collisionMap = new FlxTilemap();
+      // Start our setup chain.
+      setupPlatform();
       
-      // Initializes the map using the generated string, the tile images, and the tile size.
-      collisionMap.loadMap(new default_auto(), auto_tiles, TILE_WIDTH, TILE_HEIGHT, FlxTilemap.AUTO);
+      // For now, we add things in order to get correct layering.
+      // TODO - offload to draw method?
+      add(bg);
       add(collisionMap);
-      
-      setupPlayer();
-      setupPanning();
+      add(player);      
     }
     override public function update():void
     {
-      // Tilemaps can be collided just like any other FlxObject, and flixel
-      // automatically collides each individual tile with the object.
-      FlxG.collide(player, collisionMap);
-      
-      updateCamera(updatePlayer());
+      // Start our update chain.
+      updatePlatform();
       
       super.update();
     }
@@ -71,10 +74,51 @@ package
     
     // Setup Routines
     // --------------
-    private function setupPlayer():void
+    // Since the observer pattern is too slow, we'll just name our functions to be like hooks.
+    // The platform is the first thing that gets set up.
+    private function setupPlatform():void
     {
-      player = new Player(FlxG.width/2, FlxG.height/2);
-      player.loadGraphic(ImgSpaceman, true, true, 16);
+      // Creates a new tilemap with no arguments.
+      collisionMap = new FlxTilemap();
+      // Initializes the map using the generated string, the tile images, and the tile size.
+      collisionMap.loadMap(new default_auto(), auto_tiles, TILE_WIDTH, TILE_HEIGHT, FlxTilemap.AUTO);
+
+      bg = new FlxSprite(0, 0);
+      bg.loadGraphic(ImgBg);
+
+      setupPlatformAfter();
+    }
+    // Hooks.
+    private function setupPlatformAfter():void
+    {
+      // Draw player at the bottom.
+      var start:FlxPoint = new FlxPoint();
+      var floorHeight:Number = PLAYER_HEIGHT;
+      start.x = (FlxG.width - PLAYER_HEIGHT) / 2;
+      start.y = collisionMap.height - (PLAYER_HEIGHT + floorHeight);
+      setupPlayer(start);
+      
+      // Move until we don't overlap.
+      while (collisionMap.overlaps(player)) {
+        if (player.x <= 0) {
+          player.x = FlxG.width;
+        }
+        player.x -= TILE_WIDTH;
+      }
+      
+      setupPlatformAndPlayerAfter();
+    }
+    private function setupPlatformAndPlayerAfter():void 
+    {
+      setupCamera();
+    }
+    // Hooked routines.
+    private function setupPlayer(start:FlxPoint):void
+    {
+      // Find start position for player.
+      
+      player = new Player(start.x, start.y);
+      player.loadGraphic(ImgPlayer, true, true, 16);
       
       // Bounding box tweaks.
       player.width = 14;
@@ -92,10 +136,8 @@ package
       player.addAnimation('idle', [0]);
       player.addAnimation('run', [1, 2, 3, 0], 12);
       player.addAnimation('jump', [4]);
-      
-      add(player);
     }
-    private function setupPanning():void
+    private function setupCamera():void
     {
       FlxG.camera.follow(player);
       collisionMap.follow();
@@ -103,10 +145,27 @@ package
     
     // Update Routines
     // ---------------
-    private function updatePlayer():Array
+    private function updatePlatform():void
     {
-      wrapToStage(player);
+      updatePlatformAfter();
+    }
+    private function updatePlatformAfter():void
+    {
+      // Tilemaps can be collided just like any other FlxObject, and flixel
+      // automatically collides each individual tile with the object.
+      FlxG.collide(player, collisionMap);
       
+      wrapToStage(player);
+      updatePlayer();
+      
+      updatePlatformAndPlayerAfter();
+    }
+    private function updatePlatformAndPlayerAfter():void
+    {
+      updateCamera(player.justFell());
+    }
+    private function updatePlayer():void
+    {
       player.moveWithInput();
       
       if (player.velocity.y != 0)
@@ -121,16 +180,10 @@ package
       {
         player.play('run');
       }
-      
-      var results:Array = new Array();
-      results['justFell'] = player.justFell();
-      
-      return results;
     }
-    private function updateCamera(updateResults:Array):void
+    private function updateCamera(playerJustFell:Boolean):void
     {
-      if (fallChecking && updateResults['justFell']) {
-        player.rising = false;
+      if (fallChecking && playerJustFell) {
         FlxG.camera.shake(
           0.01,
           0.1, null, true, 
