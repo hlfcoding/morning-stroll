@@ -23,14 +23,15 @@ package
     private const TILE_HEIGHT:uint = 24;
     private const PLAYER_WIDTH:uint = 72;
     private const PLAYER_HEIGHT:uint = 72;
+    private const CEILING_TILE_Y:uint = 15; 
+    private const MIN_LEDGE_SIZE:uint = 3;
+    private const MAX_LEDGE_SIZE:uint = 6;
+    private const MIN_LEDGE_SPACING:FlxPoint = new FlxPoint(4, 2);
+    private const MAX_LEDGE_SPACING:FlxPoint = new FlxPoint(8, 4);
     
     // The dynamically generated FlxTilemap we're using.
     private var collisionMap:FlxTilemap;
     // Ledge controls, in tiles.
-    private var minLedgeSize:uint = 3;
-    private var maxLedgeSize:uint = 6;
-    private var minLedgeSpacing:FlxPoint = new FlxPoint(4, 2);
-    private var maxLedgeSpacing:FlxPoint = new FlxPoint(8, 4);
     
     // Instance of custom player class.
     private var player:Player;
@@ -45,7 +46,7 @@ package
       // Globals.
       FlxG.framerate = 30;
       FlxG.flashFramerate = 30;
-      fallChecking = true;
+      fallChecking = false;
       
       // Start our setup chain.
       setupPlatform();
@@ -83,47 +84,69 @@ package
       var rows:int = Math.round(Math.round(bg.height / TILE_HEIGHT)) ;
       var cols:int = Math.round(Math.round(bg.width / TILE_WIDTH));
       // Smarts of our algo.
-      var cStart:uint, cEnd:uint, facing:uint, rSize:int, rSpacing:int, sizeRange:uint, spacingRange:uint; 
+      var cStart:uint, cEnd:uint, facing:uint, rSize:int, rSpacing:int, sizeRange:uint, spacingRange:uint, inverse:Boolean;
       // Grunts of our algo.
       var r:int, c:int, col:Array;
-      sizeRange = (maxLedgeSize - minLedgeSize);
-      spacingRange = (maxLedgeSpacing.y - minLedgeSpacing.y);
+      sizeRange = (MAX_LEDGE_SIZE - MIN_LEDGE_SIZE);
+      spacingRange = (MAX_LEDGE_SPACING.y - MIN_LEDGE_SPACING.y);
       facing = FlxObject.RIGHT;
-      for (r = 0; r < rows; r++) {
+      for (r = 0; r < rows; r++) 
+      {
+        inverse = false;
         col = [];
-        if (r >= rows - minLedgeSpacing.y) {
+        if (r >= rows - MIN_LEDGE_SPACING.y || r < MIN_LEDGE_SPACING.y + CEILING_TILE_Y)
+        {
           cStart = 0;
           cEnd = 0;
         }
-        if (r == rows-1) {
+        if (r == rows-1)
+        {
           cStart = 0;
           cEnd = cols;
           rSpacing = 0;
-        } else {
-          if (rSpacing == 0) {
-            rSpacing = minLedgeSpacing.y + int(Math.random() * spacingRange);
-            rSize = minLedgeSize + uint(Math.random() * sizeRange);
-            if (facing == FlxObject.LEFT) {
+        } 
+        else if (r > CEILING_TILE_Y + MIN_LEDGE_SPACING.y)
+        {
+          if (rSpacing == 0)
+          {
+            rSpacing = MIN_LEDGE_SPACING.y + int(Math.random() * spacingRange);
+            rSize = MIN_LEDGE_SIZE + uint(Math.random() * sizeRange);
+            if (facing == FlxObject.LEFT) 
+            {
               cStart = 0; 
               cEnd = rSize;
               facing = FlxObject.RIGHT;
-            } else if (facing == FlxObject.RIGHT) {
+            } 
+            else if (facing == FlxObject.RIGHT)
+            {
               cStart = cols - rSize;
               cEnd = cols;
               facing = FlxObject.LEFT;
             }
-          } else {
+          }
+          else
+          {
             rSpacing--;
           }
+        } 
+        else if (r == CEILING_TILE_Y)
+        {
+          cStart = MIN_LEDGE_SIZE + 2;
+          cEnd = cols - (MIN_LEDGE_SIZE + 2);
+          rSpacing = 0;
+          inverse = true;
         }
-        for (c = 0; c < cStart; c++) {
-          col.push('0');
+        for (c = 0; c < cStart; c++)
+        {
+          col.push(inverse ? '1' : '0');
         }
-        for (c = cStart; c < cEnd; c++) {
-          col.push((rSpacing == 0) ? '1' : '0');
+        for (c = cStart; c < cEnd; c++)
+        {
+          col.push((rSpacing == 0 && !inverse) ? '1' : '0');
         }
-        for (c = cEnd; c < cols; c++) {
-          col.push('0');
+        for (c = cEnd; c < cols; c++)
+        {
+          col.push(inverse ? '1' : '0');
         }
         mapData += col.join(',')+"\n";
       }
@@ -143,11 +166,15 @@ package
       var floorHeight:Number = PLAYER_HEIGHT;
       start.x = (FlxG.width - PLAYER_HEIGHT) / 2;
       start.y = collisionMap.height - (PLAYER_HEIGHT + floorHeight);
+//      start.x = 0;
+//      start.y = 0;
       setupPlayer(start);
       
       // Move until we don't overlap.
-      while (collisionMap.overlaps(player)) {
-        if (player.x <= 0) {
+      while (collisionMap.overlaps(player)) 
+      {
+        if (player.x <= 0) 
+        {
           player.x = FlxG.width;
         }
         player.x -= TILE_WIDTH;
@@ -155,7 +182,7 @@ package
       
       setupPlatformAndPlayerAfter();
     }
-    private function setupPlatformAndPlayerAfter():void 
+    private function setupPlatformAndPlayerAfter():void
     {
       setupCamera();
     }
@@ -186,8 +213,11 @@ package
       
       // Animations.
       player.addAnimation('idle', [12,13,14], 12);
+      player.addAnimation('wait', [15,16,17], 12, false);
       player.addAnimation('run', [0,1,2,3,4,5,6,7,8,9,10,11], 12);
-      player.addAnimation('jump', [3]);
+      player.addAnimation('jump', [18,19,20,21,22,23,24,25,26,27,28,29,30], 18, false);
+      player.addAnimation('fall', [31]);
+      player.addAnimation('land', [32,33], 12, false);
     }
     private function setupCamera():void
     {
@@ -222,22 +252,34 @@ package
     {
       player.moveWithInput();
       
-      if (!player.isTouching(FlxObject.DOWN))
+      if (player.willJump) // We only need to play the jump animation once.
       {
         player.play('jump');
       }
-      else if (player.velocity.x == 0 || player.x == 0 || player.x >= (collisionMap.width - player.width))
+      else if (player.justFell()) 
       {
-        player.play('idle');
+        player.play('land');
       }
-      else
+      else if (!player.rising) 
       {
-        player.play('run');
+        if (player.finished && player.falling)
+        {
+          player.play('fall');
+        }
+        else if (player.finished && player.velocity.x == 0 || player.x == 0 || player.x >= (collisionMap.width - player.width))
+        {
+          player.play('idle');
+        }
+        else if (player.finished)
+        {
+          player.play('run');
+        }
       }
     }
     private function updateCamera(playerJustFell:Boolean):void
     {
-      if (fallChecking && playerJustFell) {
+      if (fallChecking && playerJustFell)
+      {
         FlxG.camera.shake(
           0.01,
           0.1, null, true, 
