@@ -181,7 +181,7 @@ package
       player.jumpVelocity.y = -420;
       
       // Animations.
-      player.addAnimation('idle', [7]);
+      player.addAnimation('idle', [12,13,14], 12);
       player.addAnimation('run', [0,1,2,3,4,5,6,7,8,9,10,11], 12);
       player.addAnimation('jump', [3]);
     }
