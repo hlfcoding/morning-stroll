@@ -9,26 +9,26 @@ package
     public var rising:Boolean;
     public var falling:Boolean;
     public var pVelocity:FlxPoint;
-    public var fallDist:Number;
+    public var jumpVelocity:FlxPoint;
     
     public function Player(X:Number=0, Y:Number=0, SimpleGraphic:Class=null)
     {
       super(X, Y, SimpleGraphic);
       this.rising = false;
       this.falling = false;
+      this.jumpVelocity = new FlxPoint();
+      this.pVelocity = this.velocity;
     }
     
     // This check can only be done once, for now.
     // TODO - Fix bugs.
     public function justFell():Boolean 
     {
-      this.fallDist = this.y - this.fallDist;
-      
       var did:Boolean = 
         this.justTouched(FlxObject.DOWN) 
         && this.falling 
         && this.pVelocity != null
-        && this.fallDist > FlxG.height/2;
+        && this.pVelocity.y == this.maxVelocity.y;
       
       if (did) 
       {
@@ -56,9 +56,8 @@ package
       if (FlxG.keys.justPressed('UP') && this.velocity.y == 0)
       {
         this.y -= 1;
-        this.velocity.y = -this.maxVelocity.y; // Negative is up.
+        this.velocity.y = this.jumpVelocity.y; // Negative is up.
         this.rising = true;
-        this.fallDist = this.y;
       }
       // Start falling.
       else if (this.justTouched(FlxObject.UP) && this.rising)
@@ -75,7 +74,6 @@ package
       {
         this.rising = false;
         this.falling = true;
-        this.fallDist = this.y;
       }
       
     }

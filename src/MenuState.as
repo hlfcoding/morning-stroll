@@ -22,8 +22,10 @@ package
     {
       super.update();
       
-      if(FlxG.mouse.justPressed())
+      if (FlxG.mouse.justPressed()) 
+      {
         FlxG.switchState(new PlayState());
+      }
     }
     
     private function drawTitle():void
