@@ -218,11 +218,11 @@ package
     {
       player.moveWithInput();
       
-      if (player.velocity.y != 0)
+      if (!player.isTouching(FlxObject.DOWN))
       {
         player.play('jump');
       }
-      else if (player.velocity.x == 0)
+      else if (player.velocity.x == 0 || player.x == 0 || player.x >= (collisionMap.width - player.width))
       {
         player.play('idle');
       }
