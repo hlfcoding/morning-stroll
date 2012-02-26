@@ -10,6 +10,8 @@ package
     public var falling:Boolean;
     public var pVelocity:FlxPoint;
     public var jumpVelocity:FlxPoint;
+    public var tailOffset:FlxPoint;
+    public var headOffset:FlxPoint;
     
     public function Player(X:Number=0, Y:Number=0, SimpleGraphic:Class=null)
     {
@@ -18,6 +20,8 @@ package
       this.falling = false;
       this.jumpVelocity = new FlxPoint();
       this.pVelocity = this.velocity;
+      this.tailOffset = new FlxPoint();
+      this.headOffset = new FlxPoint();
     }
     
     // This check can only be done once, for now.
@@ -38,18 +42,36 @@ package
       return did;
     }
     
+    public function face(direction:uint):void
+    {
+      if (direction == FlxObject.RIGHT) 
+      {
+        this.offset.x = this.tailOffset.x;
+        this.facing = FlxObject.RIGHT;
+      } 
+      else if (direction == FlxObject.LEFT) 
+      {
+        this.offset.x = 0;
+        this.facing = FlxObject.LEFT;
+      }
+    }
+    
     public function moveWithInput():void {
       
       this.acceleration.x = 0;
       
       if (FlxG.keys.LEFT) 
       {
-        this.facing = FlxObject.LEFT;
+        if (this.facing == FlxObject.RIGHT) {
+          this.face(FlxObject.LEFT);
+        }
         this.acceleration.x -= this.drag.x;
       }
       else if (FlxG.keys.RIGHT)
       {
-        this.facing = FlxObject.RIGHT;
+        if (this.facing == FlxObject.LEFT) {
+          this.face(FlxObject.RIGHT);
+        }
         this.acceleration.x += this.drag.x;
       }
       // Try to jump.
@@ -59,7 +81,7 @@ package
         this.velocity.y = this.jumpVelocity.y; // Negative is up.
         this.rising = true;
       }
-      // Start falling.
+        // Start falling.
       else if (this.justTouched(FlxObject.UP) && this.rising)
       {
         this.falling = true;

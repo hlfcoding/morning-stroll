@@ -43,8 +43,8 @@ package
     override public function create():void
     {
       // Globals.
-      FlxG.framerate = 50;
-      FlxG.flashFramerate = 50;
+      FlxG.framerate = 30;
+      FlxG.flashFramerate = 30;
       fallChecking = true;
       
       // Start our setup chain.
@@ -168,14 +168,18 @@ package
       player.loadGraphic(ImgPlayer, true, true, 72);
       
       // Bounding box tweaks.
-      player.height = 36;
-      player.offset.y = 36;
+      player.height = player.frameWidth / 2;
+      player.offset.y = player.frameWidth - player.height;
+      player.tailOffset.x = 35;
+      player.headOffset.x = 10;
+      player.width = player.frameWidth - player.tailOffset.x;
+      player.face(FlxObject.RIGHT);
       
       // Basic player physics.
       player.drag.x = 900; // anti-friction
       player.acceleration.y = 500; // gravity
       player.maxVelocity.x = 300;
-      player.maxVelocity.y = 700;
+      player.maxVelocity.y = 1500;
       
       // Player jump physics.
       player.jumpVelocity.y = -420;
@@ -244,9 +248,10 @@ package
     
     // Helpers
     // -------
-    private function wrapToStage(obj:FlxObject):void
+    private function wrapToStage(obj:FlxSprite):void
     {
-      obj.x = Math.min(Math.max(obj.x, 0), (collisionMap.width - obj.width));
+      obj.x = FlxU.bound(obj.x, 0, (collisionMap.width - obj.width));
+      obj.y = FlxU.bound(obj.y, 0, (collisionMap.height - obj.height));
     }
   }
 }
