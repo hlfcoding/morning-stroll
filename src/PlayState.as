@@ -3,41 +3,34 @@ package
   import flash.display.BlendMode;
   
   import org.flixel.*;
-  import org.flixel.FlxPoint;
   
   public class PlayState extends FlxState
   {
     // Tileset that works with AUTO mode (best for thin walls)
-    [Embed(source = 'auto_tiles.png')]private static var auto_tiles:Class;
+    [Embed(source='auto_tiles.png')]private static var auto_tiles:Class;
     // Tileset that works with ALT mode (best for thicker walls)
-    [Embed(source = 'alt_tiles.png')]private static var alt_tiles:Class;
+    [Embed(source='alt_tiles.png')]private static var alt_tiles:Class;
     // Tileset that works with OFF mode (do what you want mode)
-    [Embed(source = 'empty_tiles.png')]private static var empty_tiles:Class;
+    [Embed(source='empty_tiles.png')]private static var empty_tiles:Class;
     
-    [Embed(source="player.png")] private static var ImgPlayer:Class;
+    [Embed(source='player.png')]private static var ImgPlayer:Class;
     
-    [Embed(source="background.jpg")] private static var ImgBg:Class;
+    [Embed(source='background.jpg')]private static var ImgBg:Class;
     
-    // Some static constants for the size of the tilemap tiles
-    private const TILE_WIDTH:uint = 24;
-    private const TILE_HEIGHT:uint = 24;
-    private const PLAYER_WIDTH:uint = 72;
-    private const PLAYER_HEIGHT:uint = 72;
-    private const CEILING_TILE_Y:uint = 15; 
-    private const MIN_LEDGE_SIZE:uint = 3;
-    private const MAX_LEDGE_SIZE:uint = 6;
-    private const MIN_LEDGE_SPACING:FlxPoint = new FlxPoint(4, 2);
-    private const MAX_LEDGE_SPACING:FlxPoint = new FlxPoint(8, 4);
-    
-    // The dynamically generated FlxTilemap we're using.
-    private var collisionMap:FlxTilemap;
+    // The dynamically generated and extended FlxTilemap.
+    private var platform:Platform;
     // Ledge controls, in tiles.
     
-    // Instance of custom player class.
+    // The extend FlxSprite.
+    private const PLAYER_WIDTH:uint = 72;
+    private const PLAYER_HEIGHT:uint = 72;
     private var player:Player;
-    private var fallChecking:Boolean;
     
+    // The background with parallax.
     private var bg:FlxSprite;
+    
+    // Some game switches.
+    private var fallChecking:Boolean;
     
     // Flixel Methods
     // --------------
@@ -54,7 +47,7 @@ package
       // For now, we add things in order to get correct layering.
       // TODO - offload to draw method?
       add(bg);
-      add(collisionMap);
+      add(platform);
       add(player);      
     }
     override public function update():void
@@ -79,82 +72,20 @@ package
       bg = new FlxSprite(0, 0);
       bg.loadGraphic(ImgBg);
       
-      // Generate our map string.
-      var mapData:String = '';
-      var rows:int = Math.round(Math.round(bg.height / TILE_HEIGHT)) ;
-      var cols:int = Math.round(Math.round(bg.width / TILE_WIDTH));
-      // Smarts of our algo.
-      var cStart:uint, cEnd:uint, facing:uint, rSize:int, rSpacing:int, sizeRange:uint, spacingRange:uint, inverse:Boolean;
-      // Grunts of our algo.
-      var r:int, c:int, col:Array;
-      sizeRange = (MAX_LEDGE_SIZE - MIN_LEDGE_SIZE);
-      spacingRange = (MAX_LEDGE_SPACING.y - MIN_LEDGE_SPACING.y);
-      facing = FlxObject.RIGHT;
-      for (r = 0; r < rows; r++) 
-      {
-        inverse = false;
-        col = [];
-        if (r >= rows - MIN_LEDGE_SPACING.y || r < MIN_LEDGE_SPACING.y + CEILING_TILE_Y)
-        {
-          cStart = 0;
-          cEnd = 0;
-        }
-        if (r == rows-1)
-        {
-          cStart = 0;
-          cEnd = cols;
-          rSpacing = 0;
-        } 
-        else if (r > CEILING_TILE_Y + MIN_LEDGE_SPACING.y)
-        {
-          if (rSpacing == 0)
-          {
-            rSpacing = MIN_LEDGE_SPACING.y + int(Math.random() * spacingRange);
-            rSize = MIN_LEDGE_SIZE + uint(Math.random() * sizeRange);
-            if (facing == FlxObject.LEFT) 
-            {
-              cStart = 0; 
-              cEnd = rSize;
-              facing = FlxObject.RIGHT;
-            } 
-            else if (facing == FlxObject.RIGHT)
-            {
-              cStart = cols - rSize;
-              cEnd = cols;
-              facing = FlxObject.LEFT;
-            }
-          }
-          else
-          {
-            rSpacing--;
-          }
-        } 
-        else if (r == CEILING_TILE_Y)
-        {
-          cStart = MIN_LEDGE_SIZE + 2;
-          cEnd = cols - (MIN_LEDGE_SIZE + 2);
-          rSpacing = 0;
-          inverse = true;
-        }
-        for (c = 0; c < cStart; c++)
-        {
-          col.push(inverse ? '1' : '0');
-        }
-        for (c = cStart; c < cEnd; c++)
-        {
-          col.push((rSpacing == 0 && !inverse) ? '1' : '0');
-        }
-        for (c = cEnd; c < cols; c++)
-        {
-          col.push(inverse ? '1' : '0');
-        }
-        mapData += col.join(',')+"\n";
-      }
-      
       // Creates a new tilemap with no arguments.
-      collisionMap = new FlxTilemap();
-      // Initializes the map using the generated string, the tile images, and the tile size.
-      collisionMap.loadMap(mapData, auto_tiles, TILE_WIDTH, TILE_HEIGHT, FlxTilemap.AUTO);
+      platform = new Platform();
+
+      platform.tileWidth = 24;
+      platform.tileHeight = 24;
+      platform.minLedgeSize = 3;
+      platform.maxLedgeSize = 6;
+      platform.minLedgeSpacing = new FlxPoint(4, 2);
+      platform.maxLedgeSpacing = new FlxPoint(8, 4);
+      
+      platform.bounds = new FlxRect(bg.x, bg.y, bg.frameWidth, bg.frameHeight);
+      
+      // Make our platform.
+      platform.makeMap(auto_tiles);
       
       setupPlatformAfter();
     }
@@ -165,19 +96,19 @@ package
       var start:FlxPoint = new FlxPoint();
       var floorHeight:Number = PLAYER_HEIGHT;
       start.x = (FlxG.width - PLAYER_HEIGHT) / 2;
-      start.y = collisionMap.height - (PLAYER_HEIGHT + floorHeight);
+      start.y = platform.height - (PLAYER_HEIGHT + floorHeight);
 //      start.x = 0;
 //      start.y = 0;
       setupPlayer(start);
       
       // Move until we don't overlap.
-      while (collisionMap.overlaps(player)) 
+      while (platform.overlaps(player)) 
       {
         if (player.x <= 0) 
         {
           player.x = FlxG.width;
         }
-        player.x -= TILE_WIDTH;
+        player.x -= platform.tileWidth;
       }
       
       setupPlatformAndPlayerAfter();
@@ -214,15 +145,15 @@ package
       // Animations.
       player.addAnimation('idle', [12,13,14], 12);
       player.addAnimation('wait', [15,16,17], 12, false);
-      player.addAnimation('run', [0,1,2,3,4,5,6,7,8,9,10,11], 12);
-      player.addAnimation('jump', [18,19,20,21,22,23,24,25,26,27,28,29,30], 18, false);
+      player.addAnimation('run', [0,1,2,3,4,5,6,7,8,9,10,11], 24);
+      player.addAnimation('jump', [18,19,20,21,22,23,24,25,26,27,28,29,30,31], 24, false);
       player.addAnimation('fall', [31]);
       player.addAnimation('land', [32,33], 12, false);
     }
     private function setupCamera():void
     {
       FlxG.camera.follow(player);
-      collisionMap.follow();
+      platform.follow();
     }
     
     // Update Routines
@@ -236,7 +167,7 @@ package
     {
       // Tilemaps can be collided just like any other FlxObject, and flixel
       // automatically collides each individual tile with the object.
-      FlxG.collide(player, collisionMap);
+      FlxG.collide(player, platform);
       
       wrapToStage(player);
       updatePlayer();
@@ -266,7 +197,7 @@ package
         {
           player.play('fall');
         }
-        else if (player.finished && player.velocity.x == 0 || player.x == 0 || player.x >= (collisionMap.width - player.width))
+        else if (player.finished && player.velocity.x == 0 || player.x == 0 || player.x >= (platform.width - player.width))
         {
           player.play('idle');
         }
@@ -292,8 +223,8 @@ package
     // -------
     private function wrapToStage(obj:FlxSprite):void
     {
-      obj.x = FlxU.bound(obj.x, 0, (collisionMap.width - obj.width));
-      obj.y = FlxU.bound(obj.y, 0, (collisionMap.height - obj.height));
+      obj.x = FlxU.bound(obj.x, 0, (platform.width - obj.width));
+      obj.y = FlxU.bound(obj.y, 0, (platform.height - obj.height));
     }
   }
 }
