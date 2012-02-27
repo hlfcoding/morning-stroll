@@ -25,6 +25,7 @@ package
     public const SIDE_TO_SIDE:uint = 1;
     
     public var tilingMode:uint;
+    public var tilingStart:uint;
     
     public var hasCeiling:Boolean;
     public var hasFloor:Boolean;
@@ -34,7 +35,10 @@ package
     public function Platform()
     {
       super();
+      this.structureMode = this.SIDE_TO_SIDE;
       this.tilingMode = FlxTilemap.AUTO;
+      this.tilingStart = FlxObject.FLOOR;
+      this.hasFloor = true;
     }
     
     public function generateData():void
@@ -42,16 +46,29 @@ package
       var rows:int = Math.floor(this.bounds.height / this.tileWidth);
       var cols:int = Math.floor(this.bounds.width / this.tileHeight);
       // Smarts of our algo.
-      var cStart:uint, cEnd:uint, facing:uint, rSize:int, rSpacing:int, sizeRange:uint, spacingRange:uint, inverse:Boolean;
+      var cStart:uint, cEnd:uint, facing:uint, rSize:int, rSpacing:int, 
+          sizeRange:uint, spacingRange:uint, inverse:Boolean,
+          rStart:int, rEnd:int;
       // Grunts of our algo.
       var r:int, c:int, l:int, col:Array;
       // Subroutines.
-      var addRow:Function, setupEmptyRow:Function, setupFloorRow:Function, setupLedgeRow:Function, setupEachRow:Function;
+      var addRow:Function, setupEmptyRow:Function, setupFloorRow:Function, 
+          setupLedgeRow:Function, setupEachRow:Function;
       
       mapData = '';
       sizeRange = (this.maxLedgeSize - this.minLedgeSize);
       spacingRange = (this.maxLedgeSpacing.y - this.minLedgeSpacing.y);
       facing = FlxObject.RIGHT;
+      if (this.tilingStart == FlxObject.FLOOR)
+      {
+        rStart = rows-1;
+        rEnd = 0;
+      }
+      else
+      {
+        rEnd = rows-1;
+        rStart = 0;
+      }
       
       addRow = function():void
       {
@@ -70,7 +87,14 @@ package
             col.push(inverse ? '1' : '0');
           }
         }
-        mapData += col.join(',')+"\n";
+        if (this.tilingStart == FlxObject.FLOOR) 
+        {
+          mapData = col.join(',')+"\n" + mapData;
+        }
+        else
+        {
+          mapData += col.join(',')+"\n";
+        }
       };
       setupEmptyRow = function():void
       {
@@ -108,12 +132,14 @@ package
           col = [];
         }
       };
-      
-      for (r = 0; r < rows; r++) // For each row. 
+      for (r = rStart; 
+           (rStart < rEnd && r < rEnd) || (rStart > rEnd && r >= rEnd); 
+           (rEnd != 0) ? r++ : r--) // For each row. // TODO - Optimize throughout. 
       {
-        if (r == rows-1)
+        if (r == rStart && this.tilingStart == FlxObject.FLOOR && this.hasFloor)
         {
           setupFloorRow.call(this);
+          rSpacing = this.minLedgeSpacing.y;
         }
         else 
         {
