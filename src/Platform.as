@@ -17,6 +17,8 @@ package
     public var minLedgeSpacing:FlxPoint;
     public var maxLedgeSpacing:FlxPoint;
     
+    public var ledgeThickness:uint;
+    
     public var bounds:FlxRect;
     
     public var structureMode:uint;
@@ -42,67 +44,107 @@ package
       // Smarts of our algo.
       var cStart:uint, cEnd:uint, facing:uint, rSize:int, rSpacing:int, sizeRange:uint, spacingRange:uint, inverse:Boolean;
       // Grunts of our algo.
-      var r:int, c:int, col:Array;
+      var r:int, c:int, l:int, col:Array;
+      // Subroutines.
+      var addRow:Function, setupEmptyRow:Function, setupFloorRow:Function, setupLedgeRow:Function, setupEachRow:Function;
       
       mapData = '';
       sizeRange = (this.maxLedgeSize - this.minLedgeSize);
       spacingRange = (this.maxLedgeSpacing.y - this.minLedgeSpacing.y);
       facing = FlxObject.RIGHT;
       
-      for (r = 0; r < rows; r++) 
+      addRow = function():void
+      {
+        if (col.length == 0) 
+        {
+          for (c = 0; c < cStart; c++) // For each column.
+          {
+            col.push(inverse ? '1' : '0');
+          }
+          for (c = cStart; c < cEnd; c++)
+          {
+            col.push(!inverse ? '1' : '0');
+          }
+          for (c = cEnd; c < cols; c++)
+          {
+            col.push(inverse ? '1' : '0');
+          }
+        }
+        mapData += col.join(',')+"\n";
+      };
+      setupEmptyRow = function():void
+      {
+        cStart = 0;
+        cEnd = 0;      
+      };
+      setupFloorRow = function():void
+      {
+        col = [];
+        cStart = 0;
+        cEnd = cols;
+        rSpacing = 0;
+      };
+      setupLedgeRow = function():void
+      {
+        rSpacing = this.minLedgeSpacing.y + int(Math.random() * spacingRange);
+        rSize = this.minLedgeSize + uint(Math.random() * sizeRange);
+        if (facing == FlxObject.LEFT) 
+        {
+          cStart = 0; 
+          cEnd = rSize;
+          facing = FlxObject.RIGHT;
+        } 
+        else if (facing == FlxObject.RIGHT)
+        {
+          cStart = cols - rSize;
+          cEnd = cols;
+          facing = FlxObject.LEFT;
+        }
+      };
+      setupEachRow = function():void
       {
         inverse = false;
-        col = [];
-        if (r >= rows - this.minLedgeSpacing.y || r < this.minLedgeSpacing.y)
-        {
-          cStart = 0;
-          cEnd = 0;
+        if (l == 0) {
+          col = [];
         }
+      };
+      
+      for (r = 0; r < rows; r++) // For each row. 
+      {
         if (r == rows-1)
         {
-          cStart = 0;
-          cEnd = cols;
-          rSpacing = 0;
-        } 
-        else
+          setupFloorRow.call(this);
+        }
+        else 
         {
-          if (rSpacing == 0)
+          setupEachRow.call(this);
+          if (r >= rows - this.minLedgeSpacing.y || r < this.minLedgeSpacing.y)
           {
-            rSpacing = this.minLedgeSpacing.y + int(Math.random() * spacingRange);
-            rSize = this.minLedgeSize + uint(Math.random() * sizeRange);
-            if (facing == FlxObject.LEFT) 
-            {
-              cStart = 0; 
-              cEnd = rSize;
-              facing = FlxObject.RIGHT;
-            } 
-            else if (facing == FlxObject.RIGHT)
-            {
-              cStart = cols - rSize;
-              cEnd = cols;
-              facing = FlxObject.LEFT;
-            }
+            setupEmptyRow.call(this);
           }
           else
           {
-            rSpacing--;
+            if (rSpacing == 0)
+            {
+              setupLedgeRow.call(this);
+              l = this.ledgeThickness-1;
+            }
+            else if (l > 0)
+            {
+              l--;
+            }
+            else
+            {
+              setupEmptyRow.call(this);
+              rSpacing--;
+              l = 0;
+            }
           }
-        } 
-        for (c = 0; c < cStart; c++)
-        {
-          col.push(inverse ? '1' : '0');
         }
-        for (c = cStart; c < cEnd; c++)
-        {
-          col.push((rSpacing == 0 && !inverse) ? '1' : '0');
-        }
-        for (c = cEnd; c < cols; c++)
-        {
-          col.push(inverse ? '1' : '0');
-        }
-        mapData += col.join(',')+"\n";
+        addRow.call(this);
       }
       
+    
     }
     
     public function makeMap(tileGraphic:Class):FlxTilemap 

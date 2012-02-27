@@ -16,7 +16,7 @@ package
     public var tailOffset:FlxPoint;
     public var headOffset:FlxPoint;
     public var acclFactor:Number = 0.5;
-    public var acclJumpFactor:Number = 0.25;
+    public var acclJumpFactor:Number = 0.1;
     
     public function Player(X:Number=0, Y:Number=0, SimpleGraphic:Class=null)
     {

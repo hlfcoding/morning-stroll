@@ -76,12 +76,13 @@ package
       platform = new Platform();
         
       // Customize our tile generation.
-      platform.tileWidth = 24;
-      platform.tileHeight = 24;
+      platform.tileWidth = 32;
+      platform.tileHeight = 32;
       platform.minLedgeSize = 3;
       platform.maxLedgeSize = 6;
       platform.minLedgeSpacing = new FlxPoint(4, 2);
       platform.maxLedgeSpacing = new FlxPoint(8, 4);
+      platform.ledgeThickness = 2;
       
       // Set the bounds based on the background.
       // TODO - Account for parallax.
