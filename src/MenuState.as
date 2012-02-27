@@ -10,7 +10,7 @@ package
     override public function create():void
     {
       title = "Morning Stroll";
-      instructions = "Don't stop climbing!";
+      instructions = "Climb and see!";
       
       drawTitle();
       drawInstructions();
