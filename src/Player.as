@@ -6,25 +6,21 @@ package
   {
     
     // These aren't really used, but eventually may come in handy.
-    public var rising:Boolean;
-    public var falling:Boolean;
-    public var still:Boolean;
-    public var willJump:Boolean;
-    public var willStop:Boolean;
-    public var willStart:Boolean;
+    public var rising:Boolean = false;
+    public var falling:Boolean = false;
+    public var willJump:Boolean = false;
+    public var willStop:Boolean = false;
+    public var willStart:Boolean = false;
     public var pVelocity:FlxPoint;
     public var jumpVelocity:FlxPoint;
     public var tailOffset:FlxPoint;
     public var headOffset:FlxPoint;
+    public var acclFactor:Number = 0.5;
+    public var acclJumpFactor:Number = 0.25;
     
     public function Player(X:Number=0, Y:Number=0, SimpleGraphic:Class=null)
     {
       super(X, Y, SimpleGraphic);
-      this.rising = false;
-      this.falling = false;
-      this.willJump = false;
-      this.willStop = false;
-      this.willStart = false;
       this.jumpVelocity = new FlxPoint();
       this.pVelocity = this.velocity;
       this.tailOffset = new FlxPoint();
@@ -90,10 +86,7 @@ package
         {
           this.face(FlxObject.LEFT);
         }
-        if (!(this.rising || this.falling)) 
-        {
-          this.run(-1);
-        }
+        this.run(-1);
       }
       else if (FlxG.keys.RIGHT)
       {
@@ -101,10 +94,7 @@ package
         {
           this.face(FlxObject.RIGHT);
         }
-        if (!(this.rising || this.falling)) 
-        {
-          this.run();
-        }
+        this.run();
       }
       else if (!(this.rising || this.falling) && this.acceleration.x == 0)
       {
@@ -151,7 +141,12 @@ package
     }
     private function run(direction:int=1):void
     {
-      this.acceleration.x = this.drag.x / 2 * direction; // TODO - Refactor coefficient.
+      var factor:Number = this.acclFactor;
+      if (this.rising || this.falling)
+      {
+        factor = this.acclJumpFactor;
+      }
+      this.acceleration.x = this.drag.x * factor * direction;
     }
   }
 }

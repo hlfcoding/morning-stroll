@@ -146,6 +146,7 @@ package
       player.jumpVelocity.y = -420;
       
       // Animations.
+      // Make sure to add end transitions, otherwise the last frame is skipped if framerate is low.
       player.addAnimation('still',[17], 12);
       player.addAnimation('idle', [], 12, false);
       player.addAnimation('run',  [0,1,2,3,4,5,6,7,8,9,10,11], 24);
@@ -153,7 +154,7 @@ package
       player.addAnimation('start',[17,16,15,14,13,12], 24, false);
       player.addAnimation('jump', [18,19,20,21,22,23,24,25,26,27,28,29,30,31], 24, false);
       player.addAnimation('fall', [31]);
-      player.addAnimation('land', [32,33,18], 12, false);
+      player.addAnimation('land', [32,33,18,17], 12, false);
     }
     private function setupCamera():void
     {
