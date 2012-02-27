@@ -8,7 +8,10 @@ package
     // These aren't really used, but eventually may come in handy.
     public var rising:Boolean;
     public var falling:Boolean;
+    public var still:Boolean;
     public var willJump:Boolean;
+    public var willStop:Boolean;
+    public var willStart:Boolean;
     public var pVelocity:FlxPoint;
     public var jumpVelocity:FlxPoint;
     public var tailOffset:FlxPoint;
@@ -20,6 +23,8 @@ package
       this.rising = false;
       this.falling = false;
       this.willJump = false;
+      this.willStop = false;
+      this.willStart = false;
       this.jumpVelocity = new FlxPoint();
       this.pVelocity = this.velocity;
       this.tailOffset = new FlxPoint();
@@ -51,29 +56,44 @@ package
     
     public function face(direction:uint):void
     {
-      if (direction == FlxObject.RIGHT)
+      if (this.velocity.x != 0 && !this.willStop && this.facing != direction) 
       {
-        this.offset.x = this.tailOffset.x;
-        this.facing = FlxObject.RIGHT;
-      } 
-      else if (direction == FlxObject.LEFT)
+        this.willStop = true;
+        this.willStart = false;
+      }
+      else if (this.finished)
       {
-        this.offset.x = 0;
-        this.facing = FlxObject.LEFT;
+        this.willStop = false;
+        this.willStart = true;
+        if (direction == FlxObject.RIGHT)
+        {
+          this.offset.x = this.tailOffset.x;
+          this.facing = FlxObject.RIGHT;
+        }
+        else if (direction == FlxObject.LEFT)
+        {
+          this.offset.x = 0;
+          this.facing = FlxObject.LEFT;
+        }
       }
     }
     
     public function moveWithInput():void 
     {
-      this.acceleration.x = 0;
-      
+      if (!(this.rising || this.falling)) 
+      {
+        this.acceleration.x = 0;
+      }
       if (FlxG.keys.LEFT) 
       {
         if (this.facing == FlxObject.RIGHT)
         {
           this.face(FlxObject.LEFT);
         }
-        this.acceleration.x -= this.drag.x;
+        if (!(this.rising || this.falling)) 
+        {
+          this.run(-1);
+        }
       }
       else if (FlxG.keys.RIGHT)
       {
@@ -81,13 +101,29 @@ package
         {
           this.face(FlxObject.RIGHT);
         }
-        this.acceleration.x += this.drag.x;
+        if (!(this.rising || this.falling)) 
+        {
+          this.run();
+        }
       }
-      // Try to jump.
+      else if (!(this.rising || this.falling) && this.acceleration.x == 0)
+      {
+        if (this.velocity.x == 0) 
+        {
+          this.willStop = false;
+          this.willStart = true;
+        }
+        else
+        {
+          this.willStop = true;
+          this.willStart = false;
+        }
+      }
       if (FlxG.keys.justPressed('UP') && this.velocity.y == 0)
       {
+        // Try to jump.
         this.y -= 1;
-        this.velocity.y = this .jumpVelocity.y; // Negative is up.
+        this.velocity.y = this.jumpVelocity.y; // Negative is up.
         this.rising = true;
         this.falling = false;
         this.willJump = true;
@@ -96,9 +132,9 @@ package
       {
         this.willJump = false;
       }
-      // Start falling.
       else if (this.isTouching(FlxObject.UP) && this.rising)
       {
+        // Start falling.
         this.falling = true;
         this.rising = false;
         this.pVelocity = null;
@@ -112,6 +148,10 @@ package
         this.rising = false;
         this.falling = true;
       }
+    }
+    private function run(direction:int=1):void
+    {
+      this.acceleration.x = this.drag.x / 2 * direction; // TODO - Refactor coefficient.
     }
   }
 }

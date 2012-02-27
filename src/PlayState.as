@@ -74,7 +74,8 @@ package
       
       // Creates a new tilemap with no arguments.
       platform = new Platform();
-
+        
+      // Customize our tile generation.
       platform.tileWidth = 24;
       platform.tileHeight = 24;
       platform.minLedgeSize = 3;
@@ -82,6 +83,8 @@ package
       platform.minLedgeSpacing = new FlxPoint(4, 2);
       platform.maxLedgeSpacing = new FlxPoint(8, 4);
       
+      // Set the bounds based on the background.
+      // TODO - Account for parallax.
       platform.bounds = new FlxRect(bg.x, bg.y, bg.frameWidth, bg.frameHeight);
       
       // Make our platform.
@@ -134,21 +137,23 @@ package
       player.face(FlxObject.RIGHT);
       
       // Basic player physics.
-      player.drag.x = 900; // anti-friction
+      player.drag.x = 1000; // friction
       player.acceleration.y = 500; // gravity
-      player.maxVelocity.x = 300;
+      player.maxVelocity.x = 200;
       player.maxVelocity.y = 1500;
       
       // Player jump physics.
       player.jumpVelocity.y = -420;
       
       // Animations.
-      player.addAnimation('idle', [12,13,14], 12);
-      player.addAnimation('wait', [15,16,17], 12, false);
-      player.addAnimation('run', [0,1,2,3,4,5,6,7,8,9,10,11], 24);
+      player.addAnimation('still',[17], 12);
+      player.addAnimation('idle', [], 12, false);
+      player.addAnimation('run',  [0,1,2,3,4,5,6,7,8,9,10,11], 24);
+      player.addAnimation('stop', [12,13,14,15,16,17], 24, false);
+      player.addAnimation('start',[17,16,15,14,13,12], 24, false);
       player.addAnimation('jump', [18,19,20,21,22,23,24,25,26,27,28,29,30,31], 24, false);
       player.addAnimation('fall', [31]);
-      player.addAnimation('land', [32,33], 12, false);
+      player.addAnimation('land', [32,33,18], 12, false);
     }
     private function setupCamera():void
     {
@@ -191,17 +196,28 @@ package
       {
         player.play('land');
       }
-      else if (!player.rising) 
+      else if (!player.rising && player.finished) 
       {
-        if (player.finished && player.falling)
+        if (player.falling)
         {
           player.play('fall');
         }
-        else if (player.finished && player.velocity.x == 0 || player.x == 0 || player.x >= (platform.width - player.width))
+        else if (player.willStop) 
         {
-          player.play('idle');
+          player.play('stop');
         }
-        else if (player.finished)
+        else if (player.velocity.x == 0 || 
+          (player.x == 0 || player.x >= (platform.width - player.width))
+        )
+        {
+          player.play('still');
+        }
+        else if (player.willStart)
+        {
+          player.play('start');
+          player.willStart = false; // TODO - Hack.
+        }
+        else
         {
           player.play('run');
         }
