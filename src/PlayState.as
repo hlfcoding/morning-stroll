@@ -4,6 +4,10 @@ package
   
   import org.flixel.*;
   
+  // The main coordinator: part config list, part asset list. 
+  // Handles all of the character animations.
+  // TODO, offload animation logic to PlayerDelegate interface.
+  
   public class PlayState extends FlxState
   {
     // Tileset that works with AUTO mode (best for thin walls)
@@ -13,7 +17,7 @@ package
     // Tileset that works with OFF mode (do what you want mode)
     [Embed(source='empty_tiles.png')]private static var empty_tiles:Class;
     
-    [Embed(source='player.png')]private static var ImgPlayer:Class;
+    [Embed(source='player.png')]private static var player_img:Class;
     
     [Embed(source='background.jpg')]private static var ImgBg:Class;
     
@@ -127,7 +131,7 @@ package
       // Find start position for player.
       
       player = new Player(start.x, start.y);
-      player.loadGraphic(ImgPlayer, true, true, 72);
+      player.loadGraphic(player_img, true, true, 72);
       
       // Bounding box tweaks.
       player.height = player.frameWidth / 2;

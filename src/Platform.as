@@ -1,10 +1,11 @@
 package
 {
+  import org.flixel.FlxU;
+  import org.flixel.FlxG;
   import org.flixel.FlxObject;
   import org.flixel.FlxPoint;
   import org.flixel.FlxRect;
   import org.flixel.FlxTilemap;
-  import org.flixel.FlxU;
   
   public class Platform extends FlxTilemap
   {

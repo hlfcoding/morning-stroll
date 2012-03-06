@@ -1,6 +1,10 @@
 package
 {
-  import org.flixel.*;
+  import org.flixel.FlxU;
+  import org.flixel.FlxG;
+  import org.flixel.FlxObject;
+  import org.flixel.FlxSprite;
+  import org.flixel.FlxPoint;
   
   public class Player extends FlxSprite
   {
