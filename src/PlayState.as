@@ -19,7 +19,18 @@ package
     
     [Embed(source='player.png')]private static var player_img:Class;
     
-    [Embed(source='background.jpg')]private static var ImgBg:Class;
+    [Embed(source='bg-1.png')]private static var bg1_img:Class;
+    [Embed(source='bg-2.png')]private static var bg2_img:Class;
+    [Embed(source='bg-3.png')]private static var bg3_img:Class;
+    [Embed(source='bg-4.png')]private static var bg4_img:Class;
+    [Embed(source='bg-5.png')]private static var bg5_img:Class;
+    [Embed(source='bg-6.png')]private static var bg6_img:Class;
+    [Embed(source='bg-7.png')]private static var bg7_img:Class;
+    [Embed(source='bg-8.png')]private static var bg8_img:Class;
+    [Embed(source='bg-9.png')]private static var bg9_img:Class;
+    [Embed(source='bg-10.png')]private static var bg10_img:Class;
+    [Embed(source='bg-11.png')]private static var bg11_img:Class;
+    [Embed(source='bg-12.png')]private static var bg12_img:Class;
     
     // The dynamically generated and extended FlxTilemap.
     private var platform:Platform;
@@ -31,7 +42,7 @@ package
     private var player:Player;
     
     // The background with parallax.
-    private var bg:FlxSprite;
+    private var bg:Background;
     
     // Some game switches.
     private var fallChecking:Boolean;
@@ -73,8 +84,24 @@ package
     private function setupPlatform():void
     {
       // Load our scenery.
-      bg = new FlxSprite(0, 0);
-      bg.loadGraphic(ImgBg);
+      bg = new Background();
+      bg.bounds.x = 0;
+      bg.bounds.y = 0;
+      bg.parallax_factor = 1; // Our bg is part "foreground".
+      bg.parallax_buffer = 1.7;
+      bg.addImage(bg12_img);
+      bg.addImage(bg11_img);
+      bg.addImage(bg10_img);
+      bg.addImage(bg9_img);
+      bg.addImage(bg8_img);
+      bg.addImage(bg7_img);
+      bg.addImage(bg6_img);
+      bg.addImage(bg5_img);
+      bg.addImage(bg4_img);
+      bg.addImage(bg3_img);
+      bg.addImage(bg2_img);
+      bg.addImage(bg1_img);
+      bg.layout();
       
       // Creates a new tilemap with no arguments.
       platform = new Platform();
@@ -90,7 +117,7 @@ package
       
       // Set the bounds based on the background.
       // TODO - Account for parallax.
-      platform.bounds = new FlxRect(bg.x, bg.y, bg.frameWidth, bg.frameHeight);
+      platform.bounds = new FlxRect(bg.bounds.x, bg.bounds.y, bg.bounds.width, bg.bounds.height);
       
       // Make our platform.
       platform.makeMap(auto_tiles);
