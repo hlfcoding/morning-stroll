@@ -15,6 +15,7 @@ package
     public var willJump:Boolean = false;
     public var willStop:Boolean = false;
     public var willStart:Boolean = false;
+    public var controlled:Boolean = true;
     public var pVelocity:FlxPoint;
     public var jumpVelocity:FlxPoint;
     public var tailOffset:FlxPoint;
@@ -80,6 +81,7 @@ package
     
     public function moveWithInput():void 
     {
+      if (!this.controlled) { return; }
       if (!(this.rising || this.falling)) 
       {
         this.acceleration.x = 0;

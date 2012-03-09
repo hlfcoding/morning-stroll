@@ -1,11 +1,11 @@
 package
 {
-  import org.flixel.FlxU;
   import org.flixel.FlxG;
   import org.flixel.FlxObject;
   import org.flixel.FlxPoint;
   import org.flixel.FlxRect;
   import org.flixel.FlxTilemap;
+  import org.flixel.FlxU;
   
   public class Platform extends FlxTilemap
   {
@@ -33,6 +33,9 @@ package
     
     private var mapData:String;
     
+    public var startingPoint:FlxPoint;
+    public var endingPoint:FlxPoint;
+    
     public function Platform()
     {
       super();
@@ -40,6 +43,8 @@ package
       this.tilingMode = FlxTilemap.AUTO;
       this.tilingStart = FlxObject.FLOOR;
       this.hasFloor = true;
+      this.startingPoint = new FlxPoint();
+      this.endingPoint = new FlxPoint();
     }
     
     public function generateData():void
@@ -188,5 +193,19 @@ package
       );
     }
     
+    public function isAtEndingPoint(obj:FlxObject):Boolean
+    {
+      var test:Boolean;
+      test = obj.isTouching(FlxObject.FLOOR);
+      if (!test) {
+        return test;
+      }
+      if (this.endingPoint.y < this.startingPoint.y) {
+        test = obj.y <= this.endingPoint.y;
+      } else {
+        test = obj.y >= this.endingPoint.y;
+      }
+      return test; 
+    }
   }
 }

@@ -108,18 +108,19 @@ package
       
       // Make our platform.
       platform.makeMap(ImgAutoTiles);
+      
+      // Set points.
+      var floorHeight:Number = PLAYER_HEIGHT;
+      platform.startingPoint.x = (FlxG.width - PLAYER_HEIGHT) / 2;
+      platform.startingPoint.y = platform.height - (PLAYER_HEIGHT + floorHeight);
+      platform.endingPoint.y = (platform.maxLedgeSpacing.y + 1) * platform.tileHeight - PLAYER_HEIGHT
     }
     // Hooks.
     private function setupPlatformAfter():void
     {
       // Draw player at the bottom.
-      var start:FlxPoint = new FlxPoint();
-      var floorHeight:Number = PLAYER_HEIGHT;
-      start.x = (FlxG.width - PLAYER_HEIGHT) / 2;
-      start.y = platform.height - (PLAYER_HEIGHT + floorHeight);
-//      start.x = 0;
-//      start.y = 0;
-      setupPlayer(start);
+      setupPlayer(platform.startingPoint);
+//      setupPlayer(platform.endingPoint);
       
       // Move until we don't overlap.
       while (platform.overlaps(player)) 
@@ -220,6 +221,7 @@ package
     private function updatePlatformAndPlayerAfter():void
     {
       updateCamera(player.justFell());
+      updateGameState();
     }
     // Hooked routines.
     private function updatePlayer():void
@@ -270,6 +272,38 @@ package
           0.1, null, true, 
           FlxCamera.SHAKE_VERTICAL_ONLY
         );
+      }
+    }
+    private function updateGameState():void
+    {
+      // Check if player is on top of last platform, periodically.
+      // Play the end screen for a while, on click, switch to start screen.
+      if (player.isTouching(FlxObject.FLOOR) && platform.isAtEndingPoint(player))
+      {
+        if (player.controlled)
+        {
+          player.controlled = false;
+          var title:FlxText, instructions:FlxText, baseline:Number;
+          baseline = 40;
+          title = new FlxText(
+            0, baseline * 2, FlxG.width, "The End"
+          );
+          title.size = 32;
+          instructions = new FlxText(
+            0, baseline * 4, FlxG.width, "Click to play again"
+          );
+          instructions.size = 16;
+          instructions.alignment = title.alignment = "center";
+          instructions.scrollFactor = title.scrollFactor = new FlxPoint();
+          add(title);
+          add(instructions);
+        }
+        else if (!player.controlled && FlxG.mouse.justPressed())
+        {
+          FlxG.fade(0xff000000, 1, function():void {
+            FlxG.resetGame();
+          });
+        }
       }
     }
     
