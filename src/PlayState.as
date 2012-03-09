@@ -11,26 +11,24 @@ package
   public class PlayState extends FlxState
   {
     // Tileset that works with AUTO mode (best for thin walls)
-    [Embed(source='auto_tiles.png')]private static var auto_tiles:Class;
-    // Tileset that works with ALT mode (best for thicker walls)
-    [Embed(source='alt_tiles.png')]private static var alt_tiles:Class;
+    [Embed(source='data/auto_tiles.png')]private static var auto_tiles:Class;
     // Tileset that works with OFF mode (do what you want mode)
-    [Embed(source='empty_tiles.png')]private static var empty_tiles:Class;
+    [Embed(source='data/empty_tiles.png')]private static var empty_tiles:Class;
     
-    [Embed(source='player.png')]private static var player_img:Class;
+    [Embed(source='data/player.png')]private static var player_img:Class;
     
-    [Embed(source='bg-1.png')]private static var bg1_img:Class;
-    [Embed(source='bg-2.png')]private static var bg2_img:Class;
-    [Embed(source='bg-3.png')]private static var bg3_img:Class;
-    [Embed(source='bg-4.png')]private static var bg4_img:Class;
-    [Embed(source='bg-5.png')]private static var bg5_img:Class;
-    [Embed(source='bg-6.png')]private static var bg6_img:Class;
-    [Embed(source='bg-7.png')]private static var bg7_img:Class;
-    [Embed(source='bg-8.png')]private static var bg8_img:Class;
-    [Embed(source='bg-9.png')]private static var bg9_img:Class;
-    [Embed(source='bg-10.png')]private static var bg10_img:Class;
-    [Embed(source='bg-11.png')]private static var bg11_img:Class;
-    [Embed(source='bg-12.png')]private static var bg12_img:Class;
+    [Embed(source='data/bg-1.png')]private static var bg1_img:Class;
+    [Embed(source='data/bg-2.png')]private static var bg2_img:Class;
+    [Embed(source='data/bg-3.png')]private static var bg3_img:Class;
+    [Embed(source='data/bg-4.png')]private static var bg4_img:Class;
+    [Embed(source='data/bg-5.png')]private static var bg5_img:Class;
+    [Embed(source='data/bg-6.png')]private static var bg6_img:Class;
+    [Embed(source='data/bg-7.png')]private static var bg7_img:Class;
+    [Embed(source='data/bg-8.png')]private static var bg8_img:Class;
+    [Embed(source='data/bg-9.png')]private static var bg9_img:Class;
+    [Embed(source='data/bg-10.png')]private static var bg10_img:Class;
+    [Embed(source='data/bg-11.png')]private static var bg11_img:Class;
+    [Embed(source='data/bg-12.png')]private static var bg12_img:Class;
     
     // The dynamically generated and extended FlxTilemap.
     private var platform:Platform;
