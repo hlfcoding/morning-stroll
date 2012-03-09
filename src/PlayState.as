@@ -11,24 +11,25 @@ package
   public class PlayState extends FlxState
   {
     // Tileset that works with AUTO mode (best for thin walls)
-    [Embed(source='data/auto_tiles.png')]private static var auto_tiles:Class;
+    [Embed(source='data/auto_tiles.png')]private static var ImgAutoTiles:Class;
     // Tileset that works with OFF mode (do what you want mode)
-    [Embed(source='data/empty_tiles.png')]private static var empty_tiles:Class;
+    [Embed(source='data/empty_tiles.png')]private static var ImgCustomTiles:Class;
     
-    [Embed(source='data/player.png')]private static var player_img:Class;
+    [Embed(source='data/player.png')]private static var ImgPlayer:Class;
     
-    [Embed(source='data/bg-1.png')]private static var bg1_img:Class;
-    [Embed(source='data/bg-2.png')]private static var bg2_img:Class;
-    [Embed(source='data/bg-3.png')]private static var bg3_img:Class;
-    [Embed(source='data/bg-4.png')]private static var bg4_img:Class;
-    [Embed(source='data/bg-5.png')]private static var bg5_img:Class;
-    [Embed(source='data/bg-6.png')]private static var bg6_img:Class;
-    [Embed(source='data/bg-7.png')]private static var bg7_img:Class;
-    [Embed(source='data/bg-8.png')]private static var bg8_img:Class;
-    [Embed(source='data/bg-9.png')]private static var bg9_img:Class;
-    [Embed(source='data/bg-10.png')]private static var bg10_img:Class;
-    [Embed(source='data/bg-11.png')]private static var bg11_img:Class;
-    [Embed(source='data/bg-12.png')]private static var bg12_img:Class;
+    // From farthest to closest.
+    [Embed(source='data/bg-1.png')]private static var ImgBg1:Class;
+    [Embed(source='data/bg-2.png')]private static var ImgBg2:Class;
+    [Embed(source='data/bg-3.png')]private static var ImgBg3:Class;
+    [Embed(source='data/bg-4.png')]private static var ImgBg4:Class;
+    [Embed(source='data/bg-5.png')]private static var ImgBg5:Class;
+    [Embed(source='data/bg-6.png')]private static var ImgBg6:Class;
+    [Embed(source='data/bg-7.png')]private static var ImgBg7:Class;
+    [Embed(source='data/bg-8.png')]private static var ImgBg8:Class;
+    [Embed(source='data/bg-9.png')]private static var ImgBg9:Class;
+    [Embed(source='data/bg-10.png')]private static var ImgBg10:Class;
+    [Embed(source='data/bg-11.png')]private static var ImgBg11:Class;
+    [Embed(source='data/bg-12.png')]private static var ImgBg12:Class;
     
     // The dynamically generated and extended FlxTilemap.
     private var platform:Platform;
@@ -58,6 +59,8 @@ package
       
       // Start our setup chain.
       setupPlatform();
+      setupPlatformAfter();
+      setupPlatformAndPlayerAfter();
       
       // For now, we add things in order to get correct layering.
       // TODO - offload to draw method?
@@ -69,6 +72,8 @@ package
     {
       // Start our update chain.
       updatePlatform();
+      updatePlatformAfter();
+      updatePlatformAndPlayerAfter();
       
       super.update();
     }
@@ -83,25 +88,7 @@ package
     // The platform is the first thing that gets set up.
     private function setupPlatform():void
     {
-      // Load our scenery.
-      bg = new Background();
-      bg.bounds.x = 0;
-      bg.bounds.y = 0;
-      bg.parallax_factor = 1; // Our bg is part "foreground".
-      bg.parallax_buffer = 1.7;
-      bg.addImage(bg12_img);
-      bg.addImage(bg11_img);
-      bg.addImage(bg10_img);
-      bg.addImage(bg9_img);
-      bg.addImage(bg8_img);
-      bg.addImage(bg7_img);
-      bg.addImage(bg6_img);
-      bg.addImage(bg5_img);
-      bg.addImage(bg4_img);
-      bg.addImage(bg3_img);
-      bg.addImage(bg2_img);
-      bg.addImage(bg1_img);
-      bg.layout();
+      setupBg();
       
       // Creates a new tilemap with no arguments.
       platform = new Platform();
@@ -120,9 +107,7 @@ package
       platform.bounds = new FlxRect(bg.bounds.x, bg.bounds.y, bg.bounds.width, bg.bounds.height);
       
       // Make our platform.
-      platform.makeMap(auto_tiles);
-      
-      setupPlatformAfter();
+      platform.makeMap(ImgAutoTiles);
     }
     // Hooks.
     private function setupPlatformAfter():void
@@ -145,8 +130,6 @@ package
         }
         player.x -= platform.tileWidth;
       }
-      
-      setupPlatformAndPlayerAfter();
     }
     private function setupPlatformAndPlayerAfter():void
     {
@@ -158,7 +141,7 @@ package
       // Find start position for player.
       
       player = new Player(start.x, start.y);
-      player.loadGraphic(player_img, true, true, 72);
+      player.loadGraphic(ImgPlayer, true, true, 72);
       
       // Bounding box tweaks.
       player.height = player.frameWidth / 2;
@@ -193,12 +176,36 @@ package
       FlxG.camera.follow(player);
       platform.follow();
     }
+    private function setupBg():void
+    {
+      // Load our scenery.
+      bg = new Background();
+      bg.bounds.x = 0;
+      bg.bounds.y = 0;
+      bg.parallax_factor = 1; // Our bg is part "foreground".
+      bg.parallax_buffer = 1.7;
+      
+      // This is the lamest image loading ever.
+      bg.addImage(ImgBg1);
+      bg.addImage(ImgBg2);
+      bg.addImage(ImgBg3);
+      bg.addImage(ImgBg4);
+      bg.addImage(ImgBg5);
+      bg.addImage(ImgBg6);
+      bg.addImage(ImgBg7);
+      bg.addImage(ImgBg8);
+      bg.addImage(ImgBg9);
+      bg.addImage(ImgBg10);
+      bg.addImage(ImgBg11);
+      bg.addImage(ImgBg12);
+      
+      bg.layout();
+    }
     
     // Update Routines
     // ---------------
     private function updatePlatform():void
     {
-      updatePlatformAfter();
     }
     // Hooks.
     private function updatePlatformAfter():void
@@ -209,8 +216,6 @@ package
       
       wrapToStage(player);
       updatePlayer();
-      
-      updatePlatformAndPlayerAfter();
     }
     private function updatePlatformAndPlayerAfter():void
     {

@@ -51,8 +51,10 @@ package
       this.bounds.width = FlxSprite(this.members[0]).width;
       var n:Number;
       var i:uint = 0; // Assume we added the bottom layers first. 
-      for each (var bg:FlxSprite in this.members) { 
-        if (this.mode == this.CLIP_BGS) {
+      for each (var bg:FlxSprite in this.members)
+      { 
+        if (this.mode == this.CLIP_BGS) 
+        {
           this.bounds.height += bg.frameHeight;
         }
         n = Math.pow(i/this.length, 2) * this.parallax_factor;
@@ -60,7 +62,8 @@ package
         bg.scrollFactor = new FlxPoint(n, n);
         i++;
       }
-      if (this.mode == this.FULL_BGS) {
+      if (this.mode == this.FULL_BGS) 
+      {
         this.bounds.height = FlxSprite(this.members[0]).height;
       }
     }
