@@ -49,6 +49,8 @@ package
     // --------------
     override public function create():void
     {
+      FlxG.mouse.hide();
+      
       // Globals.
       FlxG.framerate = 30;
       FlxG.flashFramerate = 30;
