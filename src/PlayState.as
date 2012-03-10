@@ -153,13 +153,14 @@ package
       player.face(FlxObject.RIGHT);
       
       // Basic player physics.
-      player.drag.x = 1000; // friction
-      player.acceleration.y = 500; // gravity
-      player.maxVelocity.x = 200;
+      player.naturalForces.x = 1000; // friction
+      player.naturalForces.y = 500; // gravity
+      player.maxVelocity.x = 150;
       player.maxVelocity.y = 1500;
       
       // Player jump physics.
-      player.jumpVelocity.y = -420;
+      player.jumpMaxVelocity.y = -250;
+      player.jumpAccel.y = -0.3;
       
       // Animations.
       // Make sure to add end transitions, otherwise the last frame is skipped if framerate is low.
@@ -171,6 +172,9 @@ package
       player.addAnimation('jump', [18,19,20,21,22,23,24,25,26,27,28,29,30,31], 24, false);
       player.addAnimation('fall', [31]);
       player.addAnimation('land', [32,33,18,17], 12, false);
+      
+      // Process settings.
+      player.init();
     }
     private function setupCamera():void
     {
