@@ -283,27 +283,25 @@ package
         if (player.controlled)
         {
           player.controlled = false;
-          var title:FlxText, instructions:FlxText, baseline:Number;
-          baseline = 40;
-          title = new FlxText(
-            0, baseline * 2, FlxG.width, "The End"
-          );
-          title.size = 32;
-          instructions = new FlxText(
-            0, baseline * 4, FlxG.width, "Click to play again"
-          );
+          var title:Text, instructions:Text;
+          title = new Text(0, Text.BASELINE * 2, FlxG.width, 
+            "The End", Text.H1);
+          instructions = new Text(0, Text.BASELINE * 4, FlxG.width, 
+            "Click to play again");
           instructions.size = 16;
-          instructions.alignment = title.alignment = "center";
+          // Stay on the screen.
           instructions.scrollFactor = title.scrollFactor = new FlxPoint();
           add(title);
           add(instructions);
         }
         else if (!player.controlled && FlxG.mouse.justPressed())
         {
-          FlxG.fade(0xff000000, 1, function():void {
-            FlxG.resetGame();
-          });
+          MorningStroll.endGame();
         }
+      }
+      else if (FlxG.keys.justPressed('Q'))
+      {
+        MorningStroll.endGame();
       }
     }
     
