@@ -45,6 +45,9 @@ package
     // Some game switches.
     private var fallChecking:Boolean;
     
+    // Internal helpers.
+    private var gameStatePollInterval:FlxTimer;
+    
     // Flixel Methods
     // --------------
     override public function create():void
@@ -64,7 +67,16 @@ package
       // For now, we add things in order to get correct layering.
       add(bg);
       add(platform);
-      add(player);      
+      add(player);
+      
+      // Internals.
+      // Don't do expensive operations too often, if possible.
+      gameStatePollInterval = new FlxTimer();
+      gameStatePollInterval.start(2, Number.POSITIVE_INFINITY,
+        function(onTimer:FlxTimer):void {
+          updateGameState(true);
+        }
+      );
     }
     override public function update():void
     {
@@ -226,12 +238,20 @@ package
       // Tilemaps can be collided just like any other FlxObject, and flixel
       // automatically collides each individual tile with the object.
       FlxG.collide(player, platform);
-      var pPos:FlxPoint = new FlxPoint(player.x, player.y);
-      wrapToStage(player);
-      var pos:FlxPoint = new FlxPoint(player.x, player.y);
-      if (FlxU.getDistance(pos, pPos) > 0)
+      // Wrap to stage.
+      if (!player.inMidAir() && player.nextAction != Player.STOP)
       {
-        player.nextAction = Player.STOP;
+        var pPos:FlxPoint = new FlxPoint(player.x, player.y);
+        wrapToStage(player);
+        var pos:FlxPoint = new FlxPoint(player.x, player.y);
+        if (FlxU.getDistance(pos, pPos) > 0)
+        {
+          player.nextAction = Player.STOP;
+        }
+      }
+      else
+      {
+        wrapToStage(player);
       }
     }
     private function updateCamera(playerJustFell:Boolean):void
@@ -245,32 +265,35 @@ package
         );
       }
     }
-    private function updateGameState():void
+    private function updateGameState(doChecks:Boolean=false):void
     {
-      // Check if player is on top of last platform, periodically.
-      // Play the end screen for a while, on click, switch to start screen.
-      if (player.isTouching(FlxObject.FLOOR) && platform.isAtEndingPoint(player))
+      if (doChecks)
       {
-        if (player.controlled)
+        // Check if player is on top of last platform, periodically.
+        // Play the end screen for a while, on click, switch to start screen.
+        if (player.isTouching(FlxObject.FLOOR) && platform.isAtEndingPoint(player))
         {
-          player.controlled = false;
-          var title:Text, instructions:Text;
-          title = new Text(0, Text.BASELINE * 2, FlxG.width, 
-            "The End", Text.H1);
-          instructions = new Text(0, Text.BASELINE * 4, FlxG.width, 
-            "Click to play again");
-          instructions.size = 16;
-          // Stay on the screen.
-          instructions.scrollFactor = title.scrollFactor = new FlxPoint();
-          add(title);
-          add(instructions);
-        }
-        else if (!player.controlled && FlxG.mouse.justPressed())
-        {
-          MorningStroll.endGame();
+          if (player.controlled)
+          {
+            player.controlled = false;
+            var title:Text, instructions:Text;
+            title = new Text(0, Text.BASELINE * 2, FlxG.width, 
+              "The End", Text.H1);
+            instructions = new Text(0, Text.BASELINE * 4, FlxG.width, 
+              "Click to play again");
+            instructions.size = 16;
+            // Stay on the screen.
+            instructions.scrollFactor = title.scrollFactor = new FlxPoint();
+            add(title);
+            add(instructions);
+          }
+          else if (!player.controlled && FlxG.mouse.justPressed())
+          {
+            MorningStroll.endGame();
+          }
         }
       }
-      else if (FlxG.keys.justPressed('Q'))
+      if (FlxG.keys.justPressed('Q'))
       {
         MorningStroll.endGame();
       }
