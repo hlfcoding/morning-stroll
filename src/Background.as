@@ -24,16 +24,16 @@ package
     
     public var mode:uint;
     // Images are only partial, and clip the transparent leftovers.
-    public const CLIP_BGS:uint = 1;
+    public static const CLIP_BGS:uint = 1;
     // Each image is the since of the full original.
-    public const FULL_BGS:uint = 2;
+    public static const FULL_BGS:uint = 2;
     
     public function Background(MaxSize:uint=0)
     {
       this.bounds = new FlxRect();
       this.parallax_factor = 0.9; // This IS a background, after all.
       this.parallax_buffer = 2.0;
-      this.mode = this.FULL_BGS;
+      this.mode = FULL_BGS;
       super(MaxSize);
     }
     
@@ -53,7 +53,7 @@ package
       var i:uint = 0; // Assume we added the bottom layers first. 
       for each (var bg:FlxSprite in this.members)
       { 
-        if (this.mode == this.CLIP_BGS) 
+        if (this.mode == CLIP_BGS) 
         {
           this.bounds.height += bg.frameHeight;
         }
@@ -62,7 +62,7 @@ package
         bg.scrollFactor = new FlxPoint(n, n);
         i++;
       }
-      if (this.mode == this.FULL_BGS) 
+      if (this.mode == FULL_BGS) 
       {
         this.bounds.height = FlxSprite(this.members[0]).height;
       }

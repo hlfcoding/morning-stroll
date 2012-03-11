@@ -23,7 +23,7 @@ package
     public var bounds:FlxRect;
     
     public var structureMode:uint;
-    public const SIDE_TO_SIDE:uint = 1;
+    public static const SIDE_TO_SIDE:uint = 1;
     
     public var tilingMode:uint;
     public var tilingStart:uint;
@@ -39,7 +39,7 @@ package
     public function Platform()
     {
       super();
-      this.structureMode = this.SIDE_TO_SIDE;
+      this.structureMode = SIDE_TO_SIDE;
       this.tilingMode = FlxTilemap.AUTO;
       this.tilingStart = FlxObject.FLOOR;
       this.hasFloor = true;

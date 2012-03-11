@@ -6,9 +6,8 @@ package
   
   // The main coordinator: part config list, part asset list. 
   // Handles all of the character animations.
-  // TODO, offload animation logic to PlayerDelegate interface.
   
-  public class PlayState extends FlxState
+  public class PlayState extends FlxState implements IPlayerAnimationDelegate
   {
     // Tileset that works with AUTO mode (best for thin walls)
     [Embed(source='data/auto_tiles.png')]private static var ImgAutoTiles:Class;
@@ -36,8 +35,8 @@ package
     // Ledge controls, in tiles.
     
     // The extend FlxSprite.
-    private const PLAYER_WIDTH:uint = 72;
-    private const PLAYER_HEIGHT:uint = 72;
+    private static const PLAYER_WIDTH:uint = 72;
+    private static const PLAYER_HEIGHT:uint = 72;
     private var player:Player;
     
     // The background with parallax.
@@ -63,7 +62,6 @@ package
       setupPlatformAndPlayerAfter();
       
       // For now, we add things in order to get correct layering.
-      // TODO - offload to draw method?
       add(bg);
       add(platform);
       add(player);      
@@ -103,7 +101,6 @@ package
       platform.ledgeThickness = 2;
       
       // Set the bounds based on the background.
-      // TODO - Account for parallax.
       platform.bounds = new FlxRect(bg.bounds.x, bg.bounds.y, bg.bounds.width, bg.bounds.height);
       
       // Make our platform.
@@ -172,6 +169,7 @@ package
       player.addAnimation('jump', [18,19,20,21,22,23,24,25,26,27,28,29,30,31], 24, false);
       player.addAnimation('fall', [31]);
       player.addAnimation('land', [32,33,18,17], 12, false);
+      player.animDelegate = this;
       
       // Process settings.
       player.init();
@@ -215,11 +213,6 @@ package
     // Hooks.
     private function updatePlatformAfter():void
     {
-      // Tilemaps can be collided just like any other FlxObject, and flixel
-      // automatically collides each individual tile with the object.
-      FlxG.collide(player, platform);
-      
-      wrapToStage(player);
       updatePlayer();
     }
     private function updatePlatformAndPlayerAfter():void
@@ -230,41 +223,15 @@ package
     // Hooked routines.
     private function updatePlayer():void
     {
-      player.moveWithInput();
-      
-      if (player.willJump) // We only need to play the jump animation once.
+      // Tilemaps can be collided just like any other FlxObject, and flixel
+      // automatically collides each individual tile with the object.
+      FlxG.collide(player, platform);
+      var pPos:FlxPoint = new FlxPoint(player.x, player.y);
+      wrapToStage(player);
+      var pos:FlxPoint = new FlxPoint(player.x, player.y);
+      if (FlxU.getDistance(pos, pPos) > 0)
       {
-        player.play('jump');
-      }
-      else if (player.justFell()) 
-      {
-        player.play('land');
-      }
-      else if (!player.rising && player.finished) 
-      {
-        if (player.falling)
-        {
-          player.play('fall');
-        }
-        else if (player.willStop) 
-        {
-          player.play('stop');
-        }
-        else if (player.velocity.x == 0 || 
-          (player.x == 0 || player.x >= (platform.width - player.width))
-        )
-        {
-          player.play('still');
-        }
-        else if (player.willStart)
-        {
-          player.play('start');
-          player.willStart = false; // TODO - Hack.
-        }
-        else
-        {
-          player.play('run');
-        }
+        player.nextAction = Player.STOP;
       }
     }
     private function updateCamera(playerJustFell:Boolean):void
@@ -307,6 +274,56 @@ package
       {
         MorningStroll.endGame();
       }
+    }
+    
+    // Delegate Methods
+    // ----------------
+    public function playerWillUpdateAnimation():void {}
+    public function playerDidUpdateAnimation():void {}
+    // Smooth, once.
+    public function playerWillStart():void
+    {
+      if (!player.finished) return;
+      if (player.currentAnimation().name == 'start') return;
+      player.play('start');
+    }
+    // Interruptive, once.
+    public function playerWillStop():void
+    {
+      if (player.currentAnimation().name == 'stop') return;
+      player.play('stop');
+    }
+    // Interruptive, once.
+    public function playerWillJump():void
+    {
+      if (player.currentAnimation().name == 'jump') return;
+      player.play('jump');
+    }
+    // Smooth.
+    public function playerIsStill():void
+    {
+      if (!player.finished) return;
+      player.play('still');
+    }
+    // Smooth.
+    public function playerIsRunning():void
+    {
+      if (!player.finished) return;
+      player.play('run');
+    }
+    // Smooth, once.
+    public function playerIsLanding():void
+    {
+      if (!player.finished) return;
+      if (player.currentAnimation().name == 'land') return;
+      player.play('land');
+    }
+    public function playerIsRising():void {}
+    // Smooth.
+    public function playerIsFalling():void
+    {
+      if (!player.finished) return;
+      player.play('fall');
     }
     
     // Helpers

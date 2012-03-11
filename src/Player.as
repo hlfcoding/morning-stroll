@@ -6,17 +6,33 @@ package
   import org.flixel.FlxSprite;
   import org.flixel.FlxTimer;
   import org.flixel.FlxU;
+  import org.flixel.system.FlxAnim;
+  
+  // Player that has more complex running and jumping abilities.
+  // It makes use of an animation delegate and has a simple state
+  // tracking system. It also takes into account custom offsets.
+  // This class is meant to be very configurable and has many hooks.
   
   public class Player extends FlxSprite
   {
     
-    // These aren't really used, but eventually may come in handy.
-    public var rising:Boolean = false;
-    public var falling:Boolean = false;
-    public var willJump:Boolean = false;
-    public var willStop:Boolean = false;
-    public var willStart:Boolean = false;
+    public var currently:uint;
+    public static const STILL:uint = 0;
+    public static const RUNNING:uint = 1;
+    public static const LANDING:uint = 2;
+    public static const RISING:uint = 101;
+    public static const FALLING:uint = 102;
+    
+    // Note this is not always cleared.
+    public var nextAction:uint;
+    public static const NO_ACTION:uint = 0;
+    public static const JUMP:uint = 1;
+    public static const STOP:uint = 2;
+    public static const START:uint = 3;
+    
     public var controlled:Boolean = true;
+    
+    public var animDelegate:IPlayerAnimationDelegate;
 
     public var pVelocity:FlxPoint;
     public var jumpMaxVelocity:FlxPoint;
@@ -36,6 +52,11 @@ package
     {
       super(X, Y, SimpleGraphic);
       
+      this.finished = true;
+      
+      this.currently = FALLING;
+      this.nextAction = NO_ACTION;
+      
       this.pVelocity = this.velocity;
       this.jumpMaxVelocity = new FlxPoint();
       this.jumpAccel = new FlxPoint();
@@ -54,67 +75,23 @@ package
       this.acceleration.y = this.naturalForces.y;
       this.oDrag.x = this.drag.x;
       this.jumpDrag.x = this.oDrag.x * 2;
+      this.animDelegate.playerIsFalling();
     }
     
     // Flixel Methods
     // --------------
-    override public function postUpdate():void 
+    override public function update():void 
     {
-      if (this.justFell())
-      {
-        this.falling = false;
-      }
-      super.postUpdate();
-    }
-    
-    // This check can only be done once, for now.
-    // TODO - Fix bugs.
-    public function justFell():Boolean
-    {
-      var did:Boolean = 
-        this.justTouched(FlxObject.DOWN) 
-        && this.falling 
-        && this.pVelocity != null;
+      if (!this.controlled) return;
       
-      return did;
-    }
-    
-    public function face(direction:uint):void
-    {
-      if (this.velocity.x != 0 && !this.willStop && this.facing != direction) 
-      {
-        this.willStop = true;
-        this.willStart = false;
-      }
-      else if (this.finished)
-      {
-        this.willStop = false;
-        this.willStart = true;
-        if (direction == FlxObject.RIGHT)
-        {
-          this.offset.x = this.tailOffset.x;
-          this.facing = FlxObject.RIGHT;
-        }
-        else if (direction == FlxObject.LEFT)
-        {
-          this.offset.x = 0;
-          this.facing = FlxObject.LEFT;
-        }
-      }
-    }
-    
-    public function moveWithInput():void 
-    {
-      if (!this.controlled) { return; }
-      if (!(this.rising || this.falling)) 
+      // Horizontal
+      // - Revert to still. (Our acceleration updates funny.)
+      if (!this.inMidAir()) 
       {
         this.acceleration.x = 0;
       }
-      if (!jumpTimer.finished) {
-        // Negative is up.
-        this.velocity.y = FlxU.bound(this.velocity.y, 0, this.jumpMaxVelocity.y);
-      }
-      // Horizontal
+      // - Basically handle switching direction, and running or being still
+      // when not in the air.
       if (FlxG.keys.LEFT) 
       {
         if (this.facing == FlxObject.RIGHT)
@@ -131,20 +108,28 @@ package
         }
         run();
       }
-      else if (!(this.rising || this.falling) && this.acceleration.x == 0)
+      else if (!this.inMidAir())
       {
-        if (this.velocity.x == 0) 
+        if (this.acceleration.x == 0)
         {
-          this.willStop = false;
-          this.willStart = true;
+          this.nextAction = (this.velocity.x == 0) ? START : STOP;
         }
-        else
+        if (this.velocity.x == 0)
         {
-          this.willStop = true;
-          this.willStart = false;
+          this.currently = STILL;
         }
       }
+      
       // Vertical
+      // - Constrain jump.
+      if (!jumpTimer.finished)
+      {
+        // Negative is up.
+        this.velocity.y = FlxU.bound(this.velocity.y, 0, this.jumpMaxVelocity.y);
+      }
+      // - Basically handle starting and ending of jump, and starting of
+      // falling. The tracking of pVelocity is an extra complexity. The 
+      // possibility of hitting the ceiling during jump is another one.
       if (FlxG.keys.justPressed('UP') && jumpTimer.finished &&
           this.isTouching(FlxObject.FLOOR))
       {
@@ -155,42 +140,128 @@ package
       {
         jumpEnd();
       }
-      else if (this.willJump) 
-      {
-        this.willJump = false;
-      }
-      else if (this.isTouching(FlxObject.UP) && this.rising)
+      else if (this.isTouching(FlxObject.UP) && this.currently == RISING)
       {
         // Start falling.
-        this.falling = true;
-        this.rising = false;
+        this.currently = FALLING;
         this.pVelocity = null;
       }
-      else if (this.falling && this.velocity.y > 0) 
+      else if (this.velocity.y > 0)
       {
-        this.pVelocity = this.velocity;
+        if (this.currently == FALLING) 
+        {
+          this.pVelocity = this.velocity;
+        }
+        else
+        {
+          this.currently = FALLING;
+        }
       }
-      else if (!this.falling && this.velocity.y > 0) 
+      // - Handle ending of falling.
+      if (this.justFell())
       {
-        this.rising = false;
-        this.falling = true;
+        this.currently = LANDING;
       }
     }
+    // Animations get updated after movement.
+    override protected function updateAnimation():void
+    {
+      this.animDelegate.playerWillUpdateAnimation();
+      if (this.currently == STILL)
+      {
+        this.animDelegate.playerIsStill();
+      }
+      else if (this.currently == RUNNING)
+      {
+        this.animDelegate.playerIsRunning();
+      }
+      else if (this.currently == LANDING)
+      {
+        this.animDelegate.playerIsLanding();
+      }
+      else if (this.currently == RISING)
+      {
+        this.animDelegate.playerIsRising();
+      }
+      else if (this.currently == FALLING)
+      {
+        this.animDelegate.playerIsFalling();
+      }
+      super.updateAnimation();
+      this.animDelegate.playerDidUpdateAnimation();
+    }
+    
+    // Update API
+    // ----------
+    public function justFell():Boolean
+    {
+      var did:Boolean = 
+        this.justTouched(FlxObject.DOWN) 
+        && this.currently == FALLING 
+        && this.pVelocity != null;
+      
+      return did;
+    }
+    public function inMidAir():Boolean
+    {
+      return this.currently >= RISING;
+    }
+    public function face(direction:uint):void
+    {
+      if (this.velocity.x != 0 && 
+          this.nextAction != STOP && 
+          this.facing != direction) 
+      {
+        this.nextAction = STOP;
+        if (!this.inMidAir())
+        {
+          this.animDelegate.playerWillStop();
+        }
+      }
+      else if (this.finished)
+      {
+        this.nextAction = START;
+        if (!this.inMidAir())
+        {
+          this.animDelegate.playerWillStart();
+        }
+        if (direction == FlxObject.RIGHT)
+        {
+          this.offset.x = this.tailOffset.x;
+          this.facing = FlxObject.RIGHT;
+        }
+        else if (direction == FlxObject.LEFT)
+        {
+          this.offset.x = 0;
+          this.facing = FlxObject.LEFT;
+        }
+      }
+    }
+    public function currentAnimation():FlxAnim
+    {
+      return this._curAnim;
+    }
+    
+    // Update Routines
+    // ---------------
     private function run(direction:int=1):void
     {
       var factor:Number = this.accelFactor;
-      if (this.rising || this.falling)
+      if (this.inMidAir())
       {
         factor = this.accelJumpFactor;
+      }
+      else if (this.currently != RUNNING)
+      {
+        this.currently = RUNNING;
       }
       this.acceleration.x = this.drag.x * factor * direction;
     }
     private function jumpStart():void
     {
-//      trace('start');
+      this.animDelegate.playerWillJump();
       this.y--;
-      this.rising = true;
-      this.willJump = true;
+      this.currently = RISING;
       this.acceleration.y = this.jumpAccel.y;
       this.acceleration.x = 0;
       this.drag.x = this.jumpDrag.x;
@@ -201,7 +272,6 @@ package
     }
     private function jumpEnd():void
     {
-//      trace('end');
       this.acceleration.y = this.naturalForces.y;
       this.drag.x = this.oDrag.x;
       jumpTimer.stop();
