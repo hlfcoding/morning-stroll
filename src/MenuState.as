@@ -3,19 +3,19 @@ package
   import org.flixel.FlxG;
   import org.flixel.FlxState;
   import org.flixel.FlxU;
-  
+
   public class MenuState extends FlxState
   {
     [Embed(source="data/cursor.png")] protected var ImgCursor:Class;
-    
+
     private var title:Text;
     private var instructions:Text;
     private var start:Button;
-    
+
     override public function create():void
     {
       FlxG.mouse.show(ImgCursor, 0.5);
-      
+
       // Layout.
       title = new Text(0, Text.BASELINE * 6, FlxG.width,
         "Morning Stroll", Text.H1);
@@ -29,17 +29,17 @@ package
           });
         });
       start.x = (FlxG.width - start.width) / 2;
-      
+
       add(title);
       add(instructions);
       add(start);
     }
-    
+
     override public function update():void
     {
       super.update();
-      
+
     }
-    
+
   }
 }
