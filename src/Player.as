@@ -34,14 +34,16 @@ package
     
     public var animDelegate:IPlayerAnimationDelegate;
 
+    public var naturalForces:FlxPoint = new FlxPoint(1000, 500);
     public var pVelocity:FlxPoint;
+    public var accelFactor:Number = 0.5;
     public var jumpMaxVelocity:FlxPoint;
     public var jumpAccel:FlxPoint;
-    public var oDrag:FlxPoint;
+    // This should be small. Negative creates some drag.
+    public var accelJumpFactor:Number = -0.001;
     public var jumpDrag:FlxPoint;
-    public var accelFactor:Number = 0.5;
-    public var accelJumpFactor:Number = 0.1;
-    public var naturalForces:FlxPoint = new FlxPoint(1000, 500);
+    public var oDrag:FlxPoint;
+    public var jumpMinDuration:Number = 0.1;
     public var jumpMaxDuration:Number = 0.5;
     private var jumpTimer:FlxTimer;
 
@@ -91,7 +93,8 @@ package
         this.acceleration.x = 0;
       }
       // - Basically handle switching direction, and running or being still
-      // when not in the air.
+      // when not in the air. Note the player still runs in midair, but run
+      // will behave differently.
       if (FlxG.keys.LEFT) 
       {
         if (this.facing == FlxObject.RIGHT)
@@ -259,13 +262,15 @@ package
     }
     private function jumpStart():void
     {
+      var jumpMaxDuration:Number = this.jumpMinDuration +
+        FlxU.abs(this.velocity.x/this.maxVelocity.x) * (this.jumpMaxDuration-this.jumpMinDuration);
       this.animDelegate.playerWillJump();
       this.y--;
       this.currently = RISING;
       this.acceleration.y = this.jumpAccel.y;
       this.acceleration.x = 0;
       this.drag.x = this.jumpDrag.x;
-      jumpTimer.start(this.jumpMaxDuration, 1, 
+      jumpTimer.start(jumpMaxDuration, 1, 
         function(timer:FlxTimer):void {
           jumpEnd(); 
         });

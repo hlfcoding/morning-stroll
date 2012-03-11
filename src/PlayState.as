@@ -164,7 +164,7 @@ package
       // Basic player physics.
       player.naturalForces.x = 1000; // friction
       player.naturalForces.y = 500; // gravity
-      player.maxVelocity.x = 150;
+      player.maxVelocity.x = 200;
       player.maxVelocity.y = 1500;
       
       // Player jump physics.
