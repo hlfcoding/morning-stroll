@@ -168,7 +168,7 @@ package
       player.maxVelocity.y = 1500;
 
       // Player jump physics.
-      player.jumpMaxVelocity.y = -250;
+      player.jumpMaxVelocity.y = -260;
       player.jumpAccel.y = -0.3;
 
       // Animations.
