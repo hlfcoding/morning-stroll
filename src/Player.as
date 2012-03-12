@@ -11,6 +11,7 @@ package
   // Player that has more complex running and jumping abilities.
   // It makes use of an animation delegate and has a simple state
   // tracking system. It also takes into account custom offsets.
+  // It also allows for custom camera tracking.
   // This class is meant to be very configurable and has many hooks.
 
   public class Player extends FlxSprite
@@ -30,7 +31,7 @@ package
     public static const STOP:uint = 2;
     public static const START:uint = 3;
 
-    public var controlled:Boolean = true;
+    public var controlled:Boolean;
 
     public var animDelegate:IPlayerAnimationDelegate;
 
@@ -49,6 +50,11 @@ package
 
     public var tailOffset:FlxPoint;
     public var headOffset:FlxPoint;
+    
+    public var cameraFocus:FlxObject;
+    public var updateFocus:Boolean;
+    // Basically, 1/n traveled per tween.
+    public var cameraSpeed:Number = 30;
 
     public function Player(X:Number=0, Y:Number=0, SimpleGraphic:Class=null)
     {
@@ -58,6 +64,8 @@ package
 
       this.currently = FALLING;
       this.nextAction = NO_ACTION;
+      
+      this.controlled = true;
 
       this.pVelocity = this.velocity;
       this.jumpMaxVelocity = new FlxPoint();
@@ -69,6 +77,9 @@ package
 
       this.tailOffset = new FlxPoint();
       this.headOffset = new FlxPoint();
+
+      this.cameraFocus = new FlxObject(this.x, this.y, this.width, this.height);
+      this.updateFocus = true;
     }
 
     public function init():void
@@ -164,6 +175,13 @@ package
       if (this.justFell())
       {
         this.currently = LANDING;
+      }
+      
+      // - Handle focus.
+      if (this.updateFocus)
+      {
+        this.cameraFocus.x += (this.x - this.cameraFocus.x) / this.cameraSpeed;
+        this.cameraFocus.y += (this.y - this.cameraFocus.y) / this.cameraSpeed;
       }
     }
     // Animations get updated after movement.

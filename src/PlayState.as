@@ -188,7 +188,9 @@ package
     }
     private function setupCamera():void
     {
-      FlxG.camera.follow(player);
+      // Follow the player's custom focus.
+      FlxG.camera.follow(player.cameraFocus);
+      // Constrain the camera to the platform.
       platform.follow();
     }
     private function setupBg():void
@@ -321,6 +323,7 @@ package
     {
       if (player.currentAnimation().name == 'jump') return;
       player.play('jump');
+      player.updateFocus = false;
     }
     // Smooth.
     public function playerIsStill():void
@@ -347,6 +350,7 @@ package
     {
       if (!player.finished) return;
       player.play('fall');
+      player.updateFocus = true;
     }
 
     // Helpers
