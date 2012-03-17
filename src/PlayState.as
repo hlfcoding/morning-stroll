@@ -1,7 +1,7 @@
 package
 {
   import flash.display.BlendMode;
-
+  
   import org.flixel.*;
 
   // The main coordinator: part config list, part asset list.
@@ -10,7 +10,7 @@ package
   public class PlayState extends FlxState implements IPlayerAnimationDelegate
   {
     // Tileset that works with AUTO mode (best for thin walls)
-    [Embed(source='data/auto_tiles.png')]private static var ImgAutoTiles:Class;
+    [Embed(source='data/tiles-auto-balcony.png')]private static var ImgAutoTiles:Class;
     // Tileset that works with OFF mode (do what you want mode)
     [Embed(source='data/empty_tiles.png')]private static var ImgCustomTiles:Class;
 
@@ -32,8 +32,8 @@ package
 
     // The dynamically generated and extended FlxTilemap.
     private var platform:Platform;
-    // Ledge controls, in tiles.
-
+    private static const FLOOR_HEIGHT:uint = 32;
+    
     // The extend FlxSprite.
     private static const PLAYER_WIDTH:uint = 72;
     private static const PLAYER_HEIGHT:uint = 72;
@@ -41,7 +41,7 @@ package
 
     // The background with parallax.
     private var bg:Background;
-
+    
     // Some game switches.
     private var fallChecking:Boolean;
 
@@ -99,7 +99,7 @@ package
     private function setupPlatform():void
     {
       setupBg();
-
+      
       // Creates a new tilemap with no arguments.
       platform = new Platform();
 
@@ -113,15 +113,14 @@ package
       platform.ledgeThickness = 2;
 
       // Set the bounds based on the background.
-      platform.bounds = new FlxRect(bg.bounds.x, bg.bounds.y, bg.bounds.width, bg.bounds.height);
+      platform.bounds = new FlxRect(bg.bounds.x, bg.bounds.y, bg.bounds.width, bg.bounds.height + FLOOR_HEIGHT);
 
       // Make our platform.
       platform.makeMap(ImgAutoTiles);
 
       // Set points.
-      var floorHeight:Number = PLAYER_HEIGHT;
-      platform.startingPoint.x = (FlxG.width - PLAYER_HEIGHT) / 2;
-      platform.startingPoint.y = platform.height - (PLAYER_HEIGHT + floorHeight);
+      platform.startingPoint.x = PLAYER_WIDTH;
+      platform.startingPoint.y = platform.height - (PLAYER_HEIGHT + FLOOR_HEIGHT);
       platform.endingPoint.y = (platform.maxLedgeSpacing.y + 1) * platform.tileHeight - PLAYER_HEIGHT
     }
     // Hooks.
@@ -192,6 +191,8 @@ package
       FlxG.camera.follow(player.cameraFocus);
       // Constrain the camera to the platform.
       platform.follow();
+      // Don't show the floor.
+      FlxG.camera.setBounds(bg.bounds.x, bg.bounds.y, bg.bounds.width, bg.bounds.height);
     }
     private function setupBg():void
     {

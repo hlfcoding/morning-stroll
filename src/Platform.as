@@ -35,6 +35,10 @@ package
 
     public var startingPoint:FlxPoint;
     public var endingPoint:FlxPoint;
+    
+    private static const EMPTY_TILE:String = '0';
+    private static const SOLID_TILE:String = '1';
+    private static const META_TILE:String = '2';
 
     public function Platform()
     {
@@ -82,15 +86,15 @@ package
         {
           for (c = 0; c < cStart; c++) // For each column.
           {
-            col.push(inverse ? '1' : '0');
+            col.push(inverse ? SOLID_TILE : EMPTY_TILE);
           }
           for (c = cStart; c < cEnd; c++)
           {
-            col.push(!inverse ? '1' : '0');
+            col.push(!inverse ? SOLID_TILE : EMPTY_TILE);
           }
           for (c = cEnd; c < cols; c++)
           {
-            col.push(inverse ? '1' : '0');
+            col.push(inverse ? SOLID_TILE : EMPTY_TILE);
           }
         }
         if (this.tilingStart == FlxObject.FLOOR)
