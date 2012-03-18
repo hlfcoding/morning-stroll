@@ -40,9 +40,9 @@ package
     public var accelFactor:Number = 0.5;
     public var jumpMaxVelocity:FlxPoint;
     public var jumpAccel:FlxPoint;
+    public var jumpAccelDecay:FlxPoint;
     // This should be small. Negative creates some drag.
-    public var accelJumpFactor:Number = -0.001;
-    public var jumpDrag:FlxPoint;
+    public var jumpAccelDecayFactor:Number = -0.001;
     public var oDrag:FlxPoint;
     public var jumpMinDuration:Number = 0.2;
     public var jumpMaxDuration:Number = 0.5;
@@ -70,8 +70,8 @@ package
       this.pVelocity = this.velocity;
       this.jumpMaxVelocity = new FlxPoint();
       this.jumpAccel = new FlxPoint();
+      this.jumpAccelDecay = new FlxPoint();
       this.oDrag = new FlxPoint();
-      this.jumpDrag = new FlxPoint();
       jumpTimer = new FlxTimer();
       jumpTimer.stop();
 
@@ -95,7 +95,9 @@ package
       this.drag.x = this.naturalForces.x;
       this.acceleration.y = this.naturalForces.y;
       this.oDrag.x = this.drag.x;
-      this.jumpDrag.x = this.oDrag.x * 2;
+      this.jumpAccelDecay.x = this.oDrag.x * 2;
+      // This prevents the "being dragged into the air" feeling.
+      this.jumpAccelDecay.y = FlxG.framerate * this.jumpMinDuration;
       if (this.animDelegate == null)
       {
         throw new Error('Player animation delegate is required.');
@@ -147,11 +149,12 @@ package
       }
 
       // Vertical
-      // - Constrain jump.
+      // - Constrain jump and decay the jump force.
       if (!jumpTimer.finished)
       {
-        // Negative is up.
+        // Negative is up, positive is down.
         this.velocity.y = FlxU.max(this.velocity.y, this.jumpMaxVelocity.y);
+        this.acceleration.y += (this.naturalForces.y - this.acceleration.y) / this.jumpAccelDecay.y;
       }
       // - Basically handle starting and ending of jump, and starting of
       // falling. The tracking of pVelocity is an extra complexity. The
@@ -286,7 +289,7 @@ package
       var factor:Number = this.accelFactor;
       if (this.inMidAir())
       {
-        factor = this.accelJumpFactor;
+        factor = this.jumpAccelDecayFactor;
       }
       else if (this.currently != RUNNING)
       {
@@ -303,7 +306,7 @@ package
       this.currently = RISING;
       this.acceleration.y = this.jumpAccel.y;
       this.acceleration.x = 0;
-      this.drag.x = this.jumpDrag.x;
+      this.drag.x = this.jumpAccelDecay.x;
       jumpTimer.start(jumpMaxDuration, 1,
         function(timer:FlxTimer):void {
           jumpEnd();
