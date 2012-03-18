@@ -58,6 +58,7 @@ package
       FlxG.framerate = 30;
       FlxG.flashFramerate = 30;
       fallChecking = false;
+      FlxG.debug = true;
 
       // Start our setup chain.
       setupPlatform();
@@ -74,7 +75,6 @@ package
       gameStatePollInterval = new FlxTimer();
       gameStatePollInterval.start(2, Number.POSITIVE_INFINITY,
         function(onTimer:FlxTimer):void {
-//          trace('Checking game state...');
           updateGameState(true);
         }
       );
@@ -318,8 +318,9 @@ package
     public function platformWillSetupLedgeRow(ledge:PlatformLedge):PlatformLedge
     {
       // TODO - Harden into config.
-      var facing:String = (ledge.facing == FlxObject.LEFT) ? 'Left: ' : 'Right: ';
-//      trace('Before: '+facing+ledge.size+','+ledge.spacing);
+      var facing:String = (ledge.facing == FlxObject.LEFT) ? 'left' : 'right';
+      
+      FlxG.log('Before: '+[facing, ledge.spacing, ledge.size]);
       
       // The amplifier for the size. Should limit it to 0.5 to 1.5.
       var factor:Number = Math.pow(Number(platform.ledgeRowCount) / (Number(ledge.index) * 3), 0.3);
@@ -331,7 +332,6 @@ package
       // Normalize.
       ledge.spacing = FlxU.bound(ledge.spacing, platform.minLedgeSpacing.y, platform.maxLedgeSpacing.y);
       ledge.size = FlxU.bound(ledge.size, platform.minLedgeSize, platform.maxLedgeSize);
-//      trace('After: '+facing+ledge.size+','+ledge.spacing+','+factor);
       
       // Update. The facing is flipped.
       if (ledge.facing == FlxObject.RIGHT)
@@ -342,6 +342,8 @@ package
       {
         ledge.start = ledge.end - ledge.size;
       }
+      
+      FlxG.log('After: '+[facing, ledge.spacing, ledge.size, factor]);
       
       return ledge;
     }

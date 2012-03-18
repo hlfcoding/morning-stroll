@@ -103,7 +103,7 @@ package
       this.ledgeRowCount = rows /
         ((this.maxLedgeSpacing.y + this.minLedgeSpacing.y) / 2 +
           (this.ledgeThickness - 1));
-      //      trace(this.ledgeRowCount);
+      FlxG.log('Ledge row count: '+this.ledgeRowCount);
       // Plot the row, given the type. 
       addRow = function():void
       {
@@ -242,9 +242,8 @@ package
         }
         addRow.call(this);
       }
-      
-//      trace(rL);
-//      trace(this.mapData);
+      FlxG.log('Ledges: '+rL);
+      FlxG.log('Map: '+this.mapData);
 
     }
 
