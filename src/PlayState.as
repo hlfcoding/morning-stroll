@@ -159,7 +159,7 @@ package
     private function setupPlatformAndPlayerAfter():void
     {
       setupCamera();
-      FlxG.playMusic(SndMain);
+      setupAudio();
     }
     // Hooked routines.
     private function setupPlayer(start:FlxPoint):void
@@ -215,6 +215,13 @@ package
       // Don't show the floor.
       FlxG.camera.setBounds(bg.bounds.x, bg.bounds.y, bg.bounds.width, bg.bounds.height);
     }
+    private function setupAudio():void
+    {
+      if (!FlxG.debug)
+      {
+        FlxG.playMusic(SndMain);
+      }
+    }
     private function setupBg():void
     {
       // Load our scenery.
@@ -259,6 +266,7 @@ package
     private function updatePlatformAndPlayerAfter():void
     {
       updateCamera(player.justFell());
+      updateAudio();
       updateGameState();
     }
     // Hooked routines.
@@ -293,6 +301,10 @@ package
           FlxCamera.SHAKE_VERTICAL_ONLY
         );
       }
+    }
+    private function updateAudio():void
+    {
+      
     }
     private function updateGameState(doChecks:Boolean=false):void
     {
