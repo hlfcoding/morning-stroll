@@ -88,6 +88,10 @@ package
       this.acceleration.y = this.naturalForces.y;
       this.oDrag.x = this.drag.x;
       this.jumpDrag.x = this.oDrag.x * 2;
+      if (this.animDelegate == null)
+      {
+        throw new Error('Player animation delegate is required.');
+      }
       this.animDelegate.playerIsFalling();
     }
 
@@ -144,8 +148,10 @@ package
       // - Basically handle starting and ending of jump, and starting of
       // falling. The tracking of pVelocity is an extra complexity. The
       // possibility of hitting the ceiling during jump is another one.
-      if (FlxG.keys.justPressed('UP') && jumpTimer.finished &&
-          this.isTouching(FlxObject.FLOOR))
+      if (
+        FlxG.keys.justPressed('UP') && jumpTimer.finished &&
+        this.isTouching(FlxObject.FLOOR)
+      )
       {
         // Try to jump.
         jumpStart();
@@ -229,9 +235,11 @@ package
     }
     public function face(direction:uint):void
     {
-      if (this.velocity.x != 0 &&
-          this.nextAction != STOP &&
-          this.facing != direction)
+      if (
+        this.velocity.x != 0 &&
+        this.nextAction != STOP &&
+        this.facing != direction
+      )
       {
         this.nextAction = STOP;
         if (!this.inMidAir())
