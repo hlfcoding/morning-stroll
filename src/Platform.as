@@ -7,6 +7,11 @@ package
   import org.flixel.FlxTilemap;
   import org.flixel.FlxU;
 
+  // Platform that can dynamically generate a map, and track the dynamically
+  // generated ledges. This makes up for FlxTilemap's lack of an API to get
+  // tile groups (ledges) that have meta-data. Only supports the `SIDE_TO_SIDE`
+  // generation scheme for now.
+  
   public class Platform extends FlxTilemap
   {
     public var tileWidth:uint;
@@ -31,14 +36,23 @@ package
     public var hasCeiling:Boolean;
     public var hasFloor:Boolean;
 
-    private var mapData:String;
+    public var mapData:String;
 
     public var startingPoint:FlxPoint;
     public var endingPoint:FlxPoint;
     
-    private static const EMPTY_TILE:String = '0';
-    private static const SOLID_TILE:String = '1';
-    private static const META_TILE:String = '2';
+    public var delegate:IPlatformDelegate;
+    // To help the delegate.
+    public var ledges:Array;
+    public var ledgeRowCount:uint;
+    
+    public static const EMPTY_TILE:String = '0';
+    public static const SOLID_TILE:String = '1';
+    public static const META_TILE:String = '2';
+    
+    public static const EMPTY_ROW:uint = 0;
+    public static const LEDGE_ROW:uint = 1;
+    public static const SOLID_ROW:uint = 2;
 
     public function Platform()
     {
@@ -49,6 +63,7 @@ package
       this.hasFloor = true;
       this.startingPoint = new FlxPoint();
       this.endingPoint = new FlxPoint();
+      this.ledges = [];
     }
 
     public function generateData():void
@@ -56,11 +71,15 @@ package
       var rows:int = Math.floor(this.bounds.height / this.tileWidth);
       var cols:int = Math.floor(this.bounds.width / this.tileHeight);
       // Smarts of our algo.
-      var cStart:uint, cEnd:uint, facing:uint, rSize:int, rSpacing:int,
-          sizeRange:uint, spacingRange:uint, inverse:Boolean,
-          rStart:int, rEnd:int;
+      var cStart:uint, cEnd:uint, facing:uint, rSize:uint, rSpacing:uint,
+          sizeRange:uint, spacingRange:uint, inverse:Boolean, rClearance:uint,
+          rStart:uint, rEnd:uint, rType:uint, ledge:PlatformLedge;
       // Grunts of our algo.
-      var r:int, c:int, l:int, col:Array;
+      var r:int, // Absolute row index.
+          rL:int, // Ledge row index.
+          c:int, // Column index.
+          l:int, // Ledge layer index.
+          col:Array;
       // Subroutines.
       var addRow:Function, setupEmptyRow:Function, setupFloorRow:Function,
           setupLedgeRow:Function, setupEachRow:Function;
@@ -68,6 +87,7 @@ package
       mapData = '';
       sizeRange = (this.maxLedgeSize - this.minLedgeSize);
       spacingRange = (this.maxLedgeSpacing.y - this.minLedgeSpacing.y);
+      rClearance = this.minLedgeSpacing.y + this.ledgeThickness - 1;
       facing = FlxObject.RIGHT;
       if (this.tilingStart == FlxObject.FLOOR)
       {
@@ -79,9 +99,32 @@ package
         rEnd = rows-1;
         rStart = 0;
       }
-
+      // Estimate the ledge row count.
+      this.ledgeRowCount = rows /
+        ((this.maxLedgeSpacing.y + this.minLedgeSpacing.y) / 2 +
+          (this.ledgeThickness - 1));
+      //      trace(this.ledgeRowCount);
+      // Plot the row, given the type. 
       addRow = function():void
       {
+        if (rType == LEDGE_ROW && this.delegate != null)
+        {
+          // Pack.
+          ledge = new PlatformLedge();
+          ledge.index = rL;
+          ledge.size = rSize;
+          ledge.spacing = rSpacing;
+          ledge.start = cStart;
+          ledge.end = cEnd;
+          ledge.facing = facing;
+          // Transform.
+          ledge = delegate.platformWillSetupLedgeRow(ledge);
+          // Save.
+          this.ledges.push(ledge);
+          // Unpack.
+          cStart = ledge.start;
+          cEnd = ledge.end;
+        }
         if (col.length == 0)
         {
           for (c = 0; c < cStart; c++) // For each column.
@@ -106,35 +149,47 @@ package
           mapData += col.join(',')+"\n";
         }
       };
+      // Prepare for emply plot.
       setupEmptyRow = function():void
       {
         cStart = 0;
         cEnd = 0;
+        rType = EMPTY_ROW;
       };
+      // Prepare for full plot.
       setupFloorRow = function():void
       {
         col = [];
         cStart = 0;
         cEnd = cols;
         rSpacing = 0;
+        rType = SOLID_ROW;
       };
+      // Prepare for partial plot. This just does a simple random, anything
+      // more complicated is delegated.
       setupLedgeRow = function():void
       {
-        rSpacing = this.minLedgeSpacing.y + int(Math.random() * spacingRange);
+        rL++;
         rSize = this.minLedgeSize + uint(Math.random() * sizeRange);
         if (facing == FlxObject.LEFT)
         {
           cStart = 0;
           cEnd = rSize;
+          // Prepare for next ledge.
           facing = FlxObject.RIGHT;
         }
         else if (facing == FlxObject.RIGHT)
         {
           cStart = cols - rSize;
           cEnd = cols;
+          // Prepare for next ledge.
           facing = FlxObject.LEFT;
         }
+        rType = LEDGE_ROW;
+        // Prepare for next ledge.
+        rSpacing = this.minLedgeSpacing.y + int(Math.random() * spacingRange);
       };
+      // Reset on each row.
       setupEachRow = function():void
       {
         inverse = false;
@@ -142,9 +197,12 @@ package
           col = [];
         }
       };
-      for (r = rStart;
-           (rStart < rEnd && r < rEnd) || (rStart > rEnd && r >= rEnd);
-           (rEnd != 0) ? r++ : r--) // For each row. // TODO - Optimize throughout.
+      for ( // For each row.
+        r = rStart;
+        // Top-to-bottom or bottom-to-top.
+        (rStart < rEnd && r < rEnd) || (rStart > rEnd && r >= rEnd);
+        (rEnd != 0) ? r++ : r--
+      ) 
       {
         if (r == rStart && this.tilingStart == FlxObject.FLOOR && this.hasFloor)
         {
@@ -154,7 +212,12 @@ package
         else
         {
           setupEachRow.call(this);
-          if (r >= rows - this.minLedgeSpacing.y || r < this.minLedgeSpacing.y)
+          if (
+            // If top-to-bottom.
+            (rStart < rEnd && r+rClearance >= rEnd) ||
+            // If bottom-to-top.
+            (rStart > rEnd && r-rClearance <= rEnd) 
+          )
           {
             setupEmptyRow.call(this);
           }
@@ -179,13 +242,16 @@ package
         }
         addRow.call(this);
       }
-
+      
+//      trace(rL);
+      trace(this.mapData);
 
     }
 
     public function makeMap(tileGraphic:Class):FlxTilemap
     {
-      if (mapData == null) {
+      if (mapData == null)
+      {
         this.generateData();
       }
 
@@ -201,12 +267,16 @@ package
     {
       var test:Boolean;
       test = obj.isTouching(FlxObject.FLOOR);
-      if (!test) {
+      if (!test)
+      {
         return test;
       }
-      if (this.endingPoint.y < this.startingPoint.y) {
+      if (this.endingPoint.y < this.startingPoint.y)
+      {
         test = obj.y <= this.endingPoint.y;
-      } else {
+      }
+      else
+      {
         test = obj.y >= this.endingPoint.y;
       }
       return test;

@@ -7,7 +7,7 @@ package
   // The main coordinator: part config list, part asset list.
   // Handles all of the character animations.
 
-  public class PlayState extends FlxState implements IPlayerAnimationDelegate
+  public class PlayState extends FlxState implements IPlayerAnimationDelegate, IPlatformDelegate
   {
     // Tileset that works with AUTO mode (best for thin walls)
     [Embed(source='data/tiles-auto-balcony.png')]private static var ImgAutoTiles:Class;
@@ -103,11 +103,15 @@ package
       // Creates a new tilemap with no arguments.
       platform = new Platform();
 
+      // Hook into delegated methods.
+      platform.delegate = this;
+      
       // Customize our tile generation.
+      // Vertical ledge spacing and horizontal ledge size affect difficulty.
       platform.tileWidth = 32;
       platform.tileHeight = 32;
       platform.minLedgeSize = 3;
-      platform.maxLedgeSize = 6;
+      platform.maxLedgeSize = 5;
       platform.minLedgeSpacing = new FlxPoint(4, 2);
       platform.maxLedgeSpacing = new FlxPoint(8, 4);
       platform.ledgeThickness = 2;
@@ -160,15 +164,18 @@ package
       player.width = player.frameWidth - player.tailOffset.x;
       player.face(FlxObject.RIGHT);
 
-      // Basic player physics.
-      player.naturalForces.x = 1000; // friction
-      player.naturalForces.y = 500; // gravity
-      player.maxVelocity.x = 200;
-      player.maxVelocity.y = 1500;
+      // These are just set as a base to derive player physics
+      player.naturalForces.x = 1000; // Friction.
+      player.naturalForces.y = 500; // Gravity.
 
+      // Basic player physics.
+      player.maxVelocity.x = 210; // This gets achieved rather quickly.
+      player.maxVelocity.y = 1500; // Freefall.
+      
       // Player jump physics.
-      player.jumpMaxVelocity.y = -260;
-      player.jumpAccel.y = -0.3;
+      // The bare minimum to clear the biggest possible jump.
+      player.jumpMaxVelocity.y = -270; // This gets achieved rather quickly.
+      player.jumpAccel.y = -0.23; // Sensitive.
 
       // Animations.
       // Make sure to add end transitions, otherwise the last frame is skipped if framerate is low.
@@ -245,7 +252,7 @@ package
       if (!player.inMidAir() && player.nextAction != Player.STOP)
       {
         var pPos:FlxPoint = new FlxPoint(player.x, player.y);
-        wrapToStage(player);
+        player.x = FlxU.bound(player.x, 0, (platform.width - player.width));
         var pos:FlxPoint = new FlxPoint(player.x, player.y);
         if (FlxU.getDistance(pos, pPos) > 0)
         {
@@ -254,7 +261,7 @@ package
       }
       else
       {
-        wrapToStage(player);
+        player.x = FlxU.bound(player.x, 0, (platform.width - player.width));
       }
     }
     private function updateCamera(playerJustFell:Boolean):void
@@ -302,8 +309,43 @@ package
       }
     }
 
-    // Delegate Methods
-    // ----------------
+    // Platform Delegate Methods
+    // -------------------------
+    // Tweak the ledge drawing to directly control difficulty.
+    // Ledges should get smaller as the ending comes closer.
+    public function platformWillSetupLedgeRow(ledge:PlatformLedge):PlatformLedge
+    {
+      // TODO - Harden into config.
+      var facing:String = (ledge.facing == FlxObject.LEFT) ? 'Left: ' : 'Right: ';
+//      trace('Before: '+facing+ledge.size+','+ledge.spacing);
+      
+      // The amplifier for the size. Should limit it to 0.5 to 1.5.
+      var factor:Number = Math.pow(Number(platform.ledgeRowCount) / (Number(ledge.index) * 3), 0.3);
+      
+      // Amplify.
+      ledge.spacing = FlxU.round(ledge.spacing / factor);
+      ledge.size = FlxU.round(ledge.size * factor);
+      
+      // Normalize.
+      ledge.spacing = FlxU.bound(ledge.spacing, platform.minLedgeSpacing.y, platform.maxLedgeSpacing.y);
+      ledge.size = FlxU.bound(ledge.size, platform.minLedgeSize, platform.maxLedgeSize);
+      trace('After: '+facing+ledge.size+','+ledge.spacing+','+factor);
+      
+      // Update. The facing is flipped.
+      if (ledge.facing == FlxObject.RIGHT)
+      {
+        ledge.end = ledge.size;
+      }
+      else if (ledge.facing == FlxObject.LEFT)
+      {
+        ledge.start = ledge.end - ledge.size;
+      }
+      
+      return ledge;
+    }
+    
+    // Player Delegate Methods
+    // -----------------------
     public function playerWillUpdateAnimation():void {}
     public function playerDidUpdateAnimation():void {}
     // Smooth, once.
@@ -354,12 +396,5 @@ package
       player.updateFocus = true;
     }
 
-    // Helpers
-    // -------
-    private function wrapToStage(obj:FlxSprite):void
-    {
-      obj.x = FlxU.bound(obj.x, 0, (platform.width - obj.width));
-      obj.y = FlxU.bound(obj.y, 0, (platform.height - obj.height));
-    }
   }
 }
