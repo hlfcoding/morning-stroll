@@ -197,8 +197,8 @@ package
       // - Handle focus.
       if (this.updateFocus)
       {
-        this.cameraFocus.x += (this.x - this.cameraFocus.x) / this.cameraSpeed;
-        this.cameraFocus.y += (this.y - this.cameraFocus.y) / this.cameraSpeed;
+        this.cameraFocus.x += FlxU.round((this.x - this.cameraFocus.x) / this.cameraSpeed);
+        this.cameraFocus.y += FlxU.round((this.y - this.cameraFocus.y) / this.cameraSpeed);
       }
     }
     // Animations get updated after movement.
