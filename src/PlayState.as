@@ -19,6 +19,8 @@ package
 
     [Embed(source='data/player.png')]private static var ImgPlayer:Class;
 
+    [Embed(source="data/morning-stroll.mp3")]private static var SndMain:Class;
+    
     // From farthest to closest.
     [Embed(source='data/bg-1.png')]private static var ImgBg1:Class;
     [Embed(source='data/bg-2.png')]private static var ImgBg2:Class;
@@ -81,6 +83,7 @@ package
           updateGameState(true);
         }
       );
+      
     }
     override public function update():void
     {
@@ -152,6 +155,7 @@ package
     private function setupPlatformAndPlayerAfter():void
     {
       setupCamera();
+      FlxG.playMusic(SndMain);
     }
     // Hooked routines.
     private function setupPlayer(start:FlxPoint):void
@@ -159,7 +163,7 @@ package
       // Find start position for player.
 
       player = new Player(start.x, start.y);
-      player = new Player(0, 0);
+//      player = new Player(0, 0);
       player.loadGraphic(ImgPlayer, true, true, 72);
 
       // Bounding box tweaks.
