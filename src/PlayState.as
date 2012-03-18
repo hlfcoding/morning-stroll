@@ -4,15 +4,18 @@ package
   
   import org.flixel.*;
 
-  // The main coordinator: part config list, part asset list.
-  // Handles all of the character animations.
+  // The main coordinator: part config list, part asset list, part delegate.
+  // Handles all of the character animations, and custom platform generation.
+  // The stage is set up based on the bg group's bounds; the platform and
+  // camera are set up around it.
 
-  public class PlayState extends FlxState implements IPlayerAnimationDelegate, IPlatformDelegate
+  public class PlayState extends FlxState
+    implements IPlayerAnimationDelegate, IPlatformDelegate
   {
     // Tileset that works with AUTO mode (best for thin walls)
     [Embed(source='data/tiles-auto-balcony.png')]private static var ImgAutoTiles:Class;
     // Tileset that works with OFF mode (do what you want mode)
-    [Embed(source='data/empty_tiles.png')]private static var ImgCustomTiles:Class;
+    [Embed(source='data/tiles-manual-placeholder.png')]private static var ImgCustomTiles:Class;
 
     [Embed(source='data/player.png')]private static var ImgPlayer:Class;
 
@@ -118,6 +121,7 @@ package
       platform.ledgeThickness = 2;
 
       // Set the bounds based on the background.
+      // TODO - Fix parallax bug.
       platform.bounds = new FlxRect(bg.bounds.x, bg.bounds.y, bg.bounds.width, bg.bounds.height + FLOOR_HEIGHT);
 
       // Make our platform.
@@ -155,7 +159,7 @@ package
       // Find start position for player.
 
       player = new Player(start.x, start.y);
-//      player = new Player(0, 0);
+      player = new Player(0, 0);
       player.loadGraphic(ImgPlayer, true, true, 72);
 
       // Bounding box tweaks.
@@ -209,8 +213,9 @@ package
       bg = new Background();
       bg.bounds.x = 0;
       bg.bounds.y = 0;
-      bg.parallax_factor = 1; // Our bg is part "foreground".
-      bg.parallax_buffer = 1.7;
+      bg.parallaxFactor = 0.95; // Our first bg is more "foreground".
+      bg.parallaxBuffer = 1.7;
+      bg.parallaxTolerance = 0;
 
       // This is the lamest image loading ever.
       bg.addImage(ImgBg1);

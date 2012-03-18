@@ -16,8 +16,9 @@ package
   {
 
     // Main knobs.
-    public var parallax_factor:Number;
-    public var parallax_buffer:Number;
+    public var parallaxFactor:Number;
+    public var parallaxBuffer:Number;
+    public var parallaxTolerance:Number;
 
     // To work with our foreground.
     public var bounds:FlxRect;
@@ -31,8 +32,8 @@ package
     public function Background(MaxSize:uint=0)
     {
       this.bounds = new FlxRect();
-      this.parallax_factor = 0.9; // This IS a background, after all.
-      this.parallax_buffer = 2.0;
+      this.parallaxFactor = 0.9; // This IS a background, after all.
+      this.parallaxBuffer = 2.0;
       this.mode = FULL_BGS;
       super(MaxSize);
     }
@@ -46,25 +47,44 @@ package
     // Apply the scroll factors using a simple algorithm:
     // - Exponential distance (and scroll factor).
     // - Apply a factor to that to increase, as well as a buffer to decrease.
+    // Also set the bounds on the entire group, based on the nearest (last) layer.
     public function layout():void
     {
-      this.bounds.width = FlxSprite(this.members[0]).width;
-      var n:Number;
+      var nearest:FlxSprite = this.members[this.length-1];
+      var farthest:FlxSprite = this.members[0];
+      this.bounds.width = nearest.width;
+      var n:Number, shift:Number;
       var i:uint = 0; // Assume we added the bottom layers first.
       for each (var bg:FlxSprite in this.members)
       {
+        // TODO - Test.
         if (this.mode == CLIP_BGS)
         {
           this.bounds.height += bg.frameHeight;
         }
-        n = Math.pow(i/this.length, 2) * this.parallax_factor;
-        n = (n + this.parallax_buffer/2.0) / this.parallax_buffer;
+        // Factor in exponentially and constrain.
+        n = Math.pow(i/this.length, 2) * this.parallaxFactor;
+        // Add buffer to further constrain.
+        n = (n + this.parallaxBuffer/2.0) / this.parallaxBuffer;
+        // Shift based on scroll factor for full bg visibility.
+        if (i != this.length-1)
+        {
+          bg.y -= bg.height * (1 - n) - this.parallaxTolerance;
+        }
+        // Set scroll factor.
         bg.scrollFactor = new FlxPoint(n, n);
+        // Set shift.
+        if (i == 0)
+        {
+          shift = -farthest.y;
+        }
+        bg.y += shift;
         i++;
       }
       if (this.mode == FULL_BGS)
       {
-        this.bounds.height = FlxSprite(this.members[0]).height;
+        // TODO - Remove the need for this magical-number hack.
+        this.bounds.height = shift + nearest.height / Math.pow(this.parallaxFactor, 0.53);
       }
     }
 
