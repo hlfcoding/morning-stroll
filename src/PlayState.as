@@ -34,6 +34,10 @@ package
     [Embed(source='data/bg-10.png')]private static var ImgBg10:Class;
     [Embed(source='data/bg-11.png')]private static var ImgBg11:Class;
     [Embed(source='data/bg-12.png')]private static var ImgBg12:Class;
+    [Embed(source='data/bg-13.png')]private static var ImgBg13:Class;
+    [Embed(source='data/bg-14.png')]private static var ImgBg14:Class;
+    [Embed(source='data/bg-15.png')]private static var ImgBg15:Class;
+    [Embed(source='data/bg-16.png')]private static var ImgBg16:Class;
 
     // The dynamically generated and extended FlxTilemap.
     private var platform:Platform;
@@ -219,7 +223,7 @@ package
       bg.bounds.y = 0;
       bg.parallaxFactor = 0.95; // Our first bg is more "foreground".
       bg.parallaxBuffer = 1.7;
-      bg.parallaxTolerance = 0;
+      bg.parallaxTolerance = -64;
 
       // This is the lamest image loading ever.
       bg.addImage(ImgBg1);
@@ -234,6 +238,10 @@ package
       bg.addImage(ImgBg10);
       bg.addImage(ImgBg11);
       bg.addImage(ImgBg12);
+      bg.addImage(ImgBg13);
+      bg.addImage(ImgBg14);
+      bg.addImage(ImgBg15);
+      bg.addImage(ImgBg16);
 
       bg.layout();
     }

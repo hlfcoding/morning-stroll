@@ -84,7 +84,8 @@ package
       if (this.mode == FULL_BGS)
       {
         // TODO - Remove the need for this magical-number hack.
-        this.bounds.height = shift + nearest.height / Math.pow(this.parallaxFactor, 0.53);
+        nearest.y += 12;
+        this.bounds.height = shift + nearest.height / Math.pow(this.parallaxFactor, 0.32);
       }
     }
 
