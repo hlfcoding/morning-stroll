@@ -74,6 +74,7 @@ package
       gameStatePollInterval = new FlxTimer();
       gameStatePollInterval.start(2, Number.POSITIVE_INFINITY,
         function(onTimer:FlxTimer):void {
+//          trace('Checking game state...');
           updateGameState(true);
         }
       );
@@ -124,8 +125,8 @@ package
 
       // Set points.
       platform.startingPoint.x = PLAYER_WIDTH;
-      platform.startingPoint.y = platform.height - (PLAYER_HEIGHT + FLOOR_HEIGHT);
-      platform.endingPoint.y = (platform.maxLedgeSpacing.y + 1) * platform.tileHeight - PLAYER_HEIGHT
+      platform.startingPoint.y = platform.height - PLAYER_HEIGHT;
+      platform.endingPoint.y = (platform.maxLedgeSpacing.y + 1) * platform.tileHeight + PLAYER_HEIGHT;
     }
     // Hooks.
     private function setupPlatformAfter():void
@@ -154,6 +155,7 @@ package
       // Find start position for player.
 
       player = new Player(start.x, start.y);
+//      player = new Player(0, 0);
       player.loadGraphic(ImgPlayer, true, true, 72);
 
       // Bounding box tweaks.
@@ -281,7 +283,7 @@ package
       {
         // Check if player is on top of last platform, periodically.
         // Play the end screen for a while, on click, switch to start screen.
-        if (player.isTouching(FlxObject.FLOOR) && platform.isAtEndingPoint(player))
+        if (player.currently == Player.STILL && platform.isAtEndingPoint(FlxObject(player)))
         {
           if (player.controlled)
           {
@@ -329,7 +331,7 @@ package
       // Normalize.
       ledge.spacing = FlxU.bound(ledge.spacing, platform.minLedgeSpacing.y, platform.maxLedgeSpacing.y);
       ledge.size = FlxU.bound(ledge.size, platform.minLedgeSize, platform.maxLedgeSize);
-      trace('After: '+facing+ledge.size+','+ledge.spacing+','+factor);
+//      trace('After: '+facing+ledge.size+','+ledge.spacing+','+factor);
       
       // Update. The facing is flipped.
       if (ledge.facing == FlxObject.RIGHT)

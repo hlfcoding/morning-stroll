@@ -244,7 +244,7 @@ package
       }
       
 //      trace(rL);
-      trace(this.mapData);
+//      trace(this.mapData);
 
     }
 
@@ -266,15 +266,12 @@ package
     public function isAtEndingPoint(obj:FlxObject):Boolean
     {
       var test:Boolean;
-      test = obj.isTouching(FlxObject.FLOOR);
-      if (!test)
-      {
-        return test;
-      }
+      // Bottom-to-top.
       if (this.endingPoint.y < this.startingPoint.y)
       {
         test = obj.y <= this.endingPoint.y;
       }
+      // Top-to-bottom.
       else
       {
         test = obj.y >= this.endingPoint.y;
