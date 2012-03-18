@@ -176,8 +176,8 @@ package
       
       // Player jump physics.
       // The bare minimum to clear the biggest possible jump.
-      player.jumpMaxVelocity.y = -270; // This gets achieved rather quickly.
-      player.jumpAccel.y = -0.23; // Sensitive.
+      player.jumpMaxVelocity.y = -300; // This gets achieved rather quickly.
+      player.jumpAccel.y = -600; // Sensitive.
 
       // Animations.
       // Make sure to add end transitions, otherwise the last frame is skipped if framerate is low.

@@ -44,7 +44,7 @@ package
     public var accelJumpFactor:Number = -0.001;
     public var jumpDrag:FlxPoint;
     public var oDrag:FlxPoint;
-    public var jumpMinDuration:Number = 0.1;
+    public var jumpMinDuration:Number = 0.2;
     public var jumpMaxDuration:Number = 0.5;
     private var jumpTimer:FlxTimer;
 
@@ -151,7 +151,7 @@ package
       if (!jumpTimer.finished)
       {
         // Negative is up.
-        this.velocity.y = FlxU.bound(this.velocity.y, 0, this.jumpMaxVelocity.y);
+        this.velocity.y = FlxU.max(this.velocity.y, this.jumpMaxVelocity.y);
       }
       // - Basically handle starting and ending of jump, and starting of
       // falling. The tracking of pVelocity is an extra complexity. The
