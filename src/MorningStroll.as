@@ -34,14 +34,17 @@ package
 
       var pauseTitle:TextField = new Text(0, 0, FlxG.width,
         "Paused", Text.H1).getTextField();
-      var quitText:TextField = new Text(0, 0, FlxG.width,
-        "Press Q to quit").getTextField();
+      var instructions:TextField = new Text(0, 0, FlxG.width, [
+        "Arrow keys to move",
+        "Press Q to quit",
+        "Press 0, -, + for volume"
+      ].join("\n\n")).getTextField();
 
       pauseTitle.y = Text.BASELINE * 6;
-      quitText.y = pauseTitle.y + Text.BASELINE * 2;
+      instructions.y = pauseTitle.y + Text.BASELINE * 2;
 
       this._focus.addChild(pauseTitle);
-      this._focus.addChild(quitText);
+      this._focus.addChild(instructions);
 
       addChild(this._focus);
 
