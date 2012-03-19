@@ -40,6 +40,7 @@ package
 
     public var startingPoint:FlxPoint;
     public var endingPoint:FlxPoint;
+    public var distanceToTravel:FlxPoint;
     
     public var delegate:IPlatformDelegate;
     // To help the delegate.
@@ -70,6 +71,14 @@ package
       this.ledges = [];
     }
     
+    public function init():void
+    {
+      this.distanceToTravel = new FlxPoint(
+        FlxU.abs(this.endingPoint.x - this.startingPoint.x),
+        FlxU.abs(this.endingPoint.y - this.startingPoint.y)
+      );
+    }
+    
     public function get numRows():uint
     {
       return Math.floor(this.bounds.height / this.tileHeight);
@@ -79,7 +88,8 @@ package
     {
       return Math.floor(this.bounds.width / this.tileWidth);
     }
-
+    
+    // This is actually part of initialization.
     public function generateData():void
     {
       var rows:uint = this.numRows;

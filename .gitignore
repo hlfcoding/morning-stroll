@@ -3,5 +3,5 @@
 .metadata
 .project
 .settings
-bin-debug
+bin-*
 html-template

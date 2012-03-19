@@ -5,6 +5,7 @@ package
   import org.flixel.FlxObject;
   import org.flixel.FlxPoint;
   import org.flixel.FlxRect;
+  import org.flixel.FlxSound;
   import org.flixel.FlxSprite;
   import org.flixel.FlxState;
   import org.flixel.FlxTimer;
@@ -62,10 +63,16 @@ package
     // Some game switches.
     private var fallChecking:Boolean;
 
-    // Internal helpers.
+    // Game state.
     private var gameStatePollInterval:FlxTimer;
     private var didTheEnd:Boolean;
     private var endAnimDuration:Number;
+    
+    // The music.
+    private var targetMusicVolume:Number = 0;
+    private var music:FlxSound;
+    private static const MUSIC_VOLUME_FACTOR:Number = 1.3;
+    private static const MIN_MUSIC_VOLUME:Number = 0.1;
 
     // Flixel Methods
     // --------------
@@ -154,6 +161,9 @@ package
       {
         platform.endingPoint.x = platform.bounds.width - platform.endingPoint.x;
       }
+      
+      // Process settings.
+      platform.init();
       
       FlxG.log('Ending point: '+[platform.numRows-1 - ledge.rowIndex, platform.endingPoint.x, platform.endingPoint.y]);
     }
@@ -252,10 +262,13 @@ package
     }
     private function setupAudio():void
     {
+      music = FlxG.loadSound(SndMain, targetMusicVolume, true, false, false);
+      updateAudio(true);
       if (!FlxG.debug)
       {
-        FlxG.playMusic(SndMain);
+        music.play();
       }
+      FlxG.watch(music, 'volume', 'Volume');
     }
     private function setupBg():void
     {
@@ -345,9 +358,18 @@ package
         );
       }
     }
-    private function updateAudio():void
+    private function updateAudio(force:Boolean=false):void
     {
-      
+      if (didTheEnd) return;
+      // The music gets louder the higher the player gets.
+      // The volume smoothly updates on each landing.
+      if (force || player.currently == Player.FALLING)
+      {
+        targetMusicVolume = (platform.startingPoint.y - player.cameraFocus.y) / platform.distanceToTravel.y;
+        targetMusicVolume = Math.pow(targetMusicVolume, MUSIC_VOLUME_FACTOR);
+      }
+      music.volume += (targetMusicVolume - music.volume) / player.cameraSpeed;
+      music.volume = FlxU.bound(music.volume, MIN_MUSIC_VOLUME, 1);
     }
     private function updateGameState(doChecks:Boolean=false):void
     {
@@ -402,7 +424,14 @@ package
       }
       if ((didTheEnd && FlxG.mouse.justPressed()) || FlxG.keys.justPressed('Q'))
       {
-        MorningStroll.endGame();
+        var fadeDuration:Number = 2;
+        gameStatePollInterval.stop();
+        gameStatePollInterval.start(fadeDuration, 1,
+          function(onTimer:FlxTimer):void {
+            MorningStroll.endGame();
+          }
+        );
+        music.fadeOut(fadeDuration);
       }
     }
 

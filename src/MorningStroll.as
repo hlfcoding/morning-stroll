@@ -2,6 +2,7 @@ package
 {
 
   import flash.text.TextField;
+  import com.adobe.viewsource.ViewSource; 
   
   import org.flixel.FlxG;
   import org.flixel.FlxGame;
@@ -20,6 +21,7 @@ package
       super(416, 600, MenuState, 1, 24, 24);
       FlxG.framerate = 30;
       FlxG.flashFramerate = 30;
+      ViewSource.addMenuItem(this, "srcview/index.html"); 
     }
 
     override protected function createFocusScreen():void
