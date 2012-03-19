@@ -362,12 +362,12 @@ package
       ledge.spacing = FlxU.bound(ledge.spacing, platform.minLedgeSpacing.y, platform.maxLedgeSpacing.y);
       ledge.size = FlxU.bound(ledge.size, platform.minLedgeSize, platform.maxLedgeSize);
       
-      // Update. The facing is flipped.
-      if (ledge.facing == FlxObject.RIGHT)
+      // Update.
+      if (ledge.facing == FlxObject.LEFT)
       {
         ledge.end = ledge.size;
       }
-      else if (ledge.facing == FlxObject.LEFT)
+      else if (ledge.facing == FlxObject.RIGHT)
       {
         ledge.start = ledge.end - ledge.size;
       }

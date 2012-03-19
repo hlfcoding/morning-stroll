@@ -53,6 +53,10 @@ package
     public static const EMPTY_ROW:uint = 0;
     public static const LEDGE_ROW:uint = 1;
     public static const SOLID_ROW:uint = 2;
+    
+    protected static const TOP_BOTTOM:uint = 1;
+    protected static const BOTTOM_TOP:uint = 2;
+    
 
     public function Platform()
     {
@@ -65,15 +69,26 @@ package
       this.endingPoint = new FlxPoint();
       this.ledges = [];
     }
+    
+    public function get numRows():uint
+    {
+      return Math.floor(this.bounds.height / this.tileHeight);
+    }
+    
+    public function get numCols():uint
+    {
+      return Math.floor(this.bounds.width / this.tileWidth);
+    }
 
     public function generateData():void
     {
-      var rows:int = Math.floor(this.bounds.height / this.tileWidth);
-      var cols:int = Math.floor(this.bounds.width / this.tileHeight);
+      var rows:uint = this.numRows;
+      var cols:uint = this.numCols;
       // Smarts of our algo.
-      var cStart:uint, cEnd:uint, facing:uint, rSize:uint, rSpacing:uint,
-          sizeRange:uint, spacingRange:uint, inverse:Boolean, rClearance:uint,
-          rStart:uint, rEnd:uint, rType:uint, ledge:PlatformLedge;
+      var cStart:uint, cEnd:uint, facing:uint, pFacing:uint, 
+          rSize:uint, rSpacing:uint, sizeRange:uint, spacingRange:uint, 
+          inverse:Boolean, rClearance:uint, rStart:uint, rEnd:uint, 
+          rType:uint, ledge:PlatformLedge, dir:uint;
       // Grunts of our algo.
       var r:int, // Absolute row index.
           rL:int, // Ledge row index.
@@ -87,17 +102,19 @@ package
       mapData = '';
       sizeRange = (this.maxLedgeSize - this.minLedgeSize);
       spacingRange = (this.maxLedgeSpacing.y - this.minLedgeSpacing.y);
-      rClearance = this.minLedgeSpacing.y + this.ledgeThickness - 1;
+      rClearance = this.minLedgeSpacing.y + this.ledgeThickness;
       facing = FlxObject.RIGHT;
       if (this.tilingStart == FlxObject.FLOOR)
       {
         rStart = rows-1;
         rEnd = 0;
+        dir = BOTTOM_TOP;
       }
       else
       {
         rEnd = rows-1;
         rStart = 0;
+        dir = TOP_BOTTOM;
       }
       // Estimate the ledge row count.
       this.ledgeRowCount = rows /
@@ -112,11 +129,12 @@ package
           // Pack.
           ledge = new PlatformLedge();
           ledge.index = rL;
+          ledge.rowIndex = (dir == TOP_BOTTOM) ? r : rStart - r;
           ledge.size = rSize;
           ledge.spacing = rSpacing;
           ledge.start = cStart;
           ledge.end = cEnd;
-          ledge.facing = facing;
+          ledge.facing = pFacing;
           // Transform.
           ledge = delegate.platformWillSetupLedgeRow(ledge);
           // Save.
@@ -171,6 +189,7 @@ package
       {
         rL++;
         rSize = this.minLedgeSize + uint(Math.random() * sizeRange);
+        pFacing = facing;
         if (facing == FlxObject.LEFT)
         {
           cStart = 0;
@@ -199,9 +218,8 @@ package
       };
       for ( // For each row.
         r = rStart;
-        // Top-to-bottom or bottom-to-top.
-        (rStart < rEnd && r < rEnd) || (rStart > rEnd && r >= rEnd);
-        (rEnd != 0) ? r++ : r--
+        (dir == TOP_BOTTOM && r < rEnd) || (dir == BOTTOM_TOP && r >= rEnd);
+        (dir == TOP_BOTTOM) ? r++ : r--
       ) 
       {
         if (r == rStart && this.tilingStart == FlxObject.FLOOR && this.hasFloor)
@@ -213,13 +231,23 @@ package
         {
           setupEachRow.call(this);
           if (
-            // If top-to-bottom.
-            (rStart < rEnd && r+rClearance >= rEnd) ||
-            // If bottom-to-top.
-            (rStart > rEnd && r-rClearance <= rEnd) 
+            (dir == TOP_BOTTOM && r+rClearance >= rEnd) ||
+            (dir == BOTTOM_TOP && r-rClearance <= rEnd) 
           )
           {
             setupEmptyRow.call(this);
+            if (l > 0)
+            {
+              l--;
+              // TODO - Temp fix.
+              PlatformLedge(this.ledges[this.ledges.length-1]).rowIndex =
+                (dir == TOP_BOTTOM) ? r : rStart - r;
+              FlxG.log('Finishing up last row...');
+            }
+            else
+            {
+              col = [];
+            }
           }
           else
           {

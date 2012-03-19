@@ -7,6 +7,7 @@ package
   {
     
     public var index:uint;
+    public var rowIndex:uint;
     public var size:uint;
     public var spacing:uint;
     public var start:uint;
