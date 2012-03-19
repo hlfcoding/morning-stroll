@@ -109,7 +109,13 @@ package
     // --------------
     override public function update():void
     {
-      if (!this.controlled) return;
+      if (!this.controlled)
+      {
+        // TODO - Move to setter.
+        this.velocity = new FlxPoint();
+        this.acceleration = new FlxPoint();
+        return;
+      }
 
       // Horizontal
       // - Revert to still. (Our acceleration updates funny.)
@@ -205,25 +211,29 @@ package
     override protected function updateAnimation():void
     {
       this.animDelegate.playerWillUpdateAnimation();
-      if (this.currently == STILL)
-      {
-        this.animDelegate.playerIsStill();
-      }
-      else if (this.currently == RUNNING)
-      {
-        this.animDelegate.playerIsRunning();
-      }
-      else if (this.currently == LANDING)
-      {
-        this.animDelegate.playerIsLanding();
-      }
-      else if (this.currently == RISING)
-      {
-        this.animDelegate.playerIsRising();
-      }
-      else if (this.currently == FALLING)
-      {
-        this.animDelegate.playerIsFalling();
+      
+      if (this.controlled) 
+      {      
+        if (this.currently == STILL)
+        {
+          this.animDelegate.playerIsStill();
+        }
+        else if (this.currently == RUNNING)
+        {
+          this.animDelegate.playerIsRunning();
+        }
+        else if (this.currently == LANDING)
+        {
+          this.animDelegate.playerIsLanding();
+        }
+        else if (this.currently == RISING)
+        {
+          this.animDelegate.playerIsRising();
+        }
+        else if (this.currently == FALLING)
+        {
+          this.animDelegate.playerIsFalling();
+        }
       }
       super.updateAnimation();
       this.animDelegate.playerDidUpdateAnimation();

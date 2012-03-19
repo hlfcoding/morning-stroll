@@ -59,6 +59,7 @@ package
     // Internal helpers.
     private var gameStatePollInterval:FlxTimer;
     private var didTheEnd:Boolean;
+    private var endAnimDuration:Number;
 
     // Flixel Methods
     // --------------
@@ -182,12 +183,12 @@ package
       // Find start position for player.
 
       player = new Player(start.x, start.y);
-//      player = new Player(0, 0);
+      player = new Player(0, 0);
       player.loadGraphic(ImgPlayer, true, true, 72);
 
       // Bounding box tweaks.
       player.height = player.frameHeight / 2;
-      player.offset.y = player.frameHeight - player.height;
+      player.offset.y = player.frameHeight - player.height - 2;
       player.tailOffset.x = 35;
       player.headOffset.x = 10;
       player.width = player.frameWidth - player.tailOffset.x;
@@ -216,7 +217,10 @@ package
       player.addAnimation('jump', [18,19,20,21,22,23,24,25,26,27,28,29,30,31], 24, false);
       player.addAnimation('fall', [31]);
       player.addAnimation('land', [32,33,18,17], 12, false);
-      player.addAnimation('end',  [], 12, false);
+      var endFrames:Array = [34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53];
+      var endFramerate:Number = 12;
+      endAnimDuration = endFrames.length / endFramerate;
+      player.addAnimation('end', endFrames, endFramerate, false);
       player.animDelegate = this;
 
       // Process settings.
@@ -232,7 +236,7 @@ package
       mate.y -= mate.frameHeight - mate.height - 6; // TODO - Magic pixel hack.
       mate.x -= 20;
       
-      mate.addAnimation('end', [], 12, false);
+      mate.addAnimation('end', [1,4,5,6,7,8,9,10,11,12,13,14], 12, false);
     }    
     private function setupCamera():void
     {
@@ -303,7 +307,10 @@ package
     {
       // Tilemaps can be collided just like any other FlxObject, and flixel
       // automatically collides each individual tile with the object.
-      FlxG.collide(player, platform);
+      if (player.controlled)
+      {
+        FlxG.collide(player, platform);
+      }
       // Wrap to stage.
       if (!player.inMidAir() && player.nextAction != Player.STOP)
       {
@@ -350,10 +357,27 @@ package
           if (player.controlled)
           {
             player.controlled = false;
-            var path:FlxPath = new FlxPath([
-              new FlxPoint(mate.x + 30, mate.y)
-            ]);
-            player.followPath(path);
+            // TODO - Follow path, then animate.
+            player.addAnimationCallback(
+              function(name:String, frameNumber:uint, frameIndex:uint):void {
+                if (name == 'end' && frameNumber == 6)
+                {
+                  mate.play('end');
+                }
+                if (name == 'still')
+                {
+                  player.frame = player.frames-1;
+                  mate.frame = mate.frames-1;
+                }
+              }
+            );
+            player.x = mate.x;
+            player.y = mate.y;
+            player.height = mate.height;
+            player.offset.y = mate.offset.y;
+            player.offset.x = 43;
+            player.facing = FlxObject.RIGHT;
+            player.play('end');
             gameStatePollInterval.stop();
             gameStatePollInterval.start(5, 1, 
               function(onTimer:FlxTimer):void {
