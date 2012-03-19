@@ -18,6 +18,7 @@ package
     [Embed(source='data/tiles-manual-placeholder.png')]private static var ImgCustomTiles:Class;
 
     [Embed(source='data/player.png')]private static var ImgPlayer:Class;
+    [Embed(source='data/mate.png')]private static var ImgMate:Class;
 
     [Embed(source="data/morning-stroll.mp3")]private static var SndMain:Class;
     
@@ -47,6 +48,7 @@ package
     private static const PLAYER_WIDTH:uint = 72;
     private static const PLAYER_HEIGHT:uint = 72;
     private var player:Player;
+    private var mate:FlxSprite;
 
     // The background with parallax.
     private var bg:Background;
@@ -56,6 +58,7 @@ package
 
     // Internal helpers.
     private var gameStatePollInterval:FlxTimer;
+    private var didTheEnd:Boolean;
 
     // Flixel Methods
     // --------------
@@ -77,6 +80,7 @@ package
       // For now, we add things in order to get correct layering.
       add(bg);
       add(platform);
+      add(mate);
       add(player);
 
       // Internals.
@@ -87,6 +91,7 @@ package
           updateGameState(true);
         }
       );
+      didTheEnd = false;
       
     }
     override public function update():void
@@ -137,7 +142,15 @@ package
       // Set points.
       platform.startingPoint.x = PLAYER_WIDTH;
       platform.startingPoint.y = platform.height - PLAYER_HEIGHT;
-      platform.endingPoint.y = (platform.maxLedgeSpacing.y + 1) * platform.tileHeight + PLAYER_HEIGHT;
+      var ledge:PlatformLedge = platform.ledges[platform.ledges.length-1]; // Always reads top-to-bottom.
+      platform.endingPoint.y = (platform.numRows-1 - ledge.rowIndex) * platform.tileHeight;
+      platform.endingPoint.x = (ledge.size * platform.tileWidth) / 2;
+      if (ledge.facing == FlxObject.RIGHT)
+      {
+        platform.endingPoint.x = platform.bounds.width - platform.endingPoint.x;
+      }
+      
+      FlxG.log('Ending point: '+[platform.numRows-1 - ledge.rowIndex, platform.endingPoint.x, platform.endingPoint.y]);
     }
     // Hooks.
     private function setupPlatformAfter():void
@@ -155,6 +168,8 @@ package
         }
         player.x -= platform.tileWidth;
       }
+      // Draw its mate at the top.
+      setupMate(platform.endingPoint);
     }
     private function setupPlatformAndPlayerAfter():void
     {
@@ -171,8 +186,8 @@ package
       player.loadGraphic(ImgPlayer, true, true, 72);
 
       // Bounding box tweaks.
-      player.height = player.frameWidth / 2;
-      player.offset.y = player.frameWidth - player.height;
+      player.height = player.frameHeight / 2;
+      player.offset.y = player.frameHeight - player.height;
       player.tailOffset.x = 35;
       player.headOffset.x = 10;
       player.width = player.frameWidth - player.tailOffset.x;
@@ -201,11 +216,24 @@ package
       player.addAnimation('jump', [18,19,20,21,22,23,24,25,26,27,28,29,30,31], 24, false);
       player.addAnimation('fall', [31]);
       player.addAnimation('land', [32,33,18,17], 12, false);
+      player.addAnimation('end',  [], 12, false);
       player.animDelegate = this;
 
       // Process settings.
       player.init();
     }
+    private function setupMate(start:FlxPoint):void
+    {
+      mate = new FlxSprite(start.x, start.y);
+      mate.loadGraphic(ImgMate, true, true, PLAYER_WIDTH);
+      
+      mate.height = 46;
+      mate.offset.y = mate.frameHeight - mate.height;
+      mate.y -= mate.frameHeight - mate.height - 6; // TODO - Magic pixel hack.
+      mate.x -= 20;
+      
+      mate.addAnimation('end', [], 12, false);
+    }    
     private function setupCamera():void
     {
       // Follow the player's custom focus.
@@ -262,6 +290,7 @@ package
     private function updatePlatformAfter():void
     {
       updatePlayer();
+      updateMate();
     }
     private function updatePlatformAndPlayerAfter():void
     {
@@ -291,6 +320,10 @@ package
         player.x = FlxU.bound(player.x, 0, (platform.width - player.width));
       }
     }
+    private function updateMate():void
+    {
+      FlxG.collide(mate, platform);
+    }
     private function updateCamera(playerJustFell:Boolean):void
     {
       if (fallChecking && playerJustFell)
@@ -317,24 +350,30 @@ package
           if (player.controlled)
           {
             player.controlled = false;
-            var title:Text, instructions:Text;
-            title = new Text(0, Text.BASELINE * 2, FlxG.width,
-              "The End", Text.H1);
-            instructions = new Text(0, Text.BASELINE * 4, FlxG.width,
-              "Click to play again");
-            instructions.size = 16;
-            // Stay on the screen.
-            instructions.scrollFactor = title.scrollFactor = new FlxPoint();
-            add(title);
-            add(instructions);
-          }
-          else if (!player.controlled && FlxG.mouse.justPressed())
-          {
-            MorningStroll.endGame();
+            var path:FlxPath = new FlxPath([
+              new FlxPoint(mate.x + 30, mate.y)
+            ]);
+            player.followPath(path);
+            gameStatePollInterval.stop();
+            gameStatePollInterval.start(5, 1, 
+              function(onTimer:FlxTimer):void {
+                var title:Text, instructions:Text;
+                title = new Text(0, Text.BASELINE * 2, FlxG.width,
+                  "The End", Text.H1);
+                instructions = new Text(0, Text.BASELINE * 4, FlxG.width,
+                  "Click to play again");
+                instructions.size = 16;
+                // Stay on the screen.
+                instructions.scrollFactor = title.scrollFactor = new FlxPoint();
+                add(title);
+                add(instructions);
+                didTheEnd = true;
+              }
+            );
           }
         }
       }
-      if (FlxG.keys.justPressed('Q'))
+      if ((didTheEnd && FlxG.mouse.justPressed()) || FlxG.keys.justPressed('Q'))
       {
         MorningStroll.endGame();
       }
