@@ -29,22 +29,22 @@ package
     [Embed(source="data/morning-stroll.mp3")]private static var SndMain:Class;
     
     // From farthest to closest.
-    [Embed(source='data/bg-1.png')]private static var ImgBg1:Class;
-    [Embed(source='data/bg-2.png')]private static var ImgBg2:Class;
-    [Embed(source='data/bg-3.png')]private static var ImgBg3:Class;
-    [Embed(source='data/bg-4.png')]private static var ImgBg4:Class;
-    [Embed(source='data/bg-5.png')]private static var ImgBg5:Class;
-    [Embed(source='data/bg-6.png')]private static var ImgBg6:Class;
-    [Embed(source='data/bg-7.png')]private static var ImgBg7:Class;
-    [Embed(source='data/bg-8.png')]private static var ImgBg8:Class;
-    [Embed(source='data/bg-9.png')]private static var ImgBg9:Class;
-    [Embed(source='data/bg-10.png')]private static var ImgBg10:Class;
-    [Embed(source='data/bg-11.png')]private static var ImgBg11:Class;
-    [Embed(source='data/bg-12.png')]private static var ImgBg12:Class;
-    [Embed(source='data/bg-13.png')]private static var ImgBg13:Class;
-    [Embed(source='data/bg-14.png')]private static var ImgBg14:Class;
-    [Embed(source='data/bg-15.png')]private static var ImgBg15:Class;
-    [Embed(source='data/bg-16.png')]private static var ImgBg16:Class;
+    [Embed(source='data/bg-_0015_1.png')]private static var ImgBg1:Class;
+    [Embed(source='data/bg-_0014_2.png')]private static var ImgBg2:Class;
+    [Embed(source='data/bg-_0013_3.png')]private static var ImgBg3:Class;
+    [Embed(source='data/bg-_0012_4.png')]private static var ImgBg4:Class;
+    [Embed(source='data/bg-_0011_5.png')]private static var ImgBg5:Class;
+    [Embed(source='data/bg-_0010_6.png')]private static var ImgBg6:Class;
+    [Embed(source='data/bg-_0009_7.png')]private static var ImgBg7:Class;
+    [Embed(source='data/bg-_0008_8.png')]private static var ImgBg8:Class;
+    [Embed(source='data/bg-_0007_9.png')]private static var ImgBg9:Class;
+    [Embed(source='data/bg-_0006_10.png')]private static var ImgBg10:Class;
+    [Embed(source='data/bg-_0005_11.png')]private static var ImgBg11:Class;
+    [Embed(source='data/bg-_0004_12.png')]private static var ImgBg12:Class;
+    [Embed(source='data/bg-_0003_13.png')]private static var ImgBg13:Class;
+    [Embed(source='data/bg-_0002_14.png')]private static var ImgBg14:Class;
+    [Embed(source='data/bg-_0001_15.png')]private static var ImgBg15:Class;
+    [Embed(source='data/bg-_0000_16.png')]private static var ImgBg16:Class;
 
     // The dynamically generated and extended FlxTilemap.
     private var platform:Platform;
