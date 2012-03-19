@@ -2,7 +2,7 @@ package
 {
 
   import flash.text.TextField;
-
+  
   import org.flixel.FlxG;
   import org.flixel.FlxGame;
   import org.flixel.FlxU;
@@ -18,6 +18,8 @@ package
     public function MorningStroll()
     {
       super(416, 600, MenuState, 1, 24, 24);
+      FlxG.framerate = 30;
+      FlxG.flashFramerate = 30;
     }
 
     override protected function createFocusScreen():void

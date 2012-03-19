@@ -1,8 +1,14 @@
 package
 {
-  import flash.display.BlendMode;
-  
-  import org.flixel.*;
+  import org.flixel.FlxCamera;
+  import org.flixel.FlxG;
+  import org.flixel.FlxObject;
+  import org.flixel.FlxPoint;
+  import org.flixel.FlxRect;
+  import org.flixel.FlxSprite;
+  import org.flixel.FlxState;
+  import org.flixel.FlxTimer;
+  import org.flixel.FlxU;
 
   // The main coordinator: part config list, part asset list, part delegate.
   // Handles all of the character animations, and custom platform generation.
@@ -68,10 +74,8 @@ package
       FlxG.mouse.hide();
 
       // Globals.
-      FlxG.framerate = 30;
-      FlxG.flashFramerate = 30;
       fallChecking = false;
-      FlxG.debug = true;
+      FlxG.debug = false;
 
       // Start our setup chain.
       setupPlatform();
@@ -158,7 +162,6 @@ package
     {
       // Draw player at the bottom.
       setupPlayer(platform.startingPoint);
-//      setupPlayer(platform.endingPoint);
 
       // Move until we don't overlap.
       while (platform.overlaps(player))
@@ -183,7 +186,7 @@ package
       // Find start position for player.
 
       player = new Player(start.x, start.y);
-      player = new Player(0, 0);
+//      player = new Player(0, 0);
       player.loadGraphic(ImgPlayer, true, true, 72);
 
       // Bounding box tweaks.
