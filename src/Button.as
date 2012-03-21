@@ -21,9 +21,9 @@ package
       {
         this.label = new FlxText(0, 0, 160, Label);
         this.label.setFormat(null, LabelSize, 0x333333, "center");
-        this.labelOffset = new FlxPoint(-1, LabelSize/2);
+        this.labelOffset = new FlxPoint(-1, 3);
       }
-      this.loadGraphic(ImgButton, true, false, 160, 40);
+      this.loadGraphic(ImgButton, true, false, 80, 30);
 
       this.onUp = OnClick;
       this.onDown = null;

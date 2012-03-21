@@ -33,6 +33,8 @@ package
           });
         });
       start.x = (FlxG.width - start.width) / 2;
+      start.label.font = 'Museo700';
+      start.label.color = 0xffffffff;
       
       bg = new FlxSprite(0, 0, ImgStart); 
       
