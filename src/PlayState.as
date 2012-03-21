@@ -72,7 +72,8 @@ package
     private var targetMusicVolume:Number = 0;
     private var music:FlxSound;
     private static const MUSIC_VOLUME_FACTOR:Number = 1.3;
-    private static const MIN_MUSIC_VOLUME:Number = 0.1;
+    private static const MIN_MUSIC_VOLUME:Number = 0.2;
+    private static const MAX_MUSIC_VOLUME:Number = 0.8;
 
     // Flixel Methods
     // --------------
@@ -369,7 +370,7 @@ package
         targetMusicVolume = Math.pow(targetMusicVolume, MUSIC_VOLUME_FACTOR);
       }
       music.volume += (targetMusicVolume - music.volume) / player.cameraSpeed;
-      music.volume = FlxU.bound(music.volume, MIN_MUSIC_VOLUME, 1);
+      music.volume = FlxU.bound(music.volume, MIN_MUSIC_VOLUME, MAX_MUSIC_VOLUME);
     }
     private function updateGameState(doChecks:Boolean=false):void
     {
@@ -424,14 +425,14 @@ package
       }
       if ((didTheEnd && FlxG.mouse.justPressed()) || FlxG.keys.justPressed('Q'))
       {
-        var fadeDuration:Number = 2;
+        var fadeDuration:Number = 3;
+        music.fadeOut(fadeDuration);
         gameStatePollInterval.stop();
         gameStatePollInterval.start(fadeDuration, 1,
           function(onTimer:FlxTimer):void {
             MorningStroll.endGame();
           }
         );
-        music.fadeOut(fadeDuration);
       }
     }
 
