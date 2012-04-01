@@ -70,10 +70,10 @@ package
     
     // The music.
     private var targetMusicVolume:Number = 0;
-    private var music:FlxSound;
     private static const MUSIC_VOLUME_FACTOR:Number = 1.3;
     private static const MIN_MUSIC_VOLUME:Number = 0.2;
     private static const MAX_MUSIC_VOLUME:Number = 0.8;
+    private var playMusic:Boolean;
 
     // Flixel Methods
     // --------------
@@ -83,7 +83,8 @@ package
 
       // Globals.
       fallChecking = false;
-      FlxG.debug = false;
+      FlxG.debug = true;
+      playMusic = !FlxG.debug;
 
       // Start our setup chain.
       setupPlatform();
@@ -263,13 +264,11 @@ package
     }
     private function setupAudio():void
     {
-      music = FlxG.loadSound(SndMain, targetMusicVolume, true, false, false);
+      if (!playMusic) return;
+      FlxG.music = FlxG.loadSound(SndMain, targetMusicVolume, true, false, false);
       updateAudio(true);
-      if (!FlxG.debug)
-      {
-        music.play();
-      }
-      FlxG.watch(music, 'volume', 'Volume');
+      FlxG.music.play();
+      FlxG.watch(FlxG.music, 'volume', 'Volume');
     }
     private function setupBg():void
     {
@@ -361,6 +360,7 @@ package
     }
     private function updateAudio(force:Boolean=false):void
     {
+      if (!playMusic) return;
       if (didTheEnd) return;
       // The music gets louder the higher the player gets.
       // The volume smoothly updates on each landing.
@@ -369,8 +369,8 @@ package
         targetMusicVolume = (platform.startingPoint.y - player.cameraFocus.y) / platform.distanceToTravel.y;
         targetMusicVolume = Math.pow(targetMusicVolume, MUSIC_VOLUME_FACTOR);
       }
-      music.volume += (targetMusicVolume - music.volume) / player.cameraSpeed;
-      music.volume = FlxU.bound(music.volume, MIN_MUSIC_VOLUME, MAX_MUSIC_VOLUME);
+      FlxG.music.volume += (targetMusicVolume - FlxG.music.volume) / player.cameraSpeed;
+      FlxG.music.volume = FlxU.bound(FlxG.music.volume, MIN_MUSIC_VOLUME, MAX_MUSIC_VOLUME);
     }
     private function updateGameState(doChecks:Boolean=false):void
     {
@@ -426,7 +426,7 @@ package
       if ((didTheEnd && FlxG.mouse.justPressed()) || FlxG.keys.justPressed('Q'))
       {
         var fadeDuration:Number = 3;
-        music.fadeOut(fadeDuration);
+        FlxG.music.fadeOut(fadeDuration);
         gameStatePollInterval.stop();
         gameStatePollInterval.start(fadeDuration, 1,
           function(onTimer:FlxTimer):void {
