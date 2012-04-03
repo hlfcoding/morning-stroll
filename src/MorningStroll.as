@@ -21,6 +21,7 @@ package
       super(416, 600, MenuState, 1, 24, 24);
       FlxG.framerate = 30;
       FlxG.flashFramerate = 30;
+      FlxG.useBufferLocking = true;
       ViewSource.addMenuItem(this, "srcview/index.html"); 
     }
 
