@@ -79,6 +79,29 @@ package
       );
     }
     
+    // Flixel Methods
+    // --------------
+    override public function destroy():void
+    {
+      super.destroy();
+      
+      this.mapData = null;
+      
+      this.startingPoint = null;
+      this.endingPoint = null;
+      
+      for each (var l:PlatformLedge in this.ledges) { l = null; }
+      this.ledges = null;
+      
+      this.distanceToTravel = null;
+      
+      this.minLedgeSpacing = null;
+      this.maxLedgeSpacing = null;
+      
+      this.bounds = null;
+      this.delegate = null;
+    }
+    
     public function get numRows():uint
     {
       return Math.floor(this.bounds.height / this.tileHeight);
@@ -130,7 +153,7 @@ package
       this.ledgeRowCount = rows /
         ((this.maxLedgeSpacing.y + this.minLedgeSpacing.y) / 2 +
           (this.ledgeThickness - 1));
-      FlxG.log('Ledge row count: '+this.ledgeRowCount);
+//      FlxG.log('Ledge row count: '+this.ledgeRowCount);
       // Plot the row, given the type. 
       addRow = function():void
       {
@@ -252,7 +275,7 @@ package
               // TODO - Temp fix.
               PlatformLedge(this.ledges[this.ledges.length-1]).rowIndex =
                 (dir == TOP_BOTTOM) ? r : rStart - r;
-              FlxG.log('Finishing up last row...');
+//              FlxG.log('Finishing up last row...');
             }
             else
             {
@@ -280,8 +303,8 @@ package
         }
         addRow.call(this);
       }
-      FlxG.log('Ledges: '+rL);
-      FlxG.log('Map: '+this.mapData);
+//      FlxG.log('Ledges: '+rL);
+//      FlxG.log('Map: '+this.mapData);
 
     }
 

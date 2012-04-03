@@ -1,8 +1,9 @@
 package
 {
 
+  import com.adobe.viewsource.ViewSource;
+  
   import flash.text.TextField;
-  import com.adobe.viewsource.ViewSource; 
   
   import org.flixel.FlxG;
   import org.flixel.FlxGame;
@@ -15,6 +16,8 @@ package
 
   public class MorningStroll extends FlxGame
   {
+    
+    private static var playState:PlayState;
 
     public function MorningStroll()
     {
@@ -54,7 +57,15 @@ package
       addChild(this._focus);
 
     }
-
+    
+    public static function startGame():void
+    {
+      playState = new PlayState();
+      FlxG.fade(0xff000000, 1, function():void {
+        FlxG.switchState(playState);
+      });
+    }
+    
     public static function endGame():void
     {
       FlxG.fade(0xff000000, 1, function():void {

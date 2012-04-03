@@ -38,10 +38,18 @@ package
       super(MaxSize);
     }
 
+    // Flixel Methods
+    // --------------
+    override public function destroy():void
+    {
+      super.destroy();
+      
+      this.bounds = null;
+    }
+    
     public function addImage(image:Class):void
     {
-      var layer:FlxSprite = new FlxSprite(0, 0, image);
-      this.add(layer);
+      this.add(new FlxSprite(0, 0, image));
     }
 
     // Apply the scroll factors using a simple algorithm:

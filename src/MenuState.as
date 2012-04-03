@@ -14,7 +14,7 @@ package
     private var instructions:Text;
     private var start:Button;
     private var bg:FlxSprite;
-
+    
     override public function create():void
     {
       // Globals.
@@ -27,11 +27,7 @@ package
         "Climb and see!");
       start = new Button(0, // see below
         instructions.y + Text.BASELINE * 2, "Start", Text.H2,
-        function():void {
-          FlxG.fade(0xff000000, 1, function():void {
-            FlxG.switchState(new PlayState());
-          });
-        });
+        MorningStroll.startGame);
       start.x = (FlxG.width - start.width) / 2;
       start.label.font = 'Museo700';
       start.label.color = 0xffffffff;
@@ -43,11 +39,15 @@ package
       add(instructions);
       add(start);
     }
-
-    override public function update():void
+    
+    override public function destroy():void
     {
-      super.update();
-
+      super.destroy();
+      
+      bg = null;
+      title = null;
+      instructions = null;
+      start = null;
     }
 
   }

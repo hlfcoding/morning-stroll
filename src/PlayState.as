@@ -83,7 +83,7 @@ package
 
       // Globals.
       fallChecking = false;
-      FlxG.debug = true;
+      FlxG.debug = false;
       playMusic = !FlxG.debug;
 
       // Start our setup chain.
@@ -108,6 +108,14 @@ package
       didTheEnd = false;
       
     }
+    
+    override public function destroy():void
+    {
+      super.destroy();
+      
+      gameStatePollInterval.destroy();
+    }
+    
     override public function update():void
     {
       // Start our update chain.
@@ -167,7 +175,7 @@ package
       // Process settings.
       platform.init();
       
-      FlxG.log('Ending point: '+[platform.numRows-1 - ledge.rowIndex, platform.endingPoint.x, platform.endingPoint.y]);
+//      FlxG.log('Ending point: '+[platform.numRows-1 - ledge.rowIndex, platform.endingPoint.x, platform.endingPoint.y]);
     }
     // Hooks.
     private function setupPlatformAfter():void
@@ -337,6 +345,7 @@ package
         {
           player.nextAction = Player.STOP;
         }
+        pos = pPos = null;
       }
       else
       {
@@ -445,7 +454,7 @@ package
       // TODO - Harden into config.
       var facing:String = (ledge.facing == FlxObject.LEFT) ? 'left' : 'right';
       
-      FlxG.log('Before: '+[facing, ledge.spacing, ledge.size]);
+//      FlxG.log('Before: '+[facing, ledge.spacing, ledge.size]);
       
       // The amplifier for the size. Should limit it to 0.5 to 1.5.
       var factor:Number = Math.pow(Number(platform.ledgeRowCount) / (Number(ledge.index) * 3), 0.3);
@@ -468,7 +477,7 @@ package
         ledge.start = ledge.end - ledge.size;
       }
       
-      FlxG.log('After: '+[facing, ledge.spacing, ledge.size, factor]);
+//      FlxG.log('After: '+[facing, ledge.spacing, ledge.size, factor]);
       
       return ledge;
     }

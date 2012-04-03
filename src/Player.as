@@ -107,6 +107,26 @@ package
 
     // Flixel Methods
     // --------------
+    override public function destroy():void
+    {
+      super.destroy();
+      
+      this.pVelocity = null;
+      this.jumpMaxVelocity = null;
+      this.jumpAccel = null;
+      this.jumpAccelDecay = null;
+      this.oDrag = null;
+      jumpTimer.destroy();
+      jumpTimer = null;
+      this.animDelegate = null;
+      
+      this.tailOffset = null;
+      this.headOffset = null;
+      
+      this.cameraFocus.destroy();
+      this.cameraFocus = null;
+    }
+    
     override public function update():void
     {
       if (!this.controlled)
@@ -175,7 +195,7 @@ package
       }
       else if (FlxG.keys.justReleased('UP'))
       {
-        jumpEnd();
+        jumpEnd(null);
       }
       else if (this.isTouching(FlxObject.UP) && this.currently == RISING)
       {
@@ -317,12 +337,9 @@ package
       this.acceleration.y = this.jumpAccel.y;
       this.acceleration.x = 0;
       this.drag.x = this.jumpAccelDecay.x;
-      jumpTimer.start(jumpMaxDuration, 1,
-        function(timer:FlxTimer):void {
-          jumpEnd();
-        });
+      jumpTimer.start(jumpMaxDuration, 1, jumpEnd);
     }
-    private function jumpEnd():void
+    private function jumpEnd(onTimer:FlxTimer):void
     {
       this.acceleration.y = this.naturalForces.y;
       this.drag.x = this.oDrag.x;
