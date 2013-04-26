@@ -1,0 +1,782 @@
+// 0.9.3
+Animation: function Animation(game, parent, frameData, name, frames, delay, looped) {
+  destroy: function () {
+  get frame: function () {
+  get frameTotal: function () {
+  onComplete: function () {
+  play: function (frameRate, loop) {
+  restart: function () {
+  set frame: function (value) {
+  set frameTotal: undefined
+  stop: function () {
+  update: function () {
+AnimationLoader: function AnimationLoader() { }
+AnimationManager: function AnimationManager(game, parent) {
+  add: function (name, frames, frameRate, loop, useNumericIndex) {
+  get frame: function () {
+  get frameData: function () {
+  get frameName: function () {
+  get frameTotal: function () {
+  loadFrameData: function (frameData) {
+  play: function (name, frameRate, loop) {
+  set frame: function (value) {
+  set frameData: undefined
+  set frameName: function (value) {
+  set frameTotal: undefined
+  stop: function (name) {
+  update: function () {
+  validateFrames: function (frames, useNumericIndex) {
+Basic: function Basic(game) {
+  destroy: function () {
+  kill: function () {
+  postUpdate: function () {
+  preUpdate: function () {
+  render: function (camera, cameraOffsetX, cameraOffsetY) {
+  revive: function () {
+  toString: function () {
+  update: function () {
+Cache: function Cache(game) {
+  addCanvas: function (key, canvas, context) {
+  addImage: function (key, url, data) {
+  addSound: function (key, url, data) {
+  addSpriteSheet: function (key, url, data, frameWidth, frameHeight, frameMax) {
+  addText: function (key, url, data) {
+  addTextureAtlas: function (key, url, data, jsonData) {
+  decodedSound: function (key, data) {
+  destroy: function () {
+  getCanvas: function (key) {
+  getFrameData: function (key) {
+  getImage: function (key) {
+  getSound: function (key) {
+  getText: function (key) {
+  isSoundDecoded: function (key) {
+  isSpriteSheet: function (key) {
+Camera: function Camera(game, id, x, y, width, height) {
+  checkClip: function () {
+  fade: function (color, duration, onComplete, force) {
+  flash: function (color, duration, onComplete, force) {
+  focusOn: function (point) {
+  focusOnXY: function (x, y) {
+  follow: function (target, style) {
+  get backgroundColor: function () {
+  get height: function () {
+  get rotation: function () {
+  get width: function () {
+  get x: function () {
+  get y: function () {
+  render: function () {
+  renderDebugInfo: function (x, y, color) {
+  set backgroundColor: function (color) {
+  set height: function (value) {
+  set rotation: function (value) {
+  set width: function (value) {
+  set x: function (value) {
+  set y: function (value) {
+  setBounds: function (X, Y, Width, Height, UpdateWorld) {
+  setPosition: function (x, y) {
+  setSize: function (width, height) {
+  setTexture: function (key, repeat) {
+  shake: function (intensity, duration, onComplete, force, direction) {
+  stopFX: function () {
+  update: function () {
+CameraManager: function CameraManager(game, x, y, width, height) {
+  addCamera: function (x, y, width, height) {
+  destroy: function () {
+  getAll: function () {
+  removeCamera: function (id) {
+  render: function () {
+  update: function () {
+Circle: function Circle(x, y, diameter) {
+  circumference: function () {
+  circumferencePoint: function (angle, asDegrees, output) {
+  clone: function (output) {
+  contains: function (x, y) {
+  containsCircle: function (circle) {
+  containsPoint: function (point) {
+  copyFrom: function (source) {
+  copyTo: function (target) {
+  distanceTo: function (target, round) {
+  equals: function (toCompare) {
+  get area: function () {
+  get bottom: function () {
+  get diameter: function () {
+  get isEmpty: function () {
+  get left: function () {
+  get radius: function () {
+  get right: function () {
+  get top: function () {
+  intersectCircleLine: function (line) {
+  intersects: function (toIntersect) {
+  offset: function (dx, dy) {
+  offsetPoint: function (point) {
+  set area: undefined
+  set bottom: function (value) {
+  set diameter: function (value) {
+  set isEmpty: undefined
+  set left: function (value) {
+  set radius: function (value) {
+  set right: function (value) {
+  set top: function (value) {
+  setTo: function (x, y, diameter) {
+  toString: function () {
+Collision: function Collision(game) {
+  overlap: function (ObjectOrGroup1, ObjectOrGroup2, NotifyCallback, ProcessCallback) {
+Device: function Device() {
+  _checkAudio: function () {
+  _checkBrowser: function () {
+  _checkCSS3D: function () {
+  _checkDevice: function () {
+  _checkFeatures: function () {
+  _checkOS: function () {
+  getAll: function () {
+DynamicTexture: function DynamicTexture(game, width, height) {
+  clear: function () {
+  copyPixels: function (sourceTexture, sourceRect, destPoint) {
+  fillRect: function (rect, color) {
+  get height: function () {
+  get width: function () {
+  getColor: function (red, green, blue) {
+  getColor32: function (alpha, red, green, blue) {
+  getPixel: function (x, y) {
+  getPixel32: function (x, y) {
+  getPixels: function (rect) {
+  pasteImage: function (key, frame, destX, destY, destWidth, destHeight) {
+  set height: undefined
+  set width: undefined
+  setPixel: function (x, y, color) {
+  setPixel32: function (x, y, color) {
+  setPixels: function (rect, input) {
+Easing: Object
+  Back: function Back() { }
+  Bounce: function Bounce() { }
+  Circular: function Circular() { }
+  Cubic: function Cubic() { }
+  Elastic: function Elastic() { }
+  Exponential: function Exponential() { }
+  Linear: function Linear() { }
+  Quadratic: function Quadratic() { }
+  Quartic: function Quartic() { }
+  Quintic: function Quintic() { }
+  Sinusoidal: function Sinusoidal() { }
+Emitter: function Emitter(game, X, Y, Size) {
+  at: function (Object) {
+  destroy: function () {
+  emitParticle: function () {
+  kill: function () {
+  makeParticles: function (Graphics, Quantity, BakedRotations, Multiple, Collide) {
+  setRotation: function (Min, Max) {
+  setSize: function (Width, Height) {
+  setXSpeed: function (Min, Max) {
+  setYSpeed: function (Min, Max) {
+  start: function (Explode, Lifespan, Frequency, Quantity) {
+  update: function () {
+Finger: function Finger(game) {
+  justPressed: function (duration) {
+  justReleased: function (duration) {
+  leave: function (event) {
+  move: function (event) {
+  start: function (event) {
+  stop: function (event) {
+  toString: function () {
+Frame: function Frame(x, y, width, height, name) {
+  setRotation: function (rotated, rotationDirection) {
+  setTrim: function (trimmed, actualWidth, actualHeight, destX, destY, destWidth, destHeight) {
+FrameData: function FrameData() {
+  addFrame: function (frame) {
+  checkFrameName: function (name) {
+  get total: function () {
+  getAllFrames: function () {
+  getFrame: function (index) {
+  getFrameByName: function (name) {
+  getFrameIndexes: function (output) {
+  getFrameIndexesByName: function (input) {
+  getFrameRange: function (start, end, output) {
+  getFrames: function (range) {
+  set total: undefined
+Game: function Game(callbackContext, parent, width, height, initCallback, createCallback, updateCallback, renderCallback) {
+  boot: function (parent, width, height) {
+  collide: function (ObjectOrGroup1, ObjectOrGroup2, NotifyCallback) {
+  createCamera: function (x, y, width, height) {
+  createDynamicTexture: function (width, height) {
+  createEmitter: function (x, y, size) {
+  createGeomSprite: function (x, y) {
+  createGroup: function (MaxSize) {
+  createParticle: function () {
+  createScrollZone: function (key, x, y, width, height) {
+  createSprite: function (x, y, key) {
+  createTilemap: function (key, mapData, format, resizeWorld, tileWidth, tileHeight) {
+  createTween: function (obj) {
+  destroy: function () {
+  get framerate: function () {
+  get paused: function () {
+  loadComplete: function () {
+  loop: function () {
+  set framerate: function (value) {
+  set paused: function (value) {
+  setCallbacks: function (initCallback, createCallback, updateCallback, renderCallback) {
+  startState: function () {
+  switchState: function (state, clearWorld, clearCache) {
+GameMath: function GameMath(game) {
+  GCD: function (m, n) {
+  LCM: function (m, n) {
+  angleBetween: function (x1, y1, x2, y2) {
+  angleLimit: function (angle, min, max) {
+  arithWrap: function (value, max, min) {
+  average: function () {
+  bernstein: function (n, i) {
+  bezierInterpolation: function (v, k) {
+  binCoef: function (n, k) {
+  catmullRom: function (p0, p1, p2, p3, t) {
+  catmullRomInterpolation: function (v, k) {
+  ceil: function (Value) {
+  ceilTo: function (value, place, base) {
+  chanceRoll: function (chance) {
+  clamp: function (input, max, min) {
+  degreesToRadians: function (angle) {
+  difference: function (a, b) {
+  dotProduct: function (ax, ay, bx, by) {
+  factorial: function (value) {
+  fallingFactorial: function (base, exp) {
+  floor: function (Value) {
+  floorTo: function (value, place, base) {
+  fuzzyCeil: function (val, epsilon) {
+  fuzzyEqual: function (a, b, epsilon) {
+  fuzzyFloor: function (val, epsilon) {
+  fuzzyGreaterThan: function (a, b, epsilon) {
+  fuzzyLessThan: function (a, b, epsilon) {
+  gammaFunction: function (value) {
+  getRandom: function (Objects, StartIndex, Length) {
+  interpolateAngles: function (a1, a2, weight, radians, ease) {
+  interpolateFloat: function (a, b, weight) {
+  isEven: function (n) {
+  isOdd: function (n) {
+  linear: function (p0, p1, t) {
+  linearInterpolation: function (v, k) {
+  logBaseOf: function (value, base) {
+  maxAdd: function (value, amount, max) {
+  minSub: function (value, amount, min) {
+  nearestAngleBetween: function (a1, a2, radians) {
+  normalizeAngle: function (angle, radians) {
+  normalizeAngleAfterAnother: function (dep, ind, radians) {
+  normalizeAngleBeforeAnother: function (dep, ind, radians) {
+  normalizeAngleToAnother: function (dep, ind, radians) {
+  percentageMinMax: function (val, max, min) {
+  radiansToDegrees: function (angle) {
+  random: function () {
+  randomSign: function () {
+  risingBinCoef: function (n, k) {
+  risingFactorial: function (base, exp) {
+  roundTo: function (value, place, base) {
+  shear: function (n) {
+  shiftCosTable: function () {
+  shiftSinTable: function () {
+  sign: function (n) {
+  sinCosGenerator: function (length, sinAmplitude, cosAmplitude, frequency) {
+  slam: function (value, target, epsilon) {
+  snapTo: function (input, gap, start) {
+  snapToCeil: function (input, gap, start) {
+  snapToFloor: function (input, gap, start) {
+  snapToInArray: function (input, arr, sort) {
+  srand: function (Seed) {
+  truncate: function (n) {
+  vectorLength: function (dx, dy) {
+  wrap: function (val, max, min) {
+  wrapAngle: function (angle) {
+  wrapValue: function (value, amount, max) {
+GameObject: function GameObject(game, x, y, width, height) {
+  clearCameraList: function () {
+  destroy: function () {
+  get angle: function () {
+  get height: function () {
+  get rotation: function () {
+  get solid: function () {
+  get width: function () {
+  get x: function () {
+  get y: function () {
+  getMidpoint: function (point) {
+  getScreenXY: function (point, Camera) {
+  hideFromCamera: function (camera) {
+  hurt: function (Damage) {
+  isTouching: function (Direction) {
+  justTouched: function (Direction) {
+  onScreen: function (Camera) {
+  overlaps: function (ObjectOrGroup, InScreenSpace, Camera) {
+  overlapsAt: function (X, Y, ObjectOrGroup, InScreenSpace, Camera) {
+  overlapsPoint: function (point, InScreenSpace, Camera) {
+  postUpdate: function () {
+  preUpdate: function () {
+  reset: function (X, Y) {
+  set angle: function (value) {
+  set height: function (value) {
+  set rotation: function (value) {
+  set solid: function (Solid) {
+  set width: function (value) {
+  set x: function (value) {
+  set y: function (value) {
+  setBounds: function (x, y, width, height) {
+  showToCamera: function (camera) {
+  update: function () {
+  updateInput: function () {
+  updateMotion: function () {
+GeomSprite: function GeomSprite(game, x, y) {
+  collide: function (source) {
+  createCircle: function (diameter) {
+  createLine: function (x, y) {
+  createPoint: function () {
+  createRectangle: function (width, height) {
+  inCamera: function (camera) {
+  loadCircle: function (circle) {
+  loadLine: function (line) {
+  loadPoint: function (point) {
+  loadRectangle: function (rect) {
+  refresh: function () {
+  render: function (camera, cameraOffsetX, cameraOffsetY) {
+  renderDebugInfo: function (x, y, color) {
+  renderPoint: function (offsetX, offsetY, point, size) {
+  update: function () {
+Group: function Group(game, MaxSize) {
+  add: function (Object) {
+  callAll: function (FunctionName, Recurse) {
+  clear: function () {
+  countDead: function () {
+  countLiving: function () {
+  destroy: function () {
+  forEach: function (callback, Recurse) {
+  get maxSize: function () {
+  getFirstAlive: function () {
+  getFirstAvailable: function (ObjectClass) {
+  getFirstDead: function () {
+  getFirstExtant: function () {
+  getFirstNull: function () {
+  getRandom: function (StartIndex, Length) {
+  kill: function () {
+  recycle: function (ObjectClass) {
+  remove: function (Object, Splice) {
+  render: function (camera, cameraOffsetX, cameraOffsetY) {
+  replace: function (OldObject, NewObject) {
+  set maxSize: function (Size) {
+  setAll: function (VariableName, Value, Recurse) {
+  sort: function (Index, Order) {
+  sortHandler: function (Obj1, Obj2) {
+  update: function () {
+Input: function Input(game) {
+  getWorldX: function (camera) {
+  getWorldY: function (camera) {
+  renderDebugInfo: function (x, y, color) {
+  reset: function () {
+  update: function () {
+IntersectResult: function IntersectResult() {
+  setTo: function (x1, y1, x2, y2, width, height) {
+Keyboard: function Keyboard(game) {
+  addKeyCapture: function (keycode) {
+  clearCaptures: function () {
+  isDown: function (keycode) {
+  justPressed: function (keycode, duration) {
+  justReleased: function (keycode, duration) {
+  onKeyDown: function (event) {
+  onKeyUp: function (event) {
+  removeKeyCapture: function (keycode) {
+  reset: function () {
+  start: function () {
+Line: function Line(x1, y1, x2, y2) {
+  clone: function (output) {
+  copyFrom: function (source) {
+  copyTo: function (target) {
+  get angle: function () {
+  get height: function () {
+  get length: function () {
+  get perpSlope: function () {
+  get slope: function () {
+  get width: function () {
+  get yIntercept: function () {
+  getY: function (x) {
+  intersectLineLine: function (line) {
+  isPointOnLine: function (x, y) {
+  isPointOnLineSegment: function (x, y) {
+  perp: function (x, y, output) {
+  set angle: undefined
+  set height: undefined
+  set length: undefined
+  set perpSlope: undefined
+  set slope: undefined
+  set width: undefined
+  set yIntercept: undefined
+  setTo: function (x1, y1, x2, y2) {
+  toString: function () {
+LinkedList: function LinkedList() {
+  destroy: function () {
+Loader: function Loader(game, callback) {
+  addAudioFile: function (key, url) {
+  addImageFile: function (key, url) {
+  addSpriteSheet: function (key, url, frameWidth, frameHeight, frameMax) {
+  addTextFile: function (key, url) {
+  addTextureAtlas: function (key, url, jsonURL, jsonData) {
+  checkKeyExists: function (key) {
+  fileComplete: function (key) {
+  fileError: function (key) {
+  get queueSize: function () {
+  jsonLoadComplete: function (key) {
+  jsonLoadError: function (key) {
+  load: function (onFileLoadCallback, onCompleteCallback) {
+  loadFile: function () {
+  nextFile: function (previousKey, success) {
+  removeAll: function () {
+  removeFile: function (key) {
+  reset: function () {
+  set queueSize: undefined
+MicroPoint: function MicroPoint(x, y, parent) {
+  copyFrom: function (source) {
+  copyTo: function (target) {
+  equals: function (toCompare) {
+  get x: function () {
+  get y: function () {
+  set x: function (value) {
+  set y: function (value) {
+  setTo: function (x, y, callParent) {
+  toString: function () {
+Motion: function Motion(game) {
+  accelerateTowardsMouse: function (source, speed, xSpeedMax, ySpeedMax) {
+  accelerateTowardsObject: function (source, dest, speed, xSpeedMax, ySpeedMax) {
+  accelerateTowardsPoint: function (source, target, speed, xSpeedMax, ySpeedMax) {
+  angleBetween: function (a, b, asDegrees) {
+  angleBetweenMouse: function (a, asDegrees) {
+  angleBetweenPoint: function (a, target, asDegrees) {
+  computeVelocity: function (Velocity, Acceleration, Drag, Max) {
+  distanceBetween: function (a, b) {
+  distanceToMouse: function (a) {
+  distanceToPoint: function (a, target) {
+  moveTowardsMouse: function (source, speed, maxTime) {
+  moveTowardsObject: function (source, dest, speed, maxTime) {
+  moveTowardsPoint: function (source, target, speed, maxTime) {
+  velocityFromAngle: function (angle, speed) {
+  velocityFromFacing: function (parent, speed) {
+Mouse: function Mouse(game) {
+  onMouseDown: function (event) {
+  onMouseMove: function (event) {
+  onMouseUp: function (event) {
+  reset: function () {
+  start: function () {
+  update: function () {
+Particle: function Particle(game) {
+  onEmit: function () {
+  update: function () {
+Point: function Point(x, y) {
+  add: function (toAdd, output) {
+  addTo: function (x, y) {
+  clamp: function (min, max) {
+  clampX: function (min, max) {
+  clampY: function (min, max) {
+  clone: function (output) {
+  copyFrom: function (source) {
+  copyTo: function (target) {
+  distanceCompare: function (target, distance) {
+  distanceTo: function (target, round) {
+  equals: function (toCompare) {
+  interpolate: function (pointA, pointB, f) {
+  invert: function () {
+  offset: function (dx, dy) {
+  polar: function (length, angle) {
+  setTo: function (x, y) {
+  subtract: function (point, output) {
+  subtractFrom: function (x, y) {
+  toString: function () {
+Quad: function Quad(x, y, width, height) {
+  get bottom: function () {
+  get left: function () {
+  get right: function () {
+  get top: function () {
+  intersects: function (q, t) {
+  set bottom: undefined
+  set left: undefined
+  set right: undefined
+  set top: undefined
+  setTo: function (x, y, width, height) {
+  toString: function () {
+QuadTree: function QuadTree(X, Y, Width, Height, Parent) {
+  add: function (ObjectOrGroup, List) {
+  addObject: function () {
+  addToList: function () {
+  destroy: function () {
+  execute: function () {
+  load: function (ObjectOrGroup1, ObjectOrGroup2, NotifyCallback, ProcessCallback) {
+  overlapNode: function () {
+RandomDataGenerator: function RandomDataGenerator(seeds) {
+  fract32: function () {
+  get angle: function () {
+  get frac: function () {
+  get integer: function () {
+  get normal: function () {
+  get real: function () {
+  get uuid: function () {
+  hash: function (data) {
+  integerInRange: function (min, max) {
+  pick: function (array) {
+  realInRange: function (min, max) {
+  rnd: function () {
+  set angle: undefined
+  set frac: undefined
+  set integer: undefined
+  set normal: undefined
+  set real: undefined
+  set uuid: undefined
+  sow: function (seeds) {
+  timestamp: function (min, max) {
+  uint32: function () {
+  weightedPick: function (array) {
+Rectangle: function Rectangle(x, y, width, height) {
+  clone: function (output) {
+  contains: function (x, y) {
+  containsPoint: function (point) {
+  containsRect: function (rect) {
+  copyFrom: function (source) {
+  copyTo: function (target) {
+  equals: function (toCompare) {
+  get bottom: function () {
+  get halfHeight: function () {
+  get halfWidth: function () {
+  get height: function () {
+  get isEmpty: function () {
+  get left: function () {
+  get perimeter: function () {
+  get right: function () {
+  get top: function () {
+  get volume: function () {
+  get width: function () {
+  get x: function () {
+  get y: function () {
+  inflate: function (dx, dy) {
+  inflatePoint: function (point) {
+  intersection: function (toIntersect, output) {
+  intersects: function (r2, t) {
+  offset: function (dx, dy) {
+  offsetPoint: function (point) {
+  set bottom: function (value) {
+  set halfHeight: undefined
+  set halfWidth: undefined
+  set height: function (value) {
+  set isEmpty: undefined
+  set left: function (value) {
+  set perimeter: undefined
+  set right: function (value) {
+  set top: function (value) {
+  set volume: undefined
+  set width: function (value) {
+  set x: function (value) {
+  set y: function (value) {
+  setEmpty: function () {
+  setTo: function (x, y, width, height) {
+  size: function (output) {
+  toString: function () {
+  union: function (toUnion, output) {
+  updateBounds: function () {
+RequestAnimationFrame: function RequestAnimationFrame(callback, callbackContext) {
+  RAFUpdate: function () {
+  SetTimeoutUpdate: function () {
+  isUsingRAF: function () {
+  isUsingSetTimeOut: function () {
+  setCallback: function (callback) {
+  start: function (callback) {
+  stop: function () {
+ScrollRegion: function ScrollRegion(x, y, width, height, speedX, speedY) {
+  crop: function (context, texture, srcX, srcY, srcW, srcH, destX, destY, destW, destH, offsetX, offsetY) {
+  render: function (context, texture, dx, dy, dw, dh) {
+  update: function (delta) {
+ScrollZone: function ScrollZone(game, key, x, y, width, height) {
+  addRegion: function (x, y, width, height, speedX, speedY) {
+  createRepeatingTexture: function (regionWidth, regionHeight) {
+  inCamera: function (camera) {
+  render: function (camera, cameraOffsetX, cameraOffsetY) {
+  setSpeed: function (x, y) {
+  update: function () {
+Signal: function Signal() {
+  _addBinding: function (binding) {
+  _indexOfListener: function (listener, context) {
+  _registerListener: function (listener, isOnce, listenerContext, priority) {
+  add: function (listener, listenerContext, priority) {
+  addOnce: function (listener, listenerContext, priority) {
+  dispatch: function () {
+  dispose: function () {
+  forget: function () {
+  getNumListeners: function () {
+  halt: function () {
+  has: function (listener, context) {
+  remove: function (listener, context) {
+  removeAll: function () {
+  toString: function () {
+  validateListener: function (listener, fnName) {
+SignalBinding: function SignalBinding(signal, listener, isOnce, listenerContext, priority) {
+  _destroy: function () {
+  detach: function () {
+  execute: function (paramsArr) {
+  getListener: function () {
+  getSignal: function () {
+  isBound: function () {
+  isOnce: function () {
+  toString: function () {
+Sound: function Sound(context, gainNode, data, volume, loop) {
+  get volume: function () {
+  mute: function () {
+  play: function () {
+  set volume: function (value) {
+  setDecodedBuffer: function (data) {
+  stop: function () {
+  unmute: function () {
+SoundManager: function SoundManager(game) {
+  decode: function (key, callback, sound) {
+  get volume: function () {
+  mute: function () {
+  play: function (key, volume, loop) {
+  set volume: function (value) {
+  unmute: function () {
+Sprite: function Sprite(game, x, y, key) {
+  get frame: function () {
+  get frameName: function () {
+  inCamera: function (camera) {
+  loadDynamicTexture: function (texture) {
+  loadGraphic: function (key) {
+  makeGraphic: function (width, height, color) {
+  postUpdate: function () {
+  render: function (camera, cameraOffsetX, cameraOffsetY) {
+  renderBounds: function (camera, cameraOffsetX, cameraOffsetY) {
+  renderDebugInfo: function (x, y, color) {
+  set frame: function (value) {
+  set frameName: function (value) {
+Stage: function Stage(game, parent, width, height) {
+  drawInitScreen: function () {
+  drawPauseScreen: function () {
+  get backgroundColor: function () {
+  get centerX: function () {
+  get centerY: function () {
+  get height: function () {
+  get randomX: function () {
+  get randomY: function () {
+  get width: function () {
+  get x: function () {
+  get y: function () {
+  getOffset: function (element) {
+  renderDebugInfo: function () {
+  restoreCanvasValues: function () {
+  saveCanvasValues: function () {
+  set backgroundColor: function (color) {
+  set centerX: undefined
+  set centerY: undefined
+  set height: undefined
+  set randomX: undefined
+  set randomY: undefined
+  set width: undefined
+  set x: undefined
+  set y: undefined
+  update: function () {
+  visibilityChange: function (event) {
+StageScaleMode: function StageScaleMode(game) {
+  checkOrientation: function (event) {
+  get isLandscape: function () {
+  refresh: function () {
+  set isLandscape: undefined
+  setScreenSize: function () {
+  update: function () {
+State: function State(game) {
+  collide: function (ObjectOrGroup1, ObjectOrGroup2, NotifyCallback) {
+  create: function () {
+  createCamera: function (x, y, width, height) {
+  createDynamicTexture: function (width, height) {
+  createEmitter: function (x, y, size) {
+  createGeomSprite: function (x, y) {
+  createGroup: function (MaxSize) {
+  createParticle: function () {
+  createScrollZone: function (key, x, y, width, height) {
+  createSprite: function (x, y, key) {
+  createTilemap: function (key, mapData, format, resizeWorld, tileWidth, tileHeight) {
+  createTween: function (obj) {
+  init: function () {
+  paused: function () {
+  render: function () {
+  update: function () {
+Tile: function Tile(game, Tilemap, Index, Width, Height, Visible, AllowCollisions) {
+  destroy: function () {
+Tilemap: function Tilemap(game, key, mapData, format, resizeWorld, tileWidth, tileHeight) {
+  get heightInPixels: function () {
+  get widthInPixels: function () {
+  parseCSV: function (data, key, tileWidth, tileHeight) {
+  parseTiledJSON: function (data, key) {
+  render: function (camera, cameraOffsetX, cameraOffsetY) {
+  set heightInPixels: undefined
+  set widthInPixels: undefined
+  update: function () {
+TilemapLayer: function TilemapLayer(game, key, mapFormat, name, tileWidth, tileHeight) {
+  addColumn: function (column) {
+  parseTileOffsets: function () {
+  render: function (camera, dx, dy) {
+  renderDebugInfo: function (x, y, color) {
+  updateBounds: function () {
+Time: function Time(game) {
+  elapsedSecondsSince: function (since) {
+  elapsedSince: function (since) {
+  get totalElapsedSeconds: function () {
+  reset: function () {
+  set totalElapsedSeconds: undefined
+  update: function () {
+Touch: function Touch(game) {
+  calculateAngle: function (finger1, finger2) {
+  calculateDistance: function (finger1, finger2) {
+  checkOverlap: function (finger1, finger2) {
+  consumeTouchMove: function (event) {
+  onTouchCancel: function (event) {
+  onTouchEnd: function (event) {
+  onTouchEnter: function (event) {
+  onTouchLeave: function (event) {
+  onTouchMove: function (event) {
+  onTouchStart: function (event) {
+  reset: function () {
+  start: function () {
+  stop: function () {
+  update: function () {
+Tween: function Tween(object, game) {
+  chain: function (tween) {
+  get delay: function () {
+  get easing: function () {
+  get interpolation: function () {
+  get parent: undefined
+  set delay: function (amount) {
+  set easing: function (easing) {
+  set interpolation: function (interpolation) {
+  set parent: function (value) {
+  start: function () {
+  stop: function () {
+  to: function (properties, duration, ease, autoStart) {
+  update: function (time) {
+TweenManager: function TweenManager(game) {
+  add: function (tween) {
+  create: function (object) {
+  getAll: function () {
+  remove: function (tween) {
+  removeAll: function () {
+  update: function () {
+World: function World(game, width, height) {
+  createCamera: function (x, y, width, height) {
+  createDynamicTexture: function (width, height) {
+  createEmitter: function (x, y, size) {
+  createGeomSprite: function (x, y) {
+  createGroup: function (MaxSize) {
+  createParticle: function () {
+  createScrollZone: function (key, x, y, width, height) {
+  createSprite: function (x, y, key) {
+  createTilemap: function (key, mapData, format, resizeWorld, tileWidth, tileHeight) {
+  destroy: function () {
+  get centerX: function () {
+  get centerY: function () {
+  get height: function () {
+  get randomX: function () {
+  get randomY: function () {
+  get width: function () {
+  getAllCameras: function () {
+  removeCamera: function (id) {
+  render: function () {
+  set centerX: undefined
+  set centerY: undefined
+  set height: function (value) {
+  set randomX: undefined
+  set randomY: undefined
+  set width: function (value) {
+  setSize: function (width, height, updateCameraBounds) {
+  update: function () {
