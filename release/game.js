@@ -4,8 +4,8 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(['app/play-state', 'phaser'], function(PlayState) {
-    var MorningStroll;
-    return MorningStroll = (function(_super) {
+    var C, MorningStroll;
+    MorningStroll = (function(_super) {
 
       __extends(MorningStroll, _super);
 
@@ -16,7 +16,7 @@
       MorningStroll.ID = 'morning-stroll';
 
       function MorningStroll() {
-        MorningStroll.__super__.constructor.call(this, this, 'morning-stroll', MorningStroll.WIDTH, MorningStroll.HEIGHT, this.init, this.create, this.update);
+        MorningStroll.__super__.constructor.call(this, this, 'morning-stroll', C.WIDTH, C.HEIGHT, this.init, this.create, this.update);
       }
 
       MorningStroll.prototype.init = function() {};
@@ -32,6 +32,7 @@
       return MorningStroll;
 
     })(Phaser.Game);
+    return C = MorningStroll;
   });
 
 }).call(this);

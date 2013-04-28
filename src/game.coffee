@@ -11,7 +11,7 @@ define [
     @ID:      'morning-stroll'
 
     constructor: ->
-      super @, 'morning-stroll', MorningStroll.WIDTH, MorningStroll.HEIGHT,
+      super @, 'morning-stroll', C.WIDTH, C.HEIGHT,
             @init, @create, @update
 
     # Inherited
@@ -26,3 +26,5 @@ define [
 
     start: ->
       @switchState new PlayState @
+
+  C = MorningStroll

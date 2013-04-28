@@ -13,9 +13,10 @@
     }
   });
 
-  requirejs(['app/game', 'phaser'], function(MorningStroll, PlayState) {
+  requirejs(['app/game', 'phaser'], function(MorningStroll) {
     'use strict';
     var game;
+    window.DEBUG = true;
     game = new MorningStroll();
     game.start();
     return console.info(game);

@@ -3,8 +3,13 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['phaser'], function() {
-    var C, PlayState;
+  define(['underscore', 'app/platform', 'app/player', 'app/background', 'phaser'], function(_, Platform, Player, Background) {
+    var C, Collision, PlayState, Point, Rectangle, Signal, State;
+    State = Phaser.State;
+    Point = Phaser.Point;
+    Rectangle = Phaser.Rectangle;
+    Collision = Phaser.Collision;
+    Signal = Phaser.Signal;
     PlayState = (function(_super) {
 
       __extends(PlayState, _super);
@@ -15,23 +20,137 @@
 
       PlayState.prototype._platform = null;
 
-      PlayState.prototype._fallChecking = void 0;
-
       PlayState.FLOOR_HEIGHT = 32;
 
-      PlayState.PLAYER_WIDTH = 72;
-
-      PlayState.PLAYER_HEIGHT = 72;
+      PlayState.prototype.didSetupPlatform = null;
 
       PlayState.prototype._player = null;
 
       PlayState.prototype._mate = null;
 
-      PlayState.prototype.create = function() {};
+      PlayState.PLAYER_WIDTH = 72;
+
+      PlayState.PLAYER_HEIGHT = 72;
+
+      PlayState.prototype.didSetupCharacters = null;
+
+      PlayState.prototype._bg = null;
+
+      PlayState.prototype.didSetupBg = null;
+
+      PlayState.prototype._shouldCheckFalling = void 0;
+
+      PlayState.prototype._statePollInterval = null;
+
+      PlayState.prototype._didEnding = void 0;
+
+      PlayState.prototype._endingDuration = 0;
+
+      PlayState.ENDING_FPS = 12;
+
+      PlayState.prototype._targetMusicVolume = 0;
+
+      PlayState.prototype._shouldPlayMusic = void 0;
+
+      PlayState.MUSIC_VOLUME_FACTOR = 1.3;
+
+      PlayState.MUSIC_VOLUME_MIN = 0.2;
+
+      PlayState.MUSIC_VOLUME_MAX = 0.8;
+
+      PlayState.prototype.create = function() {
+        var add, _didEnding;
+        this._shouldCheckFalling = false;
+        this._shouldPlayMusic = !window.DEBUG;
+        this.didSetupPlatform = new Signal();
+        this.didSetupCharacters = new Signal();
+        this.didSetupBg = new Signal();
+        this.world = this.game.world;
+        add = _.bind(this.world.group.add, this.world.group);
+        this.didSetupBg.add(function() {
+          add(this._bg);
+          this._setupPlatform();
+          return console.log('Did setup background.');
+        }, this);
+        this.didSetupPlatform.add(function() {
+          add(this._platform);
+          this._setupPlayer(this._platform.startingPoint);
+          this._setupPlayerToPlatform();
+          this._setupMate(this._platform.endingPoint);
+          return console.log('Did setup platform.');
+        }, this);
+        this.didSetupCharacters.add(function() {
+          add(this._mate);
+          add(this._player);
+          this._setupCamera();
+          this._setupAudio();
+          return console.log('Did setup characters.');
+        }, this);
+        this._setupBg();
+        return _didEnding = false;
+      };
+
+      PlayState.prototype._setupPlatform = function() {
+        var ledge;
+        this._platform = new Platform(this.game);
+        this._platform.tileWidth = 32;
+        this._platform.tileHeight = 32;
+        this._platform.minLedgeSize = 3;
+        this._platform.maxLedgeSize = 5;
+        this._platform.minLedgeSpacing = new Point(4, 2);
+        this._platform.maxLedgeSpacing = new Point(8, 4);
+        this._platform.ledgeThickness = 2;
+        this._platform.bounds = new Rectangle(this._bg.bounds.x, this._bg.bounds.y, this._bg.bounds.width, this._bg.bounds.height + C.FLOOR_HEIGHT);
+        this._platform.makeMap();
+        this._platform.startingPoint.x = C.PLAYER_WIDTH;
+        this._platform.startingPoint.y = this._platform.height - C.PLAYER_HEIGHT;
+        ledge = this._platform.ledges[this._platform.ledges.length - 1];
+        /*
+        @_platform.endingPoint.y = (@_platform.numRows-1 - ledge.rowIndex) * @_platform.tileHeight
+        @_platform.endingPoint.x = (ledge.size * @_platform.tileWidth) / 2
+        if ledge.facing is Collision.RIGHT
+          @_platform.endingPoint.x = @_platform.bounds.width - @_platform.endingPoint.x
+        */
+
+        return this.didSetupPlatform.dispatch();
+      };
+
+      PlayState.prototype._setupPlayer = function(point) {
+        this._player = new Player(this.game, point.x, point.y);
+        return this.didSetupCharacters.dispatch();
+      };
+
+      PlayState.prototype._setupPlayerToPlatform = function() {
+        var _results;
+        _results = [];
+        while (this._platform.overlaps(this._player)) {
+          if (this._player.x <= 0) {
+            this._player.x = this.game.width;
+          }
+          _results.push(this._player.x -= this._platform.tileWidth);
+        }
+        return _results;
+      };
+
+      PlayState.prototype._setupMate = function(point) {};
+
+      PlayState.prototype._setupBg = function() {
+        this._bg = new Background(this.game);
+        this._bg.bounds.x = this._bg.bounds.y = 0;
+        this._bg.parallaxFactor = 0.95;
+        this._bg.parallaxBuffer = 1.7;
+        this._bg.parallaxTolerance = -64;
+        this._bg.layout();
+        return this.didSetupBg.dispatch();
+      };
+
+      PlayState.prototype._setupCamera = function() {};
+
+      PlayState.prototype._setupAudio = function() {};
 
       return PlayState;
 
-    })(Phaser.State);
+    })(State);
     return C = PlayState;
   });
 

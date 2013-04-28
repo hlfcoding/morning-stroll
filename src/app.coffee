@@ -10,9 +10,11 @@ requirejs [
   # Only non-exports after this point.
   'phaser'
 ],
-(MorningStroll, PlayState) ->
+(MorningStroll) ->
 
   'use strict'
+
+  window.DEBUG = on
 
   game = new MorningStroll()
 
