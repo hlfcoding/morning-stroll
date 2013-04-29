@@ -3,7 +3,7 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['underscore', 'app/platform', 'app/player', 'app/background', 'phaser'], function(_, Platform, Player, Background) {
+  define(['phaser', 'underscore', 'app/platform', 'app/player', 'app/background'], function(Phaser, _, Platform, Player, Background) {
     var C, Collision, PlayState, Point, Rectangle, Signal, State;
     State = Phaser.State;
     Point = Phaser.Point;

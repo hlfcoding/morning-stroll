@@ -5,15 +5,10 @@
     baseUrl: 'lib',
     paths: {
       app: '../release'
-    },
-    shim: {
-      'phaser': {
-        deps: []
-      }
     }
   });
 
-  requirejs(['app/game', 'phaser'], function(MorningStroll) {
+  requirejs(['phaser', 'app/game'], function(Phaser, MorningStroll) {
     'use strict';
     var game;
     window.DEBUG = true;

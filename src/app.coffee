@@ -2,15 +2,12 @@ requirejs.config
   baseUrl: 'lib'
   paths:
     app: '../release'
-  shim:
-    'phaser': { deps: [] }
 
 requirejs [
-  'app/game'
-  # Only non-exports after this point.
   'phaser'
+  'app/game'
 ],
-(MorningStroll) ->
+(Phaser, MorningStroll) ->
 
   'use strict'
 

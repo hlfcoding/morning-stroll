@@ -1,6 +1,6 @@
 define [
   'phaser'
-], () ->
+], (Phaser) ->
 
   Sprite = Phaser.Sprite
 

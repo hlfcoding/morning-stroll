@@ -1,6 +1,6 @@
 define [
   'phaser'
-], () ->
+], (Phaser) ->
 
   Tilemap = Phaser.Tilemap
   Point = Phaser.Point

@@ -1,8 +1,7 @@
 define [
-  'app/play-state'
-  # Only non-exports after this point.
   'phaser'
-], (PlayState) ->
+  'app/play-state'
+], (Phaser, PlayState) ->
 
   class MorningStroll extends Phaser.Game
 

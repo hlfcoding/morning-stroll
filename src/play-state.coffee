@@ -1,11 +1,10 @@
 define [
+  'phaser'
   'underscore'
   'app/platform'
   'app/player'
   'app/background'
-  # Only non-exports after this point.
-  'phaser'
-], (_, Platform, Player, Background) ->
+], (Phaser, _, Platform, Player, Background) ->
 
   State = Phaser.State
   Point = Phaser.Point

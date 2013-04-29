@@ -1,6 +1,6 @@
 define [
   'phaser'
-], () ->
+], (Phaser) ->
 
   Group = Phaser.Group
   Rectangle = Phaser.Rectangle
