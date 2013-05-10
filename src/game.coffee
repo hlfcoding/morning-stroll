@@ -19,11 +19,11 @@ define [
 
     init: ->
     create: ->
+      @switchState new PlayState @
     update: ->
 
     # Public
 
     start: ->
-      @switchState new PlayState @
 
   C = MorningStroll
