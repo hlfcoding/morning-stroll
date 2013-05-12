@@ -4,16 +4,312 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(['phaser'], function(Phaser) {
-    var C, Player, Sprite, _ref;
+    var C, Collision, GameObject, Keyboard, MicroPoint, Player, Point, Signal, Sprite;
 
+    Collision = Phaser.Collision;
+    GameObject = Phaser.GameObject;
+    Keyboard = Phaser.Keyboard;
+    MicroPoint = Phaser.MicroPoint;
+    Point = Phaser.Point;
+    Signal = Phaser.Signal;
     Sprite = Phaser.Sprite;
     Player = (function(_super) {
       __extends(Player, _super);
 
+      Player.STILL = 0;
+
+      Player.RUNNING = 1;
+
+      Player.LANDING = 2;
+
+      Player.RISING = 101;
+
+      Player.FALLING = 102;
+
+      Player.prototype.state = Player.STILL;
+
+      Player.NO_ACTION = 0;
+
+      Player.JUMP = 1;
+
+      Player.STOP = 2;
+
+      Player.START = 3;
+
+      Player.prototype.nextAction = Player.NO_ACTION;
+
+      Player.NO_FLAGS = 0;
+
+      Player.IS_CONTROLLED = 1 << 0;
+
+      Player.NEEDS_CAMERA_REFOCUS = 1 << 10;
+
+      Player.prototype.flags = Player.NO_FLAGS;
+
+      Player.prototype.jumpMaxVelocity = null;
+
+      Player.prototype.jumpAccel = null;
+
+      Player.prototype.jumpAccelDecay = null;
+
+      Player.prototype._pVelocity = null;
+
+      Player.prototype._oDrag = null;
+
+      Player.prototype._jumpTimer = null;
+
+      Player.prototype.naturalForces = new MicroPoint(1000, 500);
+
+      Player.prototype.accelFactor = 0.5;
+
+      Player.prototype.jumpAccelDecayFactor = -0.001;
+
+      Player.prototype.jumpMinDuration = 0.2;
+
+      Player.prototype.jumpMaxDuration = 0.5;
+
+      Player.prototype.tailOffset = null;
+
+      Player.prototype.headOffset = null;
+
+      Player.prototype.facing = Collision.NONE;
+
+      Player.prototype.offset = null;
+
+      Player.prototype.cameraFocus = null;
+
+      Player.prototype.cameraSpeed = 30;
+
+      Player.prototype.animDelegate = null;
+
+      Player.prototype._eAction = {
+        playerIsStill: {
+          signal: null,
+          state: Player.STILL
+        },
+        playerIsRunning: {
+          signal: null,
+          state: Player.RUNNING
+        },
+        playerIsLanding: {
+          signal: null,
+          state: Player.LANDING
+        },
+        playerIsRising: {
+          signal: null,
+          state: Player.RISING
+        },
+        playerIsFalling: {
+          signal: null,
+          state: Player.FALLING
+        },
+        playerWillJump: {
+          signal: null,
+          command: Player.JUMP
+        },
+        playerWillStop: {
+          signal: null,
+          command: Player.STOP
+        },
+        playerWillStart: {
+          signal: null,
+          command: Player.START
+        }
+      };
+
+      Player.prototype._kb = null;
+
       function Player() {
-        _ref = Player.__super__.constructor.apply(this, arguments);
-        return _ref;
+        var evt, name, _ref;
+
+        Player.__super__.constructor.apply(this, arguments);
+        this.pVelocity = this.velocity;
+        this.jumpMaxVelocity = new Point();
+        this.jumpAccel = new Point();
+        this.jumpAccelDecay = new Point();
+        this._oDrag = new Point();
+        this.tailOffset = new MicroPoint();
+        this.headOffset = new MicroPoint();
+        this.facing = Collision.RIGHT;
+        this.offset = new MicroPoint();
+        this.cameraFocus = new GameObject(this._game, this.x, this.y, this.width, this.height);
+        this.flags |= C.NEEDS_CAMERA_REFOCUS;
+        _ref = this._eAction;
+        for (name in _ref) {
+          evt = _ref[name];
+          evt.signal = new Signal();
+        }
+        _.bindAll(this, ['jumpEnd']);
+        this._kb = this._game.input.keyboard;
       }
+
+      Player.prototype.destroy = function() {
+        return Player.__super__.destroy.apply(this, arguments);
+      };
+
+      Player.prototype.render = function() {
+        return Player.__super__.render.apply(this, arguments);
+      };
+
+      Player.prototype.update = function() {
+        Player.__super__.update.apply(this, arguments);
+        if (!(this.flags & C.IS_CONTROLLED)) {
+          this.velocity = new MicroPoint();
+          this.acceleration = new MicroPoint();
+          return;
+        }
+        if (!this.isInMidAir()) {
+          this.acceleration.x = 0;
+        }
+        if (this._kb.isDown(Keyboard.LEFT)) {
+          if (this.facing === Collision.RIGHT) {
+            this.face(Collision.LEFT);
+          }
+          this.run(-1);
+        } else if (this._kb.isDown(Keyboard.RIGHT)) {
+          if (this.facing === Collision.LEFT) {
+            this.face(Collision.RIGHT);
+          }
+          this.run();
+        } else if (!this.isInMidAir()) {
+          if (this.acceleration.x === 0) {
+            this.nextAction = this.velocity.x === 0 ? C.START : C.STOP;
+          }
+          if (this.velocity.x === 0) {
+            this.state = C.STILL;
+          }
+        }
+        if (this.jumpTimer != null) {
+          this.velocity.y = Math.max(this.velocity.y, this.jumpMaxVelocity.y);
+          this.acceleration.y += (this.naturalForces.y - this.acceleration.y) / this.jumpAccelDecay.y;
+        }
+        if (this._kb.justPressed(Keyboard.UP) && (this.jumpTimer == null) && this.touching === Collision.FLOOR) {
+          this.jumpStart();
+        } else if (this._kb.justReleased(Keyboard.UP)) {
+          this.jumpEnd();
+        } else if (this.velocity.y > 0) {
+          if (this.state === C.FALLING) {
+            this._pVelocity = this.velocity;
+          } else {
+            this.state = C.FALLING;
+          }
+        }
+        if (this.isJustFallen()) {
+          this.state = C.LANDING;
+        }
+        if (this.flags & C.NEEDS_CAMERA_REFOCUS) {
+          this.cameraFocus.x += Math.round((this.x - this.cameraFocus.x) / this.cameraSpeed);
+          this.cameraFocus.y += Math.round((this.y - this.cameraFocus.y) / this.cameraSpeed);
+        }
+        return this.dispatchActionStateEvent();
+      };
+
+      Player.prototype.init = function() {
+        var evt, handler, name, _ref;
+
+        this._oDrag.x = this.drag.x = this.naturalForces.x;
+        this.acceleration.y = this.naturalForces.y;
+        this.jumpAccelDecay.setTo(this._oDrag.x * 2, this.jumpAccelDecay.y = this._game.framerate * this.jumpMinDuration);
+        if (this.animDelegate != null) {
+          _ref = this._eAction;
+          for (name in _ref) {
+            evt = _ref[name];
+            handler = this.animDelegate[name];
+            if (handler != null) {
+              handler = _.partial(handler, this);
+              evt.signal.add(handler, this.animDelegate, 9999);
+            }
+          }
+        }
+        return this.dispatchActionStateEvent();
+      };
+
+      Player.prototype.currentAnimation = function() {
+        return this.animations.currentAnim;
+      };
+
+      Player.prototype.dispatchActionStateEvent = function() {
+        var evt;
+
+        evt = _.findWhere(this._eAction, {
+          state: this.state
+        });
+        return evt.signal.dispatch();
+      };
+
+      Player.prototype.dispatchActionCommandEvent = function(name) {
+        return this._eAction[name].signal.dispatch();
+      };
+
+      Player.prototype.face = function(dir) {
+        if (this.velocity.x !== 0 && this.nextAction !== C.STOP && this.facing !== dir) {
+          this.nextAction = C.STOP;
+          if (!this.isInMidAir()) {
+            return dispatchActionCommandEvent('playerWillStop');
+          }
+        } else if (this.isFinished()) {
+          this.nextAction = C.START;
+          if (!this.isInMidAir()) {
+            dispatchActionCommandEvent('playerWillStart');
+          }
+          if (dir === Collision.RIGHT) {
+            this.offset.x = this.tailOffset.x;
+            return this.facing = Collision.RIGHT;
+          } else if (dir === Collision.LEFT) {
+            this.offset.x = 0;
+            return this.facing = Collision.LEFT;
+          }
+        }
+      };
+
+      Player.prototype.isInMidAir = function() {
+        return this.state >= C.RISING;
+      };
+
+      Player.prototype.isFinished = function() {
+        return true;
+      };
+
+      Player.prototype.isJustFallen = function() {
+        return this.wasTouching === Collision.FLOOR && this.state === C.FALLING && (this._pVelocity != null);
+      };
+
+      Player.prototype.jumpStart = function() {
+        var duration, durationFactor, velocityFactor;
+
+        velocityFactor = Math.abs(this.velocity.x / this.maxVelocity.x);
+        durationFactor = velocityFactor * (this.jumpMaxDuration - this.jumpMinDuration);
+        duration = this.jumpMinDuration + durationFactor;
+        dispatchActionCommandEvent('playerWillJump');
+        this.y--;
+        this.state = C.RISING;
+        this.acceleration.setTo(0, this.jumpAccel.y);
+        this.drag.x = this.jumpAccelDecay.x;
+        return this.jumpTimer = setTimeout(this.jumpEnd, duration);
+      };
+
+      Player.prototype.jumpEnd = function() {
+        this.acceleration.y = this.naturalForces.y;
+        this.drag.x = this._oDrag.x;
+        if (this.jumpTimer != null) {
+          return clearTimeout(this.jumpTimer);
+        }
+      };
+
+      Player.prototype.run = function(dir) {
+        var factor;
+
+        if (dir == null) {
+          dir = 1;
+        }
+        factor = this.accelFactor;
+        if (this.isInMidAir()) {
+          factor = this.jumpAccelDecayFactor;
+        } else if (this.state !== C.RUNNING) {
+          this.state = C.RUNNING;
+        }
+        return this.acceleration.x = this.drag.x * factor * dir;
+      };
 
       return Player;
 

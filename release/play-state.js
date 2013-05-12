@@ -120,11 +120,54 @@
 
       PlayState.prototype._setupPlayer = function(point) {
         this._player = new Player(this.game, point.x, point.y);
+        this._player.state = Player.FALLING;
+        /*
+        #
+        # Bounding box tweaks.
+        @_player.height = @_player.frameHeight / 2
+        @_player.offset.y = @_player.frameHeight - @_player.height - 2
+        @_player.tailOffset.x = 35
+        @_player.headOffset.x = 10
+        @_player.width = @_player.frameWidth - @_player.tailOffset.x
+        @_player.face Collision.RIGHT
+        #
+        # These are just set as a base to derive player physics
+        @_player.naturalForces.x = 1000   # Friction.
+        @_player.naturalForces.y = 600    # Gravity.
+        #
+        # Basic player physics.
+        @_player.maxVelocity.x = 220      # This gets achieved rather quickly.
+        @_player.maxVelocity.y = 1500     # Freefall.
+        #
+        # Player jump physics.
+        # The bare minimum to clear the biggest possible jump.
+        @_player.jumpMaxVelocity.y = -320 # This gets achieved rather quickly.
+        @_player.jumpAccel.y = -2800      # Starting jump force.
+        #
+        # Animations.
+        # Make sure to add end transitions, otherwise the last frame is skipped if framerate is low.
+        # Note that ranges do not include the terminator.
+        @_player.addAnimation('still',[17], 12)
+        @_player.addAnimation('idle', [], 12, false)
+        @_player.addAnimation('run',  [0...12], 24)
+        @_player.addAnimation('stop', [12...18], 24, false)
+        @_player.addAnimation('start',[17...11], 24, false)
+        @_player.addAnimation('jump', [18...32], 24, false)
+        @_player.addAnimation('fall', [31])
+        @_player.addAnimation('land', [32,33,18,17], 12, false)
+        endFrames = [34...54]
+        endFramerate = 12
+        endAnimDuration = endFrames.length / endFramerate
+        @_player.addAnimation('end', endFrames, endFramerate, false)
+        */
+
+        this._player.animDelegate = this._player.init();
         return this.didSetupCharacters.dispatch();
       };
 
       PlayState.prototype._setupPlayerToPlatform = function() {
         var _results;
+
         _results = [];
         while (this._platform.overlaps(this._player)) {
           if (this._player.x <= 0) {
@@ -150,6 +193,12 @@
       PlayState.prototype._setupCamera = function() {};
 
       PlayState.prototype._setupAudio = function() {};
+
+      PlayState.prototype.playerIsStill = function(player) {
+        return console.log('I am still.', player);
+      };
+
+      PlayState.prototype.playerIsFalling = function(player) {};
 
       return PlayState;
 
