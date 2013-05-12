@@ -5,12 +5,16 @@ define [
   'app/player'
   'app/background'
 ], (Phaser, _, Platform, Player, Background) ->
-
-  State = Phaser.State
-  Point = Phaser.Point
-  Rectangle = Phaser.Rectangle
+  #
+  # Dependencies.
+  #
   Collision = Phaser.Collision
+  MicroPoint = Phaser.MicroPoint
+  Rectangle = Phaser.Rectangle
   Signal = Phaser.Signal
+  #
+  # Requires inherited properties:
+  State = Phaser.State
 
   class PlayState extends State
     #
@@ -100,23 +104,23 @@ define [
       #
       # Customize our tile generation.
       # Vertical ledge spacing and horizontal ledge size affect difficulty.
-      @_platform.tileWidth = 32;
-      @_platform.tileHeight = 32;
-      @_platform.minLedgeSize = 3;
-      @_platform.maxLedgeSize = 5;
-      @_platform.minLedgeSpacing = new Point 4, 2
-      @_platform.maxLedgeSpacing = new Point 8, 4
+      @_platform.tileWidth = 32
+      @_platform.tileHeight = 32
+      @_platform.minLedgeSize = 3
+      @_platform.maxLedgeSize = 5
+      @_platform.minLedgeSpacing = new MicroPoint 4, 2
+      @_platform.maxLedgeSpacing = new MicroPoint 8, 4
       @_platform.ledgeThickness = 2
       #
       # Set the bounds based on the background.
-      # TODO - Fix parallax bug.
+      # FIXME: Parallax bug.
       @_platform.bounds = new Rectangle(
         @_bg.bounds.x, @_bg.bounds.y,
         @_bg.bounds.width, @_bg.bounds.height + C.FLOOR_HEIGHT
       )
       #
       # Make our platform.
-      # TODO - Image.
+      # TODO: Image.
       @_platform.makeMap()
       #
       # Set points.

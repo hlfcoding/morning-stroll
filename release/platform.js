@@ -4,12 +4,13 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(['phaser'], function(Phaser) {
-    var C, Collision, Platform, Point, Tilemap;
-    Tilemap = Phaser.Tilemap;
-    Point = Phaser.Point;
-    Collision = Phaser.Collision;
-    Platform = (function(_super) {
+    var C, Collision, MicroPoint, Platform, State, Tilemap;
 
+    Collision = Phaser.Collision;
+    MicroPoint = Phaser.MicroPoint;
+    State = Phaser.State;
+    Tilemap = Phaser.Tilemap;
+    Platform = (function(_super) {
       __extends(Platform, _super);
 
       Platform.prototype.minLedgeSize = 0;
@@ -70,8 +71,10 @@
         this.structureMode = C.SIDE_TO_SIDE;
         this.tilingStart = Collision.FLOOR;
         this.hasFloor = true;
-        this.startingPoint = new Point();
-        this.endingPoint = new Point();
+        this.startingPoint = new MicroPoint();
+        this.endingPoint = new MicroPoint();
+        this.maxLedgeSpacing = new MicroPoint();
+        this.minLedgeSpacing = new MicroPoint();
         this.ledges = [];
       }
 

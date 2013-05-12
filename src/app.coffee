@@ -18,3 +18,6 @@ requirejs [
   game.start()
 
   console.info game
+  if window.DEBUG is on
+    window.Phaser = Phaser
+    window.game = game

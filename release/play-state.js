@@ -4,18 +4,19 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(['phaser', 'underscore', 'app/platform', 'app/player', 'app/background'], function(Phaser, _, Platform, Player, Background) {
-    var C, Collision, PlayState, Point, Rectangle, Signal, State;
-    State = Phaser.State;
-    Point = Phaser.Point;
-    Rectangle = Phaser.Rectangle;
-    Collision = Phaser.Collision;
-    Signal = Phaser.Signal;
-    PlayState = (function(_super) {
+    var C, Collision, MicroPoint, PlayState, Rectangle, Signal, State, _ref;
 
+    Collision = Phaser.Collision;
+    MicroPoint = Phaser.MicroPoint;
+    Rectangle = Phaser.Rectangle;
+    Signal = Phaser.Signal;
+    State = Phaser.State;
+    PlayState = (function(_super) {
       __extends(PlayState, _super);
 
       function PlayState() {
-        return PlayState.__super__.constructor.apply(this, arguments);
+        _ref = PlayState.__super__.constructor.apply(this, arguments);
+        return _ref;
       }
 
       PlayState.prototype._platform = null;
@@ -60,6 +61,7 @@
 
       PlayState.prototype.create = function() {
         var add, _didEnding;
+
         this._shouldCheckFalling = false;
         this._shouldPlayMusic = !window.DEBUG;
         this.didSetupPlatform = new Signal();
@@ -92,13 +94,14 @@
 
       PlayState.prototype._setupPlatform = function() {
         var ledge;
+
         this._platform = new Platform(this.game);
         this._platform.tileWidth = 32;
         this._platform.tileHeight = 32;
         this._platform.minLedgeSize = 3;
         this._platform.maxLedgeSize = 5;
-        this._platform.minLedgeSpacing = new Point(4, 2);
-        this._platform.maxLedgeSpacing = new Point(8, 4);
+        this._platform.minLedgeSpacing = new MicroPoint(4, 2);
+        this._platform.maxLedgeSpacing = new MicroPoint(8, 4);
         this._platform.ledgeThickness = 2;
         this._platform.bounds = new Rectangle(this._bg.bounds.x, this._bg.bounds.y, this._bg.bounds.width, this._bg.bounds.height + C.FLOOR_HEIGHT);
         this._platform.makeMap();

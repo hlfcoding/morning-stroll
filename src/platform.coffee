@@ -1,16 +1,21 @@
 define [
   'phaser'
 ], (Phaser) ->
-
-  Tilemap = Phaser.Tilemap
-  Point = Phaser.Point
+  #
+  # Dependencies.
+  #
   Collision = Phaser.Collision
-
+  MicroPoint = Phaser.MicroPoint
+  State = Phaser.State
+  #
+  # Requires inherited properties:
+  Tilemap = Phaser.Tilemap
+  #
   # Platform that can dynamically generate a map, and track the dynamically
   # generated ledges. This makes up for FlxTilemap's lack of an API to get
   # tile groups (ledges) that have meta-data. Only supports the `SIDE_TO_SIDE`
   # generation scheme for now.
-
+  #
   class Platform extends Tilemap
 
     minLedgeSize: 0
@@ -61,8 +66,10 @@ define [
       #@tilingMode = Tilemap.AUTO
       @tilingStart = Collision.FLOOR
       @hasFloor = yes
-      @startingPoint = new Point()
-      @endingPoint = new Point()
+      @startingPoint = new MicroPoint()
+      @endingPoint = new MicroPoint()
+      @maxLedgeSpacing = new MicroPoint()
+      @minLedgeSpacing = new MicroPoint()
       @ledges = []
 
     destroy: ->
