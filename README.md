@@ -9,12 +9,14 @@
 ###Code adapted
 
 (1c0ec7d):
+
 - PlayState.as
   - 90 to 98 combined, callbacks changed to signals
 - Platform.as
   - `mapData` already exists
 
 ():
+
 - Player.as
   - `currently` -> `state`
   - `controlled` -> IS_CONTROLLED, using `flags`
@@ -33,6 +35,7 @@
     - using partial application to send in target to handler
 
 General:
+
 - FlxObject -> GameObject
 - FlxTimer -> setTimeout
   - `start` -> `timer = setTimeout`
