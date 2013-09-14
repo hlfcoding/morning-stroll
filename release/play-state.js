@@ -122,7 +122,7 @@
         this._player = new Player(this.game, point.x, point.y);
         this._player.state = Player.FALLING;
         /*
-        #
+        
         # Bounding box tweaks.
         @_player.height = @_player.frameHeight / 2
         @_player.offset.y = @_player.frameHeight - @_player.height - 2
@@ -130,20 +130,20 @@
         @_player.headOffset.x = 10
         @_player.width = @_player.frameWidth - @_player.tailOffset.x
         @_player.face Collision.RIGHT
-        #
+        
         # These are just set as a base to derive player physics
         @_player.naturalForces.x = 1000   # Friction.
         @_player.naturalForces.y = 600    # Gravity.
-        #
+        
         # Basic player physics.
         @_player.maxVelocity.x = 220      # This gets achieved rather quickly.
         @_player.maxVelocity.y = 1500     # Freefall.
-        #
+        
         # Player jump physics.
         # The bare minimum to clear the biggest possible jump.
         @_player.jumpMaxVelocity.y = -320 # This gets achieved rather quickly.
         @_player.jumpAccel.y = -2800      # Starting jump force.
-        #
+        
         # Animations.
         # Make sure to add end transitions, otherwise the last frame is skipped if framerate is low.
         # Note that ranges do not include the terminator.

@@ -1,6 +1,8 @@
 ## Notes
 
-###Code not ported (1c0ec7d):
+###Code not ported
+
+(1c0ec7d):
 
 - PlayState.as
   - 82
@@ -9,12 +11,14 @@
 ###Code adapted
 
 (1c0ec7d):
+
 - PlayState.as
   - 90 to 98 combined, callbacks changed to signals
 - Platform.as
   - `mapData` already exists
 
 ():
+
 - Player.as
   - `currently` -> `state`
   - `controlled` -> IS_CONTROLLED, using `flags`
@@ -33,6 +37,7 @@
     - using partial application to send in target to handler
 
 General:
+
 - FlxObject -> GameObject
 - FlxTimer -> setTimeout
   - `start` -> `timer = setTimeout`
@@ -47,6 +52,7 @@ General:
 
 ## Todos
 
+- [ ] Cleanup docs.
 - [ ] Add and integrate UnderscoreJS.
 - [ ] Use signals to replace delegation.
 - [ ] Make camera speed be from a real tween.
