@@ -1,0 +1,21 @@
+{
+  "name": "morning-stroll",
+  "version": "0.0.1",
+  "main": "index.html",
+  "dependencies": {
+    "requirejs": "~2.1.8",
+    "underscore": "~1.5.1",
+    "phaser": "git@github.com:photonstorm/phaser.git#master"
+  },
+  "exportsOverride": {
+    "requirejs": {
+      "js": "require.js"
+    },
+    "underscore": {
+      "js": "underscore.js"
+    },
+    "phaser": {
+      "js": "build/phaser.js"
+    }
+  }
+}
