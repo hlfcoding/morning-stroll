@@ -1,5 +1,9 @@
 # PlayState
 # =========
+# The main coordinator: part config list, part asset list, part delegate.
+# Handles all of the character animations, and custom platform generation.
+# The stage is set up based on the bg group's bounds; the platform and
+# camera are set up around it.
 
 # Dependencies
 # ------------
@@ -57,19 +61,20 @@ define [
     # Phaser Methods
     # --------------
 
+    # `create`
     create: ->
 
-      # Set globals.
+      # - Set globals.
       @_shouldCheckFalling = off
       @_shouldPlayMusic = not window.DEBUG
 
-      # Set dispatch queues for events.
+      # - Set dispatch queues for events.
       @didSetupPlatform = new Signal()
       @didSetupCharacters = new Signal()
       @didSetupBg = new Signal()
 
-      # Setup our setup chain.
-      # For now, we add things in order to get correct layering.
+      # - Setup our setup chain.
+      #   For now, we add things in order to get correct layering.
       @world = @game.world
       add = _.bind @world.group.add, @world.group
       @didSetupBg.add ->
@@ -92,20 +97,21 @@ define [
         console.log 'Did setup characters.'
       , @
 
-      # Start our setup chain.
+      # - Start our setup chain.
       @_setupBg()
 
-      # Internals.
-      # Don't do expensive operations too often, if possible.
+      # - Internals.
+      #   Don't do expensive operations too often, if possible.
       _didEnding = no
 
+    # `_setupPlatform`
     _setupPlatform: ->
 
-      # Creates a new tilemap with no arguments.
+      # - Creates a new tilemap with no arguments.
       @_platform = new Platform @game
 
-      # Customize our tile generation.
-      # Vertical ledge spacing and horizontal ledge size affect difficulty.
+      # - Customize our tile generation.
+      #   Vertical ledge spacing and horizontal ledge size affect difficulty.
       @_platform.tileWidth = 32
       @_platform.tileHeight = 32
       @_platform.minLedgeSize = 3
@@ -114,22 +120,22 @@ define [
       @_platform.maxLedgeSpacing = new MicroPoint 8, 4
       @_platform.ledgeThickness = 2
 
-      # Set the bounds based on the background.
-      # FIXME: Parallax bug.
+      # - Set the bounds based on the background.
+      #   FIXME: Parallax bug.
       @_platform.bounds = new Rectangle(
         @_bg.bounds.x, @_bg.bounds.y,
         @_bg.bounds.width, @_bg.bounds.height + C.FLOOR_HEIGHT
       )
 
-      # Make our platform.
-      # TODO: Image.
+      # - Make our platform.
+      #   TODO: Image.
       @_platform.makeMap()
 
-      # Set points.
+      # - Set points.
+      #   TODO: Ledge.
       @_platform.startingPoint.x = C.PLAYER_WIDTH
       @_platform.startingPoint.y = @_platform.height - C.PLAYER_HEIGHT
       ledge = @_platform.ledges[@_platform.ledges.length-1]
-      # TODO: Ledge.
       ###
       @_platform.endingPoint.y = (@_platform.numRows-1 - ledge.rowIndex) * @_platform.tileHeight
       @_platform.endingPoint.x = (ledge.size * @_platform.tileWidth) / 2
@@ -137,18 +143,19 @@ define [
         @_platform.endingPoint.x = @_platform.bounds.width - @_platform.endingPoint.x
       ###
 
-      # Hook.
+      # - Hook.
       @didSetupPlatform.dispatch()
 
+    # `_setupPlayer`
     _setupPlayer: (point) ->
 
-      # Find start position for player.
+      # - Find start position for player.
+      #   TODO: Image.
       @_player = new Player @game, point.x, point.y
       @_player.state = Player.FALLING
-      # TODO: Image.
       ###
 
-      # Bounding box tweaks.
+      # - Bounding box tweaks.
       @_player.height = @_player.frameHeight / 2
       @_player.offset.y = @_player.frameHeight - @_player.height - 2
       @_player.tailOffset.x = 35
@@ -156,22 +163,22 @@ define [
       @_player.width = @_player.frameWidth - @_player.tailOffset.x
       @_player.face Collision.RIGHT
 
-      # These are just set as a base to derive player physics
+      # - These are just set as a base to derive player physics
       @_player.naturalForces.x = 1000   # Friction.
       @_player.naturalForces.y = 600    # Gravity.
 
-      # Basic player physics.
+      # - Basic player physics.
       @_player.maxVelocity.x = 220      # This gets achieved rather quickly.
       @_player.maxVelocity.y = 1500     # Freefall.
 
-      # Player jump physics.
-      # The bare minimum to clear the biggest possible jump.
+      # - Player jump physics.
+      #   The bare minimum to clear the biggest possible jump.
       @_player.jumpMaxVelocity.y = -320 # This gets achieved rather quickly.
       @_player.jumpAccel.y = -2800      # Starting jump force.
 
-      # Animations.
-      # Make sure to add end transitions, otherwise the last frame is skipped if framerate is low.
-      # Note that ranges do not include the terminator.
+      # - Animations.
+      #   Make sure to add end transitions, otherwise the last frame is skipped if framerate is low.
+      #   Note that ranges do not include the terminator.
       @_player.addAnimation('still',[17], 12)
       @_player.addAnimation('idle', [], 12, false)
       @_player.addAnimation('run',  [0...12], 24)
@@ -187,34 +194,35 @@ define [
       ###
       @_player.animDelegate =
 
-      # Process settings.
+      # - Process settings.
       @_player.init()
 
-      # Hook.
-      # TODO: Use _.after.
+      # - Hook.
+      #   TODO: Use `_.after`.
       @didSetupCharacters.dispatch()
 
     _setupPlayerToPlatform: ->
 
-      # Move until we don't overlap.
+      # - Move until we don't overlap.
       while @_platform.overlaps(@_player)
         if @_player.x <= 0 then @_player.x = @game.width
         @_player.x -= @_platform.tileWidth
 
     _setupMate: (point) ->
 
+    # `_setupBg`
     _setupBg: ->
 
-      # Load our scenery.
+      # - Load our scenery.
       @_bg = new Background @game
       @_bg.bounds.x = @_bg.bounds.y = 0
       @_bg.parallaxFactor = 0.95
       @_bg.parallaxBuffer = 1.7
       @_bg.parallaxTolerance = -64
-      # TODO: Image loading.
+      # - TODO: Image loading.
       @_bg.layout()
 
-      # Hook.
+      # - Hook.
       @didSetupBg.dispatch()
 
     _setupCamera: ->
@@ -228,5 +236,5 @@ define [
 
     playerIsFalling: (player) ->
 
-
+  # Alias class.
   C = PlayState

@@ -52,10 +52,11 @@ General:
 
 ## Todos
 
-- [ ] Cleanup docs.
-- [ ] Add and integrate UnderscoreJS.
-- [ ] Use signals to replace delegation.
-- [ ] Make camera speed be from a real tween.
+- Fully port existing code.
+- Add and integrate UnderscoreJS.
+- Refactor on Phaser:
+  - Use signals to replace delegation.
+  - Make camera speed be from a real tween.
 
 ## Legend
 

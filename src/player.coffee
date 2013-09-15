@@ -1,57 +1,57 @@
+# Player
+# ======
+# Player that has more complex running and jumping abilities. It makes use of an animation
+# delegate and has a simple state tracking system. It also takes into account custom offsets. It
+# also allows for custom camera tracking. This class is meant to be very configurable and has many
+# hooks.
+
+# Dependencies
+# ------------
 define [
   'phaser'
 ], (Phaser) ->
-  #
-  # Dependencies.
-  #
   Collision = Phaser.Collision
   GameObject = Phaser.GameObject
   Keyboard = Phaser.Keyboard
   MicroPoint = Phaser.MicroPoint
   Point = Phaser.Point
   Signal = Phaser.Signal
-  #
   # Requires inherited properties:
+  #
   # - `acceleration`, `velocity`
   # - `drag`
   # - `animations`
   # - `touching`, `wasTouching`
   # - `_game`
   Sprite = Phaser.Sprite
-  #
-  # Player that has more complex running and jumping abilities. It makes use of an animation
-  # delegate and has a simple state tracking system. It also takes into account custom offsets. It
-  # also allows for custom camera tracking. This class is meant to be very configurable and has many
-  # hooks.
-  #
+
   class Player extends Sprite
-    #
-    # Action state.
-    #
+
+    # Properties
+    # ----------
+
+    # Action state bitmask and options.
     @STILL:     0
     @RUNNING:   1
     @LANDING:   2
     @RISING:    101
     @FALLING:   102
     state: @STILL
-    #
-    # Unfulfilled action command.
-    #
+
+    # Unfulfilled action command bitmask and options.
     @NO_ACTION: 0
     @JUMP:      1
     @STOP:      2
     @START:     3
     nextAction: @NO_ACTION
-    #
-    # Flags.
-    #
+
+    # Flags and bitmask.
     @NO_FLAGS:             0
     @IS_CONTROLLED:        1 << 0
     @NEEDS_CAMERA_REFOCUS: 1 << 10
     flags: @NO_FLAGS
-    #
+
     # Physics.
-    #
     jumpMaxVelocity: null
     jumpAccel: null
     jumpAccelDecay: null
@@ -63,21 +63,18 @@ define [
     jumpAccelDecayFactor: -0.001
     jumpMinDuration: 0.2
     jumpMaxDuration: 0.5
-    #
+
     # Rendering.
-    #
     tailOffset: null
     headOffset: null
     facing: Collision.NONE
     offset: null
-    #
+
     # Camera.
-    #
     cameraFocus: null
     cameraSpeed: 30 # Basically, 1/n traveled per tween.
-    #
+
     # Events (Signals).
-    #
     animDelegate: null
     _eAction:
       # States.
@@ -90,42 +87,42 @@ define [
       playerWillJump:   { signal: null, command: @JUMP }
       playerWillStop:   { signal: null, command: @STOP }
       playerWillStart:  { signal: null, command: @START }
-    #
+
     # Convenience.
-    #
     _kb: null
-    #
+
     # Phaser Methods
     # --------------
+
     constructor: ->
       super
-      #
+
       # Declare physics.
       @pVelocity = @velocity
       @jumpMaxVelocity = new Point()
       @jumpAccel = new Point()
       @jumpAccelDecay = new Point()
       @_oDrag = new Point()
-      #
+
       # Declare rendering.
       @tailOffset = new MicroPoint()
       @headOffset = new MicroPoint()
       @facing = Collision.RIGHT
       @offset = new MicroPoint()
-      #
+
       # Declare camera.
       @cameraFocus = new GameObject @_game, @x, @y, @width, @height
       @flags |= C.NEEDS_CAMERA_REFOCUS
-      #
+
       # Declare state events.
       evt.signal = new Signal() for name, evt of @_eAction
-      #
+
       # Bind handlers.
       _.bindAll @, ['jumpEnd']
-      #
+
       # Setup aliases.
       @_kb = @_game.input.keyboard
-      #
+
       # TODO: Watch vars: `state`, `nextAction`, `velocity`, `acceleration`.
 
     destroy: ->
@@ -137,14 +134,14 @@ define [
 
     update: ->
       super
-      #
+
       # Guards.
       if not (@flags & C.IS_CONTROLLED)
         # TODO: Move to setter.
         @velocity = new MicroPoint()
         @acceleration = new MicroPoint()
         return
-      #
+
       # Horizontal.
       # - Revert to still. (Our acceleration updates funny.)
       if not @isInMidAir() then @acceleration.x = 0
@@ -160,7 +157,7 @@ define [
         if @acceleration.x is 0
           @nextAction = if @velocity.x is 0 then C.START else C.STOP
         if @velocity.x is 0 then @state = C.STILL
-      #
+
       # Vertical.
       # - Constrain jump and decay the jump force.
       if @jumpTimer? # Still jumping.
@@ -188,27 +185,30 @@ define [
         @cameraFocus.y += Math.round (@y - @cameraFocus.y) / @cameraSpeed
       # TODO: This may need to go elsewhere.
       @dispatchActionStateEvent()
-    #
-    # Own Methods (A-Z)
+
+    # Own Methods
     # -----------
+    # Alphabetized.
+
+    # `init`
     init: ->
-      #
-      # Setup physics.
+
+      # - Setup physics.
       @_oDrag.x = @drag.x = @naturalForces.x
       @acceleration.y = @naturalForces.y
       @jumpAccelDecay.setTo @_oDrag.x * 2,
-        # This prevents the "being dragged into the air" feeling.
+        # - This prevents the "being dragged into the air" feeling.
         @jumpAccelDecay.y = @_game.framerate * @jumpMinDuration
-      #
-      # Setup animation delegation.
+
+      # - Setup animation delegation.
       if @animDelegate?
         for name, evt of @_eAction
           handler = @animDelegate[name]
           if handler?
             handler = _.partial handler, @
             evt.signal.add handler, @animDelegate, 9999
-      #
-      # Start state.
+
+      # - Start state.
       @dispatchActionStateEvent()
 
     # TODO: May not work.
@@ -270,4 +270,5 @@ define [
         @state = C.RUNNING
       @acceleration.x = @drag.x * factor * dir
 
+  # Alias class.
   C = Player

@@ -1,3 +1,9 @@
+# Game
+# ====
+# Singleton for handling our game. Similar to `FlxGame`.
+
+# Dependencies
+# ------------
 define [
   'phaser'
   'app/play-state'
@@ -5,25 +11,29 @@ define [
 
   class MorningStroll extends Phaser.Game
 
+    # Properties
+    # ----------
+
     @WIDTH:   416
     @HEIGHT:  600
     @ID:      'morning-stroll'
 
+    # Phaser Methods
+    # --------------
+
     constructor: ->
       super @, 'morning-stroll', C.WIDTH, C.HEIGHT,
-            @init, @create, @update
+            @onInit, @onCreate, @onUpdate
 
-    # Inherited
+    # Own Methods
+    # -----------
 
-    # Delegated
-
-    init: ->
-    create: ->
+    onInit: ->
+    onCreate: ->
       @switchState new PlayState @
-    update: ->
-
-    # Public
+    onUpdate: ->
 
     start: ->
 
+  # Alias class.
   C = MorningStroll

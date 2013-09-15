@@ -1,22 +1,25 @@
+# Platform
+# ========
+# Platform that can dynamically generate a map, and track the dynamically
+# generated ledges. This makes up for `FlxTilemap`'s lack of an API to get
+# tile groups (ledges) that have meta-data. Only supports the `SIDE_TO_SIDE`
+# generation scheme for now.
+
+# Dependencies
+# ------------
 define [
   'phaser'
 ], (Phaser) ->
-  #
-  # Dependencies.
-  #
   Collision = Phaser.Collision
   MicroPoint = Phaser.MicroPoint
   State = Phaser.State
-  #
   # Requires inherited properties:
   Tilemap = Phaser.Tilemap
-  #
-  # Platform that can dynamically generate a map, and track the dynamically
-  # generated ledges. This makes up for FlxTilemap's lack of an API to get
-  # tile groups (ledges) that have meta-data. Only supports the `SIDE_TO_SIDE`
-  # generation scheme for now.
-  #
+
   class Platform extends Tilemap
+
+    # Properties
+    # ----------
 
     minLedgeSize: 0
     maxLedgeSize: 0
@@ -57,9 +60,10 @@ define [
     @_TOP_BOTTOM: 1
     @_BOTTOM_TOP: 2
 
-    #
+
     # Phaser Methods
     # --------------
+
     constructor: (@game) ->
       super @game
       @structureMode = C.SIDE_TO_SIDE
@@ -74,9 +78,10 @@ define [
 
     destroy: ->
       super()
-    #
+
     # Own Methods
     # -----------
+
     numRows: -> Math.floor @bounds.height / @tileHeight
     numCols: -> Math.floor @bounds.width / @tileWidth
     initialize: ->
@@ -84,4 +89,5 @@ define [
     makeMap: ->
     isAtEndingPoint: (gObject) ->
 
+  # Alias class.
   C = Platform

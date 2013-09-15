@@ -16,16 +16,16 @@
       MorningStroll.ID = 'morning-stroll';
 
       function MorningStroll() {
-        MorningStroll.__super__.constructor.call(this, this, 'morning-stroll', C.WIDTH, C.HEIGHT, this.init, this.create, this.update);
+        MorningStroll.__super__.constructor.call(this, this, 'morning-stroll', C.WIDTH, C.HEIGHT, this.onInit, this.onCreate, this.onUpdate);
       }
 
-      MorningStroll.prototype.init = function() {};
+      MorningStroll.prototype.onInit = function() {};
 
-      MorningStroll.prototype.create = function() {
+      MorningStroll.prototype.onCreate = function() {
         return this.switchState(new PlayState(this));
       };
 
-      MorningStroll.prototype.update = function() {};
+      MorningStroll.prototype.onUpdate = function() {};
 
       MorningStroll.prototype.start = function() {};
 

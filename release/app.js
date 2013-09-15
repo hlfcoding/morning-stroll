@@ -14,10 +14,10 @@
     window.DEBUG = true;
     game = new MorningStroll();
     game.start();
-    console.info(game);
     if (window.DEBUG === true) {
       window.Phaser = Phaser;
-      return window.game = game;
+      window.game = game;
+      return console.info(game);
     }
   });
 
