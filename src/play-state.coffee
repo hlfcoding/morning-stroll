@@ -15,7 +15,7 @@ define [
   'app/background'
 ], (Phaser, _, Platform, Player, Background) ->
   Collision = Phaser.Collision
-  MicroPoint = Phaser.MicroPoint
+  Point = Phaser.Point
   Rectangle = Phaser.Rectangle
   Signal = Phaser.Signal
   # Requires inherited properties:
@@ -108,16 +108,14 @@ define [
     _setupPlatform: ->
 
       # - Creates a new tilemap with no arguments.
-      @_platform = new Platform @game
+      @_platform = new Platform @game, 'balcony', 0, 0, no, 32, 32
 
       # - Customize our tile generation.
       #   Vertical ledge spacing and horizontal ledge size affect difficulty.
-      @_platform.tileWidth = 32
-      @_platform.tileHeight = 32
       @_platform.minLedgeSize = 3
       @_platform.maxLedgeSize = 5
-      @_platform.minLedgeSpacing = new MicroPoint 4, 2
-      @_platform.maxLedgeSpacing = new MicroPoint 8, 4
+      @_platform.minLedgeSpacing = new Point 4, 2
+      @_platform.maxLedgeSpacing = new Point 8, 4
       @_platform.ledgeThickness = 2
 
       # - Set the bounds based on the background.

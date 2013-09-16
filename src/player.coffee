@@ -13,7 +13,6 @@ define [
   Collision = Phaser.Collision
   GameObject = Phaser.GameObject
   Keyboard = Phaser.Keyboard
-  MicroPoint = Phaser.MicroPoint
   Point = Phaser.Point
   Signal = Phaser.Signal
   # Requires inherited properties:
@@ -58,7 +57,7 @@ define [
     _pVelocity: null
     _oDrag: null
     _jumpTimer: null
-    naturalForces: new MicroPoint 1000, 500
+    naturalForces: new Point 1000, 500
     accelFactor: 0.5
     jumpAccelDecayFactor: -0.001
     jumpMinDuration: 0.2
@@ -105,10 +104,10 @@ define [
       @_oDrag = new Point()
 
       # Declare rendering.
-      @tailOffset = new MicroPoint()
-      @headOffset = new MicroPoint()
+      @tailOffset = new Point()
+      @headOffset = new Point()
       @facing = Collision.RIGHT
-      @offset = new MicroPoint()
+      @offset = new Point()
 
       # Declare camera.
       @cameraFocus = new GameObject @_game, @x, @y, @width, @height
@@ -138,8 +137,8 @@ define [
       # Guards.
       if not (@flags & C.IS_CONTROLLED)
         # TODO: Move to setter.
-        @velocity = new MicroPoint()
-        @acceleration = new MicroPoint()
+        @velocity = new Point()
+        @acceleration = new Point()
         return
 
       # Horizontal.

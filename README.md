@@ -43,6 +43,9 @@ so the gruntfile doesn't provide such a build task.
     - making animation delegate an object
     - using partial application to send in target to handler
 
+- Platform.as
+  - no more `tileWidth`, `tileHeight` properties; as parameters
+
 General:
 
 - FlxObject -> GameObject
