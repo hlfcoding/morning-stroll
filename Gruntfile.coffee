@@ -35,6 +35,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-groc'
   grunt.loadNpmTasks 'grunt-contrib-watch'
 
-  grunt.registerTask 'default', []
+  grunt.registerTask 'default', ['bower:install']
   grunt.registerTask 'docs', ['groc', 'watch:docs']
 
