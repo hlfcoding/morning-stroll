@@ -1,3 +1,10 @@
+# Morning Stroll
+
+## Development
+
+Availability of LiveReload or similar utility for compiling CS to JS is assumed,
+so the gruntfile doesn't provide such a build task.
+
 ## Notes
 
 ###Code not ported

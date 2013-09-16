@@ -1,5 +1,6 @@
 docs
+Gruntfile.js
 lib/phaser.js
 lib/require.js
 lib/underscore.js
-Gruntfile.js
+release/**
