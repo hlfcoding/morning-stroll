@@ -21,19 +21,31 @@ define [
     # Phaser Methods
     # --------------
 
-    constructor: ->
-      super @, 'morning-stroll', C.WIDTH, C.HEIGHT,
-            @onInit, @onCreate, @onUpdate
+    constructor: (width, height, renderer, parent, state, transparent, antialias) ->
+      width = C.WIDTH
+      height = C.HEIGHT
+      renderer = Phaser.AUTO
+      parent = C.ID
+      state =
+        preload: @onPreload
+        create: @onCreate
+        update: @onUpdate
+      super arguments...
 
     # Own Methods
     # -----------
 
-    onInit: ->
+    onPreload: ->
+      @load.image 'mate', @asset_url('mate')
+      @load.spritesheet 'player', @asset_url('player.png'),
+        PlayState.PLAYER_WIDTH, PlayState.PLAYER_HEIGHT
     onCreate: ->
       @switchState new PlayState @
     onUpdate: ->
 
     start: ->
+
+    asset: (url) -> "assets/#{url}"
 
   # Alias class.
   C = MorningStroll

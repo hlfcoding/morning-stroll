@@ -5,6 +5,7 @@ module.exports = (grunt) ->
       PRIVATE: [
         'src/**/*.coffee'
         'README.md'
+        'Phaser.md'
       ]
 
   grunt.initConfig
