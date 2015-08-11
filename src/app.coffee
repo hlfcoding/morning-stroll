@@ -11,6 +11,9 @@ requirejs.config
   baseUrl: 'lib'
   paths:
     app: '../release'
+  shim:
+    phaser:
+      exports: 'Phaser'
 requirejs [
   'phaser'
   'app/game'
