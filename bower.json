@@ -2,6 +2,7 @@
   "name": "morning-stroll",
   "version": "0.0.1",
   "main": "index.html",
+  "private": true,
   "dependencies": {
     "requirejs": "~2.1.8",
     "underscore": "~1.5.1",
