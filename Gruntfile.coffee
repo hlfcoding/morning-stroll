@@ -1,3 +1,5 @@
+matchdep = require 'matchdep'
+
 module.exports = (grunt) ->
 
   SOURCES =
@@ -31,9 +33,7 @@ module.exports = (grunt) ->
         options:
           spawn: no
 
-  grunt.loadNpmTasks 'grunt-bower-task'
-  grunt.loadNpmTasks 'grunt-groc'
-  grunt.loadNpmTasks 'grunt-contrib-watch'
+  grunt.loadNpmTasks plugin for plugin in matchdep.filterDev 'grunt-*'
 
   grunt.registerTask 'default', ['bower:install']
   grunt.registerTask 'docs', ['groc', 'watch:docs']

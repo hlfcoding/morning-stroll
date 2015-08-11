@@ -6,5 +6,6 @@
     "grunt-bower-task": "~0.3.2",
     "grunt-groc": "~0.3.0",
     "grunt-contrib-watch": "~0.5.3"
+    "matchdep": "^0.3.0"
   }
 }
