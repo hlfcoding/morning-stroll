@@ -2,17 +2,17 @@ matchdep = require 'matchdep'
 
 module.exports = (grunt) ->
 
-  SOURCES =
-    DOCS:
-      PRIVATE: [
-        'src/**/*.coffee'
-        'README.md'
-      ]
+  src =
+    docs: [
+      'src/**/*.coffee'
+      'README.md'
+    ]
 
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
+
     bower:
-      install:
+      lib:
         options:
           cleanBowerDir: yes
           cleanTargetDir: no
@@ -22,19 +22,18 @@ module.exports = (grunt) ->
           targetDir: 'lib'
           verbose: yes
     groc:
-      private: SOURCES.DOCS.PRIVATE
       options:
         out: 'docs'
         'repository-url': 'https://bitbucket.org/hlfcoding/morning-stroll'
+      docs: src.docs
+
     watch:
       docs:
-        files: SOURCES.DOCS.PRIVATE
-        tasks: ['groc:private']
-        options:
-          spawn: no
+        files: src.docs
+        tasks: ['groc']
 
   grunt.loadNpmTasks plugin for plugin in matchdep.filterDev 'grunt-*'
 
-  grunt.registerTask 'default', ['bower:install']
-  grunt.registerTask 'docs', ['groc', 'watch:docs']
+  grunt.registerTask 'docs', ['groc:docs', 'watch:docs']
+  grunt.registerTask 'lib', ['bower:lib']
 
