@@ -2,74 +2,44 @@
 
 ## Development
 
-Availability of LiveReload or similar utility for compiling CS to JS is assumed,
-so the gruntfile doesn't provide such a build task.
+```bash
+hlf-jquery> npm install
 
-## Notes
+# to install
+hlf-jquery> grunt install
 
-###Code not ported
+# to read some docs
+hlf-jquery> grunt docs
 
-(1c0ec7d):
+# to start developing
+hlf-jquery> grunt
+```
 
-- PlayState.as
-  - 82
-  - 86
+### Sample ST2 Project File
 
-###Code adapted
+```json
+{
+  "folders":
+  [
+    {
+      "path": "morning-stroll",
+      "file_exclude_patterns":
+      [
+        "docs/*",
+        "lib/*",
+        "release/*"
+      ],
+      "folder_exclude_patterns":
+      [
+        ".grunt",
+        "node_modules"
+      ]
+    }
+  ]
+}
 
-(1c0ec7d):
+```
 
-- PlayState.as
-  - 90 to 98 combined, callbacks changed to signals
-- Platform.as
-  - `mapData` already exists
+## License
 
-():
-
-- Player.as
-  - `currently` -> `state`
-  - `controlled` -> IS_CONTROLLED, using `flags`
-  - [`animDelegate` changed to use signals]
-  - `updateFocus` -> NEEDS_CAMERA_FOCUS
-  - default state `FALLING` -> `STILL`
-  - `inMidAir` -> `isInMidAir`
-  - `justFell` -> `isJustFallen`
-  - `jumpTimer`, `cameraFocus`
-  - added:
-    - no parity: `facing`
-  - events:
-    - putting events in a collection and dynamically dispatching them
-    - using lowest priority for animation delegation
-    - making animation delegate an object
-    - using partial application to send in target to handler
-
-- Platform.as
-  - no more `tileWidth`, `tileHeight` properties; as parameters
-
-General:
-
-- FlxObject -> GameObject
-- FlxTimer -> setTimeout
-  - `start` -> `timer = setTimeout`
-  - `finished` -> `timer?`
-  - `stop` -> `clearTimeout timer`
-- no parity:
-  - `FlxSprite::finished`
-  - `FlxSprite::updateAnimation`
-  - `FlxSprite::offset`
-- `isTouching` -> `touching`
-- `justTouched` -> `wasTouching`
-
-## Todos
-
-- Fully port existing code.
-- Add and integrate UnderscoreJS.
-- Refactor on Phaser:
-  - Use signals to replace delegation.
-  - Make camera speed be from a real tween.
-
-## Legend
-
-- Prefixes:
-  - `p` - previous.
-  - `o` - original.
+Copyright (c) 2012-2015 Yinglei Yang, Peng Wang
