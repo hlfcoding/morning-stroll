@@ -5,6 +5,7 @@
   "devDependencies": {
     "grunt": "^0.4.1",
     "grunt-bower-task": "^0.4.0",
+    "grunt-contrib-coffee": "^0.13.0",
     "grunt-contrib-watch": "^0.5.3",
     "grunt-groc": "^0.6.0",
     "matchdep": "^0.3.0"
