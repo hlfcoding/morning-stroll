@@ -1,16 +1,26 @@
 # Player
 # ======
-# Player that has more complex running and jumping abilities. It makes use of an animation
-# delegate and has a simple state tracking system. It also takes into account custom offsets. It
-# also allows for custom camera tracking. This class is meant to be very configurable and has many
-# hooks.
+# Player configures and controls a sprite, tracks and updates state given user
+# interaction.
 
-# Dependencies
-# ------------
 define [
   'phaser'
 ], (Phaser) ->
 
-  class Player extends Phaser.Sprite
+  class Player
+
+    constructor: (origin, game) ->
+      @sprite = game.add.sprite origin.x, origin.y, 'player', 17
+      @animations = @sprite.animations
+      @_initAnimations()
+
+    _initAnimations: ->
+      @animations.add 'run', [0..11], 24, on
+      @animations.add 'stop', [12..17], 24
+      @animations.add 'start', [17..12], 24
+      @animations.add 'jump', [18..31], 24
+      @animations.add 'fall', [31], 24, on
+      @animations.add 'land', [32,33,18,17], 12
+      @animations.add 'end', [34...53], 12
 
   Player

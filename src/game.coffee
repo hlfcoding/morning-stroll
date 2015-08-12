@@ -1,6 +1,6 @@
 # Game
 # ====
-# Configures our Phaser.Game through composition.
+# Configures and controls our Phaser.Game through composition.
 
 # Dependencies
 # ------------
@@ -8,7 +8,8 @@ define [
   'phaser'
   'underscore'
   'app/play-state'
-], (Phaser, _, PlayState) ->
+  'app/player'
+], (Phaser, _, PlayState, Player) ->
 
   class MorningStroll
 
@@ -47,15 +48,8 @@ define [
       manager.play 'end' # @test
 
     _addPlayer: ->
-      @player = @game.add.sprite 0, 500, 'player', 17
-      manager = @player.animations
-      manager.add 'run', [0..11], 24, on
-      manager.add 'stop', [12..17], 24
-      manager.add 'start', [17..12], 24
-      manager.add 'jump', [18..31], 24
-      manager.add 'fall', [31], 24, on
-      manager.add 'land', [32,33,18,17], 12
-      manager.add 'end', [34...53], 12
-      manager.play 'run' # @test
+      origin = new Phaser.Point(0, 500)
+      @player = new Player origin, @game
+      @player.animations.play 'run' # @test
 
   MorningStroll
