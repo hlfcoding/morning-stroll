@@ -590,18 +590,6 @@
       # Horizontal.
       # - Revert to still. (Our acceleration updates funny.)
       if not @isInMidAir() then @acceleration.x = 0
-      # - Basically handle switching direction, and running or being still when not in the air. Note
-      #   the player still runs in midair, but run will behave differently.
-      if @_kb.isDown Keyboard.LEFT
-        if @facing is Collision.RIGHT then @face Collision.LEFT
-        @run -1
-      else if @_kb.isDown Keyboard.RIGHT
-        if @facing is Collision.LEFT then @face Collision.RIGHT
-        @run()
-      else if not @isInMidAir()
-        if @acceleration.x is 0
-          @nextAction = if @velocity.x is 0 then C.START else C.STOP
-        if @velocity.x is 0 then @state = C.STILL
 
       # Vertical.
       # - Constrain jump and decay the jump force.
@@ -666,20 +654,10 @@
     dispatchActionCommandEvent: (name) -> @_eAction[name].signal.dispatch()
 
     face: (dir) ->
-      if @velocity.x isnt 0 and
-         @nextAction isnt C.STOP and
-         @facing isnt dir
-        @nextAction = C.STOP
-        if not @isInMidAir() then dispatchActionCommandEvent 'playerWillStop'
-      else if @isFinished()
-        @nextAction = C.START
-        if not @isInMidAir() then dispatchActionCommandEvent 'playerWillStart'
-        if dir is Collision.RIGHT
-          @offset.x = @tailOffset.x
-          @facing = Collision.RIGHT
-        else if dir is Collision.LEFT
-          @offset.x = 0
-          @facing = Collision.LEFT
+      if dir is Collision.RIGHT
+        @offset.x = @tailOffset.x
+      else if dir is Collision.LEFT
+        @offset.x = 0
 
     isInMidAir: -> @state >= C.RISING
 

@@ -661,42 +661,6 @@ package
         return;
       }
 
-      // Horizontal
-      // - Revert to still. (Our acceleration updates funny.)
-      if (!this.inMidAir())
-      {
-        this.acceleration.x = 0;
-      }
-      // - Basically handle switching direction, and running or being still
-      // when not in the air. Note the player still runs in midair, but run
-      // will behave differently.
-      if (FlxG.keys.LEFT)
-      {
-        if (this.facing == FlxObject.RIGHT)
-        {
-          this.face(FlxObject.LEFT);
-        }
-        run(-1);
-      }
-      else if (FlxG.keys.RIGHT)
-      {
-        if (this.facing == FlxObject.LEFT)
-        {
-          this.face(FlxObject.RIGHT);
-        }
-        run();
-      }
-      else if (!this.inMidAir())
-      {
-        if (this.acceleration.x == 0)
-        {
-          this.nextAction = (this.velocity.x == 0) ? START : STOP;
-        }
-        if (this.velocity.x == 0)
-        {
-          this.currently = STILL;
-        }
-      }
 
       // Vertical
       // - Constrain jump and decay the jump force.
@@ -800,40 +764,14 @@ package
     }
     public function face(direction:uint):void
     {
-      if (
-        this.velocity.x != 0 &&
-        this.nextAction != STOP &&
-        this.facing != direction
-      )
+      if (direction == FlxObject.RIGHT)
       {
-        this.nextAction = STOP;
-        if (!this.inMidAir())
-        {
-          this.animDelegate.playerWillStop();
-        }
+        this.offset.x = this.tailOffset.x;
       }
-      else if (this.finished)
+      else if (direction == FlxObject.LEFT)
       {
-        this.nextAction = START;
-        if (!this.inMidAir())
-        {
-          this.animDelegate.playerWillStart();
-        }
-        if (direction == FlxObject.RIGHT)
-        {
-          this.offset.x = this.tailOffset.x;
-          this.facing = FlxObject.RIGHT;
-        }
-        else if (direction == FlxObject.LEFT)
-        {
-          this.offset.x = 0;
-          this.facing = FlxObject.LEFT;
-        }
+        this.offset.x = 0;
       }
-    }
-    public function currentAnimation():FlxAnim
-    {
-      return this._curAnim;
     }
 
     // Update Routines
@@ -845,11 +783,6 @@ package
       {
         factor = this.jumpAccelDecayFactor;
       }
-      else if (this.currently != RUNNING)
-      {
-        this.currently = RUNNING;
-      }
-      this.acceleration.x = this.drag.x * factor * direction;
     }
     private function jumpStart():void
     {

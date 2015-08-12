@@ -68,7 +68,6 @@ define [
       y = @game.world.height - MorningStroll.playerH - MorningStroll.groundH
       origin = new Phaser.Point 0, y
       @player = new Player origin, @game
-      @player.animations.play 'run' # @test
 
     _updateCollisions: ->
       @physics.arcade.collide @player.sprite, @platforms.group
