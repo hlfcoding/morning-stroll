@@ -45,10 +45,10 @@ module.exports = (grunt) ->
     watch:
       js:
         files: src.coffee
-        tasks: ['coffee']
+        tasks: ['coffee:src']
       docs:
         files: src.docs
-        tasks: ['groc']
+        tasks: ['groc:docs']
 
   grunt.loadNpmTasks plugin for plugin in matchdep.filterDev 'grunt-*'
 
