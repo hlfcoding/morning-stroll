@@ -4,9 +4,9 @@
   "main": "index.html",
   "private": true,
   "dependencies": {
-    "requirejs": "~2.1.8",
-    "underscore": "~1.5.1",
-    "phaser": "~2.4.2"
+    "phaser": "~2.4.2",
+    "requirejs": "~2.1.20",
+    "underscore": "~1.8.3"
   },
   "exportsOverride": {
     "requirejs": {
