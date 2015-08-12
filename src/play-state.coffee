@@ -10,10 +10,10 @@
 define [
   'phaser'
   'underscore'
-  'app/platform'
+  'app/platforms'
   'app/player'
   'app/background'
-], (Phaser, _, Platform, Player, Background) ->
+], (Phaser, _, Platforms, Player, Background) ->
 
   class PlayState extends Phaser.State
 
