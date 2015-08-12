@@ -6,7 +6,7 @@
   "dependencies": {
     "requirejs": "~2.1.8",
     "underscore": "~1.5.1",
-    "phaser": "git@github.com:photonstorm/phaser.git#1.0.1"
+    "phaser": "~2.4.2"
   },
   "exportsOverride": {
     "requirejs": {

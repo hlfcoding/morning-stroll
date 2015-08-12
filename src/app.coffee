@@ -32,7 +32,6 @@ requirejs [
 
   # Run our game.
   game = new MorningStroll()
-  game.start()
 
   # Debug
   # -----
