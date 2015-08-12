@@ -76,9 +76,6 @@
 
     onPreload: ->
       @load.tilemap 'balcony', @assetURL('tiles-auto-balcony.png'), null, '', Tilemap.CSV
-      @load.image 'mate', @assetURL('mate')
-      @load.spritesheet 'player', @assetURL('player.png'),
-        PlayState.PLAYER_WIDTH, PlayState.PLAYER_HEIGHT
       @load.audio 'bgm', ['morning-stroll.mp3'], yes
       pad = '0000'
       for i in [1...C.BGS]
