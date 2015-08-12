@@ -25,6 +25,11 @@ module.exports = (grunt) ->
           targetDir: 'lib'
           verbose: yes
 
+    clean:
+      docs: ['docs/*']
+      js: ['release/*']
+      lib: ['lib/*']
+
     coffee:
       options:
         sourceMap: yes
@@ -45,14 +50,14 @@ module.exports = (grunt) ->
     watch:
       js:
         files: src.coffee
-        tasks: ['coffee:src']
+        tasks: ['clean:js', 'coffee:src']
       docs:
         files: src.docs
-        tasks: ['groc:docs']
+        tasks: ['clean:docs', 'groc:docs']
 
   grunt.loadNpmTasks plugin for plugin in matchdep.filterDev 'grunt-*'
 
-  grunt.registerTask 'default', ['coffee:src', 'watch:js']
-  grunt.registerTask 'docs', ['groc:docs', 'watch:docs']
-  grunt.registerTask 'lib', ['bower:lib']
+  grunt.registerTask 'default', ['clean:js', 'coffee:src', 'watch:js']
+  grunt.registerTask 'docs', ['clean:docs', 'groc:docs', 'watch:docs']
+  grunt.registerTask 'lib', ['clean:lib', 'bower:lib']
 
