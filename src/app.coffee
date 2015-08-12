@@ -31,13 +31,11 @@ requirejs [
   # ----
 
   # Run our game.
-  game = new MorningStroll()
+  ms = new MorningStroll()
 
   # Debug
   # -----
   # Block of additions for debugging the app. Exposes classes and instances as
   # globals.
   if window.DEBUG is on
-    window.Phaser = Phaser
-    window.game = game
-    console.info game
+    window.ms = ms
