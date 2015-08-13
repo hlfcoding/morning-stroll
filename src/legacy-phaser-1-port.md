@@ -653,12 +653,6 @@
 
     dispatchActionCommandEvent: (name) -> @_eAction[name].signal.dispatch()
 
-    face: (dir) ->
-      if dir is Collision.RIGHT
-        @offset.x = @tailOffset.x
-      else if dir is Collision.LEFT
-        @offset.x = 0
-
     isInMidAir: -> @state >= C.RISING
 
     # TODO: Figure out how to map this to `animations`.

@@ -762,17 +762,6 @@ package
     {
       return this.currently >= RISING;
     }
-    public function face(direction:uint):void
-    {
-      if (direction == FlxObject.RIGHT)
-      {
-        this.offset.x = this.tailOffset.x;
-      }
-      else if (direction == FlxObject.LEFT)
-      {
-        this.offset.x = 0;
-      }
-    }
 
     // Update Routines
     // ---------------
