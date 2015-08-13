@@ -84,7 +84,7 @@ define [
 
     _initPhysics: ->
       @physics.collideWorldBounds = on
-      @physics.drag.x = 200
+      @physics.drag.x = 800
       h = @sprite.height
       w = @sprite.width
       @_yOffset = h / 4
