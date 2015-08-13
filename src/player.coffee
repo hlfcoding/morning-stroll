@@ -28,6 +28,7 @@ define [
 
     constructor: (origin, game) ->
       @sprite = game.add.sprite origin.x, origin.y, 'player', 17
+      @sprite.anchor = new Phaser.Point 0.5, 0.5
 
       @animations = @sprite.animations
       @_initAnimations()
