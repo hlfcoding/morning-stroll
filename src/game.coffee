@@ -52,8 +52,8 @@ define [
       @player.update()
 
     onRender: ->
-      # @debug.body @platforms.ground
-      # @debug.body @player
+      @debug.body @platforms.ground
+      @debug.body @player.sprite
 
     _addMate: ->
       @mate = @game.add.sprite 0, 0, 'mate', 1
