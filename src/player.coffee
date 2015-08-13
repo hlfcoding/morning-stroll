@@ -37,13 +37,13 @@ define [
       @physics = @sprite.body
       @velocity = @physics.velocity
       @acceleration = @physics.acceleration
+      @direction = Direction.Right
       @_initPhysics()
 
       @cursors = game.input.keyboard.createCursorKeys()
 
       @animation = null
       @state = State.Still
-      @direction = Direction.Right
       @nextAction = Action.None
 
     inMidAir: -> no
@@ -86,6 +86,10 @@ define [
     _initPhysics: ->
       @physics.collideWorldBounds = on
       @physics.drag.x = 200
+      h = @sprite.height
+      w = @sprite.width
+      @_yOffset = h / 4
+      @physics.setSize (w / 2), (h / 2), @_xOffset(), @_yOffset
 
     _run: (direction) ->
       factor = 200
@@ -107,6 +111,8 @@ define [
         @animation = @animations.play 'start' unless @inMidAir()
       @direction = direction
       @sprite.scale.x = direction
+      @physics.offset = new Phaser.Point @_xOffset(direction), @_yOffset
 
+    _xOffset: (direction = @direction) -> direction * 10
 
   Player
