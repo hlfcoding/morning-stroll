@@ -474,26 +474,8 @@ package
     // Interruptive, once.
     public function playerWillJump():void
     {
-      if (player.currentAnimation().name == 'jump') return;
-      player.play('jump');
       player.updateFocus = false;
     }
-    // Smooth, once.
-    public function playerIsLanding():void
-    {
-      if (!player.finished) return;
-      if (player.currentAnimation().name == 'land') return;
-      player.play('land');
-    }
-    public function playerIsRising():void {}
-    // Smooth.
-    public function playerIsFalling():void
-    {
-      if (!player.finished) return;
-      player.play('fall');
-      player.updateFocus = true;
-    }
-
   }
 }
 
@@ -518,29 +500,18 @@ package
 
     public var currently:uint;
     public static const LANDING:uint = 2;
-    public static const RISING:uint = 101;
-    public static const FALLING:uint = 102;
 
     // Note this is not always cleared.
     public var nextAction:uint;
-    public static const JUMP:uint = 1;
 
     public var controlled:Boolean;
 
     public var animDelegate:IPlayerAnimationDelegate;
 
-    public var naturalForces:FlxPoint = new FlxPoint(1000, 500);
     public var pVelocity:FlxPoint;
     public var accelFactor:Number = 0.5;
-    public var jumpMaxVelocity:FlxPoint;
-    public var jumpAccel:FlxPoint;
-    public var jumpAccelDecay:FlxPoint;
     // This should be small. Negative creates some drag.
     public var jumpAccelDecayFactor:Number = -0.001;
-    public var oDrag:FlxPoint;
-    public var jumpMinDuration:Number = 0.2;
-    public var jumpMaxDuration:Number = 0.5;
-    private var jumpTimer:FlxTimer;
 
     public var tailOffset:FlxPoint;
     public var headOffset:FlxPoint;
@@ -556,18 +527,9 @@ package
 
       this.finished = true;
 
-      this.currently = FALLING;
-      this.nextAction = NO_ACTION;
-
       this.controlled = true;
 
       this.pVelocity = this.velocity;
-      this.jumpMaxVelocity = new FlxPoint();
-      this.jumpAccel = new FlxPoint();
-      this.jumpAccelDecay = new FlxPoint();
-      this.oDrag = new FlxPoint();
-      jumpTimer = new FlxTimer();
-      jumpTimer.stop();
 
       this.tailOffset = new FlxPoint();
       this.headOffset = new FlxPoint();
@@ -586,10 +548,6 @@ package
 
     public function init():void
     {
-      this.oDrag.x = this.drag.x;
-      this.jumpAccelDecay.x = this.oDrag.x * 2;
-      // This prevents the "being dragged into the air" feeling.
-      this.jumpAccelDecay.y = FlxG.framerate * this.jumpMinDuration;
       if (this.animDelegate == null)
       {
         throw new Error('Player animation delegate is required.');
@@ -604,12 +562,6 @@ package
       super.destroy();
 
       this.pVelocity = null;
-      this.jumpMaxVelocity = null;
-      this.jumpAccel = null;
-      this.jumpAccelDecay = null;
-      this.oDrag = null;
-      jumpTimer.destroy();
-      jumpTimer = null;
       this.animDelegate = null;
 
       this.tailOffset = null;
@@ -629,51 +581,11 @@ package
         return;
       }
 
-
       // Vertical
-      // - Constrain jump and decay the jump force.
-      if (!jumpTimer.finished)
-      {
-        // Negative is up, positive is down.
-        this.velocity.y = FlxU.max(this.velocity.y, this.jumpMaxVelocity.y);
-        this.acceleration.y += (this.naturalForces.y - this.acceleration.y) / this.jumpAccelDecay.y;
-      }
-      // - Basically handle starting and ending of jump, and starting of
-      // falling. The tracking of pVelocity is an extra complexity. The
-      // possibility of hitting the ceiling during jump is another one.
-      if (
-        FlxG.keys.justPressed('UP') && jumpTimer.finished &&
-        this.isTouching(FlxObject.FLOOR)
-      )
-      {
-        // Try to jump.
-        jumpStart();
-      }
-      else if (FlxG.keys.justReleased('UP'))
-      {
-        jumpEnd(null);
-      }
       else if (this.isTouching(FlxObject.UP) && this.currently == RISING)
       {
         // Start falling.
-        this.currently = FALLING;
         this.pVelocity = null;
-      }
-      else if (this.velocity.y > 0)
-      {
-        if (this.currently == FALLING)
-        {
-          this.pVelocity = this.velocity;
-        }
-        else
-        {
-          this.currently = FALLING;
-        }
-      }
-      // - Handle ending of falling.
-      if (this.justFell())
-      {
-        this.currently = LANDING;
       }
 
       // - Handle focus.
@@ -688,39 +600,8 @@ package
     {
       this.animDelegate.playerWillUpdateAnimation();
 
-      if (this.controlled)
-      {
-        else if (this.currently == LANDING)
-        {
-          this.animDelegate.playerIsLanding();
-        }
-        else if (this.currently == RISING)
-        {
-          this.animDelegate.playerIsRising();
-        }
-        else if (this.currently == FALLING)
-        {
-          this.animDelegate.playerIsFalling();
-        }
-      }
       super.updateAnimation();
       this.animDelegate.playerDidUpdateAnimation();
-    }
-
-    // Update API
-    // ----------
-    public function justFell():Boolean
-    {
-      var did:Boolean =
-        this.justTouched(FlxObject.DOWN)
-        && this.currently == FALLING
-        && this.pVelocity != null;
-
-      return did;
-    }
-    public function inMidAir():Boolean
-    {
-      return this.currently >= RISING;
     }
 
     // Update Routines
@@ -735,21 +616,7 @@ package
     }
     private function jumpStart():void
     {
-      var jumpMaxDuration:Number = this.jumpMinDuration +
-        FlxU.abs(this.velocity.x/this.maxVelocity.x) * (this.jumpMaxDuration-this.jumpMinDuration);
-      this.animDelegate.playerWillJump();
       this.y--;
-      this.currently = RISING;
-      this.acceleration.y = this.jumpAccel.y;
-      this.acceleration.x = 0;
-      this.drag.x = this.jumpAccelDecay.x;
-      jumpTimer.start(jumpMaxDuration, 1, jumpEnd);
-    }
-    private function jumpEnd(onTimer:FlxTimer):void
-    {
-      this.acceleration.y = this.naturalForces.y;
-      this.drag.x = this.oDrag.x;
-      jumpTimer.stop();
     }
   }
 }

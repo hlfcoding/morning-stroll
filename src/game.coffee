@@ -41,7 +41,7 @@ define [
 
     onCreate: ->
       @physics.startSystem Phaser.Physics.ARCADE
-      @physics.arcade.gravity.y = 300
+      @physics.arcade.gravity.y = 600
 
       @_addMate()
       @_addPlatforms()

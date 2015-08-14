@@ -27,6 +27,7 @@ define [
       @velocity = @physics.velocity
       @acceleration = @physics.acceleration
       @direction = Direction.Right
+      @gravity = game.physics.arcade.gravity
       @_initPhysics()
 
       @cursors = game.input.keyboard.createCursorKeys()
@@ -35,21 +36,26 @@ define [
 
       # Readonly.
       @animation = null
-      @state = 'still' # still, running
-      @nextAction = 'none' # none, start, stop
+      @state = 'still' # still, running, rising, falling
+      @nextAction = 'none' # none, start, stop, jump
       @nextState = null
 
     debug: (label, value) -> console.log "player:#{label}", value if @debugging
 
-    isInMidAir: -> no
+    isInMidAir: -> @state is 'rising' or @state is 'falling'
     isRunning: (direction) -> direction is @direction and @velocity.x isnt 0
 
     update: ->
       # Reset any state.
       @nextAction = 'none'
-      @nextState = 'running'
+
+      if @state is 'falling' and @physics.touching.down
+        @nextState = 'landing'
+      else unless @isInMidAir()
+        @nextState = 'running'
 
       @_updateXMovement()
+      @_updateYMovement()
 
       @_updateAnimations()
       @_changeState @nextState
@@ -59,18 +65,27 @@ define [
       @animations.add 'stop', [12..17], 24
       @animations.add 'start', [17..12], 24
       @animations.add 'jump', [18..31], 24
-      @animations.add 'fall', [31], 24, on
       @animations.add 'land', [32,33,18,17], 12
       @animations.add 'end', [34...53], 12
 
     _initPhysics: ->
       @physics.collideWorldBounds = on
+
       @physics.drag.x = 800
+      @_originalDrag = @physics.drag.clone()
+
       h = @sprite.height
       w = @sprite.width
       @_yOffset = h / 4
       @physics.setSize (w / 2), (h / 2), @_xOffset(), @_yOffset
+
+      @jumpMaxVelocity = -320
+      @jumpTimeRange = { min: 200, max: 500 }
+      @maxVelocity = { x: 200, y: 1500 }
+
+      @_jumpDeacceleration = 60 * @jumpTimeRange.min # Fixes 'being dragged into the air' feeling.
       @_justTurned = no # Because velocity won't be 0 when just turning.
+      @_prevVelocity = null
 
     _changeAnimation: (nameOrFrame, interrupt = yes) ->
       return if interrupt is no and @animation?.isPlaying
@@ -94,6 +109,31 @@ define [
 
       @state = state
       @debug 'state', state
+
+    _jump: (ending = no) ->
+      if ending
+        return unless @_jumpTimer?
+        @acceleration.y = @gravity.y
+        @physics.drag.x = @_originalDrag.x
+        clearTimeout @_jumpTimer
+        @_jumpTimer = null
+        @debug 'jump:end'
+
+        @nextState = 'falling'
+        @_prevVelocity = @velocity
+        return
+
+      # Faster the run, higher the jump.
+      kVelocity = 4 * (1 + Math.abs @velocity.x / @maxVelocity.x)
+      kDuration = kVelocity * (@jumpTimeRange.max - @jumpTimeRange.min)
+      duration = parseInt (@jumpTimeRange.min / 1000) * kDuration
+      @_jumpTimer = setTimeout @_jump.bind(@, yes), duration
+      @debug 'jump:start', duration
+
+      @nextAction = 'jump'
+      @nextState = 'rising'
+      @acceleration.set 0, -3000
+      @physics.drag.x = 2 * @_originalDrag.x
 
     _run: (direction) ->
       @nextAction = 'start' if @velocity.x is 0
@@ -125,7 +165,9 @@ define [
 
       switch @nextState
         when 'running' then @_changeAnimation 'run', no
-        when 'still' then @_changeAnimation 17, no
+        when 'still' then @_changeAnimation 17, no        
+        when 'falling' then @_changeAnimation 31, no
+        when 'landing' then @_changeAnimation 'land', no
 
     _updateXMovement: ->
       ###
@@ -147,6 +189,24 @@ define [
       else unless @isInMidAir()
         if @velocity.x isnt 0 then @nextAction = 'stop'
         else @nextState = 'still'
+
+    _updateYMovement: ->
+      ###
+      Basically handle starting and ending of jump, and starting of falling. The
+      tracking of previous velocity is an extra complexity. The possibility of
+      hitting the ceiling during jump is another one.
+      ###
+      if @cursors.up.isDown and not @isInMidAir() and not @_jumpTimer?
+        @_jump()
+
+      else if @cursors.up.isUp and @_jumpTimer? # Cancel early.
+        @_jump yes
+
+      # Constrain jump and decay the jump force. Negative is up, positive is down.
+      if @cursors.up.isDown and @_jumpTimer?
+        @velocity.y = Math.max @velocity.y, -320
+        @acceleration.y += (@gravity.y - @acceleration.y) / @_jumpDeacceleration
+        @debug 'jump', 'build'
 
     _xOffset: (direction = @direction) -> direction * 10
 

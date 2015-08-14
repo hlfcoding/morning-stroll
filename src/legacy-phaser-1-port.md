@@ -364,25 +364,6 @@
     # `_setupPlayer`
     _setupPlayer: (point) ->
 
-      ###
-      # - These are just set as a base to derive player physics
-      @_player.naturalForces.y = 600    # Gravity.
-
-      # - Basic player physics.
-      @_player.maxVelocity.x = 220      # This gets achieved rather quickly.
-      @_player.maxVelocity.y = 1500     # Freefall.
-
-      # - Player jump physics.
-      #   The bare minimum to clear the biggest possible jump.
-      @_player.jumpMaxVelocity.y = -320 # This gets achieved rather quickly.
-      @_player.jumpAccel.y = -2800      # Starting jump force.
-      ###
-
-      @_player.animDelegate =
-
-      # - Process settings.
-      @_player.init()
-
       # - Hook.
       #   TODO: Use `_.after`.
       @didSetupCharacters.dispatch()
@@ -446,14 +427,7 @@
     # Properties
     # ----------
 
-    # Action state bitmask and options.
-    @LANDING:   2
-    @RISING:    101
-    @FALLING:   102
-    state: @STILL
-
     # Unfulfilled action command bitmask and options.
-    @JUMP:      1
 
     # Flags and bitmask.
     @NO_FLAGS:             0
@@ -462,17 +436,9 @@
     flags: @NO_FLAGS
 
     # Physics.
-    jumpMaxVelocity: null
-    jumpAccel: null
-    jumpAccelDecay: null
     _pVelocity: null
-    _oDrag: null
-    _jumpTimer: null
-    naturalForces: new Point 1000, 500
     accelFactor: 0.5
     jumpAccelDecayFactor: -0.001
-    jumpMinDuration: 0.2
-    jumpMaxDuration: 0.5
 
     # Rendering.
     facing: Collision.NONE
@@ -484,13 +450,6 @@
 
     # Events (Signals).
     animDelegate: null
-    _eAction:
-      # States.
-      playerIsLanding:  { signal: null, state: @LANDING }
-      playerIsRising:   { signal: null, state: @RISING }
-      playerIsFalling:  { signal: null, state: @FALLING }
-      # Commands.
-      playerWillJump:   { signal: null, command: @JUMP }
 
     # Convenience.
     _kb: null
@@ -500,13 +459,6 @@
 
     constructor: ->
       super
-
-      # Declare physics.
-      @pVelocity = @velocity
-      @jumpMaxVelocity = new Point()
-      @jumpAccel = new Point()
-      @jumpAccelDecay = new Point()
-      @_oDrag = new Point()
 
       # Declare camera.
       @cameraFocus = new GameObject @_game, @x, @y, @width, @height
@@ -534,26 +486,6 @@
         return
 
       # Vertical.
-      # - Constrain jump and decay the jump force.
-      if @jumpTimer? # Still jumping.
-        @velocity.y = Math.max(@velocity.y, @jumpMaxVelocity.y)
-        @acceleration.y += (@naturalForces.y - @acceleration.y) / @jumpAccelDecay.y
-      # - Basically handle starting and ending of jump, and starting of falling. The tracking of
-      #   pVelocity is an extra complexity. The possibility of hitting the ceiling during jump is
-      #   another one.
-      if @_kb.justPressed(Keyboard.UP) and
-         not @jumpTimer? and
-         @touching is Collision.FLOOR
-        @jumpStart()
-      else if @_kb.justReleased Keyboard.UP
-        @jumpEnd()
-      else if @velocity.y > 0
-        if @state is C.FALLING
-          @_pVelocity = @velocity
-        else
-          @state = C.FALLING
-      # - Handle ending of falling.
-      if @isJustFallen() then @state = C.LANDING
       # - Handle focus.
       if @flags & C.NEEDS_CAMERA_REFOCUS
         @cameraFocus.x += Math.round (@x - @cameraFocus.x) / @cameraSpeed
@@ -567,13 +499,6 @@
 
     # `init`
     init: ->
-
-      # - Setup physics.
-      @_oDrag.x = @drag.x = @naturalForces.x
-      @acceleration.y = @naturalForces.y
-      @jumpAccelDecay.setTo @_oDrag.x * 2,
-        # - This prevents the "being dragged into the air" feeling.
-        @jumpAccelDecay.y = @_game.framerate * @jumpMinDuration
 
       # - Setup animation delegation.
       if @animDelegate?
@@ -595,31 +520,11 @@
 
     dispatchActionCommandEvent: (name) -> @_eAction[name].signal.dispatch()
 
-    isInMidAir: -> @state >= C.RISING
-
     # TODO: Figure out how to map this to `animations`.
     isFinished: -> yes
 
-    isJustFallen: ->
-      @wasTouching is Collision.FLOOR and
-      @state is C.FALLING and
-      @_pVelocity?
-
     jumpStart: ->
-      velocityFactor = Math.abs(@velocity.x / @maxVelocity.x)
-      durationFactor = velocityFactor * (@jumpMaxDuration - @jumpMinDuration)
-      duration = @jumpMinDuration + durationFactor
-      dispatchActionCommandEvent 'playerWillJump'
       @y-- # Is this a tweak?
-      @state = C.RISING
-      @acceleration.setTo 0, @jumpAccel.y
-      @drag.x = @jumpAccelDecay.x
-      @jumpTimer = setTimeout @jumpEnd, duration
-
-    jumpEnd: ->
-      @acceleration.y = @naturalForces.y
-      @drag.x = @_oDrag.x
-      if @jumpTimer? then clearTimeout @jumpTimer
 
     run: (dir=1) ->
       factor = @accelFactor
