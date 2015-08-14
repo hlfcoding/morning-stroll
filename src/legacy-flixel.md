@@ -471,37 +471,12 @@ package
     // -----------------------
     public function playerWillUpdateAnimation():void {}
     public function playerDidUpdateAnimation():void {}
-    // Smooth, once.
-    public function playerWillStart():void
-    {
-      if (!player.finished) return;
-      if (player.currentAnimation().name == 'start') return;
-      player.play('start');
-    }
-    // Interruptive, once.
-    public function playerWillStop():void
-    {
-      if (player.currentAnimation().name == 'stop') return;
-      player.play('stop');
-    }
     // Interruptive, once.
     public function playerWillJump():void
     {
       if (player.currentAnimation().name == 'jump') return;
       player.play('jump');
       player.updateFocus = false;
-    }
-    // Smooth.
-    public function playerIsStill():void
-    {
-      if (!player.finished) return;
-      player.play('still');
-    }
-    // Smooth.
-    public function playerIsRunning():void
-    {
-      if (!player.finished) return;
-      player.play('run');
     }
     // Smooth, once.
     public function playerIsLanding():void
@@ -542,18 +517,13 @@ package
   {
 
     public var currently:uint;
-    public static const STILL:uint = 0;
-    public static const RUNNING:uint = 1;
     public static const LANDING:uint = 2;
     public static const RISING:uint = 101;
     public static const FALLING:uint = 102;
 
     // Note this is not always cleared.
     public var nextAction:uint;
-    public static const NO_ACTION:uint = 0;
     public static const JUMP:uint = 1;
-    public static const STOP:uint = 2;
-    public static const START:uint = 3;
 
     public var controlled:Boolean;
 
@@ -616,8 +586,6 @@ package
 
     public function init():void
     {
-      this.drag.x = this.naturalForces.x;
-      this.acceleration.y = this.naturalForces.y;
       this.oDrag.x = this.drag.x;
       this.jumpAccelDecay.x = this.oDrag.x * 2;
       // This prevents the "being dragged into the air" feeling.
@@ -722,14 +690,6 @@ package
 
       if (this.controlled)
       {
-        if (this.currently == STILL)
-        {
-          this.animDelegate.playerIsStill();
-        }
-        else if (this.currently == RUNNING)
-        {
-          this.animDelegate.playerIsRunning();
-        }
         else if (this.currently == LANDING)
         {
           this.animDelegate.playerIsLanding();

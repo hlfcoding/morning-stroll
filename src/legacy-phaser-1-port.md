@@ -364,22 +364,8 @@
     # `_setupPlayer`
     _setupPlayer: (point) ->
 
-      # - Find start position for player.
-      #   TODO: Image.
-      @_player = new Player @game, point.x, point.y
-      @_player.state = Player.FALLING
       ###
-
-      # - Bounding box tweaks.
-      @_player.height = @_player.frameHeight / 2
-      @_player.offset.y = @_player.frameHeight - @_player.height - 2
-      @_player.tailOffset.x = 35
-      @_player.headOffset.x = 10
-      @_player.width = @_player.frameWidth - @_player.tailOffset.x
-      @_player.face Collision.RIGHT
-
       # - These are just set as a base to derive player physics
-      @_player.naturalForces.x = 1000   # Friction.
       @_player.naturalForces.y = 600    # Gravity.
 
       # - Basic player physics.
@@ -390,23 +376,8 @@
       #   The bare minimum to clear the biggest possible jump.
       @_player.jumpMaxVelocity.y = -320 # This gets achieved rather quickly.
       @_player.jumpAccel.y = -2800      # Starting jump force.
-
-      # - Animations.
-      #   Make sure to add end transitions, otherwise the last frame is skipped if framerate is low.
-      #   Note that ranges do not include the terminator.
-      @_player.addAnimation('still',[17], 12)
-      @_player.addAnimation('idle', [], 12, false)
-      @_player.addAnimation('run',  [0...12], 24)
-      @_player.addAnimation('stop', [12...18], 24, false)
-      @_player.addAnimation('start',[17...11], 24, false)
-      @_player.addAnimation('jump', [18...32], 24, false)
-      @_player.addAnimation('fall', [31])
-      @_player.addAnimation('land', [32,33,18,17], 12, false)
-      endFrames = [34...54]
-      endFramerate = 12
-      endAnimDuration = endFrames.length / endFramerate
-      @_player.addAnimation('end', endFrames, endFramerate, false)
       ###
+
       @_player.animDelegate =
 
       # - Process settings.
@@ -476,19 +447,13 @@
     # ----------
 
     # Action state bitmask and options.
-    @STILL:     0
-    @RUNNING:   1
     @LANDING:   2
     @RISING:    101
     @FALLING:   102
     state: @STILL
 
     # Unfulfilled action command bitmask and options.
-    @NO_ACTION: 0
     @JUMP:      1
-    @STOP:      2
-    @START:     3
-    nextAction: @NO_ACTION
 
     # Flags and bitmask.
     @NO_FLAGS:             0
@@ -510,8 +475,6 @@
     jumpMaxDuration: 0.5
 
     # Rendering.
-    tailOffset: null
-    headOffset: null
     facing: Collision.NONE
     offset: null
 
@@ -523,15 +486,11 @@
     animDelegate: null
     _eAction:
       # States.
-      playerIsStill:    { signal: null, state: @STILL }
-      playerIsRunning:  { signal: null, state: @RUNNING }
       playerIsLanding:  { signal: null, state: @LANDING }
       playerIsRising:   { signal: null, state: @RISING }
       playerIsFalling:  { signal: null, state: @FALLING }
       # Commands.
       playerWillJump:   { signal: null, command: @JUMP }
-      playerWillStop:   { signal: null, command: @STOP }
-      playerWillStart:  { signal: null, command: @START }
 
     # Convenience.
     _kb: null
@@ -549,12 +508,6 @@
       @jumpAccelDecay = new Point()
       @_oDrag = new Point()
 
-      # Declare rendering.
-      @tailOffset = new Point()
-      @headOffset = new Point()
-      @facing = Collision.RIGHT
-      @offset = new Point()
-
       # Declare camera.
       @cameraFocus = new GameObject @_game, @x, @y, @width, @height
       @flags |= C.NEEDS_CAMERA_REFOCUS
@@ -570,13 +523,6 @@
 
       # TODO: Watch vars: `state`, `nextAction`, `velocity`, `acceleration`.
 
-    destroy: ->
-      super
-
-    render: ->
-      super
-      # TODO: Apply offset.
-
     update: ->
       super
 
@@ -586,10 +532,6 @@
         @velocity = new Point()
         @acceleration = new Point()
         return
-
-      # Horizontal.
-      # - Revert to still. (Our acceleration updates funny.)
-      if not @isInMidAir() then @acceleration.x = 0
 
       # Vertical.
       # - Constrain jump and decay the jump force.
