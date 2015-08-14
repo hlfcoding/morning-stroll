@@ -1,7 +1,9 @@
 # Player
 # ======
 # Player configures and controls a sprite, tracks and updates state given user
-# interaction.
+# interaction. This builds off the stock Flixel / Phaser player, but tries to
+# make the movement more natural, which requires more animations, logic, and
+# physics.
 
 define [
   'phaser'
@@ -47,28 +49,7 @@ define [
       @nextAction = 'none'
       @nextState = 'running'
 
-      # Horizontal
-
-      # - Revert to still. (Our acceleration updates funny.)
-      @acceleration.x = 0 unless @isInMidAir()
-
-      ###
-      - Basically handle switching direction, and running or being still
-        when not in the air. Note the player still runs in midair, but run
-        will behave differently.
-      ###
-
-      if @cursors.left.isDown
-        @_turn Direction.Left
-        @_run Direction.Left
-
-      else if @cursors.right.isDown
-        @_turn Direction.Right
-        @_run Direction.Right
-
-      else unless @isInMidAir()
-        if @velocity.x isnt 0 then @nextAction = 'stop'
-        else @nextState = 'still'
+      @_updateXMovement()
 
       @_updateAnimations()
       @_changeState @nextState
@@ -145,6 +126,27 @@ define [
       switch @nextState
         when 'running' then @_changeAnimation 'run', no
         when 'still' then @_changeAnimation 17, no
+
+    _updateXMovement: ->
+      ###
+      Basically handle switching direction, and running or being still
+      when not in the air. Note the player still runs in midair, but run
+      will behave differently.
+      ###
+      # Revert to still. (Our acceleration updates funny.)
+      @acceleration.x = 0 unless @isInMidAir()
+
+      if @cursors.left.isDown
+        @_turn Direction.Left
+        @_run Direction.Left
+
+      else if @cursors.right.isDown
+        @_turn Direction.Right
+        @_run Direction.Right
+
+      else unless @isInMidAir()
+        if @velocity.x isnt 0 then @nextAction = 'stop'
+        else @nextState = 'still'
 
     _xOffset: (direction = @direction) -> direction * 10
 
