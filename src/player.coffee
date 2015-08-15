@@ -40,7 +40,11 @@ define [
       @nextAction = 'none' # none, start, stop, jump
       @nextState = null
 
-    debug: (label, value) -> console.log "player:#{label}", value if @debugging
+    debug: (label, value, details) ->
+      return unless @debugging
+      label = "player:#{label}"
+      if details? then console.trace label, value, details
+      else console.trace label, value
 
     isInMidAir: -> @state is 'rising' or @state is 'falling'
     isRunning: (direction) -> direction is @direction and @velocity.x isnt 0
