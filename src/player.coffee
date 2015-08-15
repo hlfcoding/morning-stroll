@@ -153,6 +153,7 @@ define [
       else if @velocity.x isnt 0 and @nextAction isnt 'stop'
         @nextAction = 'stop'
         @_justTurned = yes
+        @debug 'turn', @velocity.x
 
       @direction = direction
       @sprite.scale.x = direction
