@@ -75,7 +75,7 @@ define [
     _initPhysics: ->
       @physics.collideWorldBounds = on
 
-      @physics.drag.x = 800
+      @physics.drag.x = 1500
       @_originalDrag = @physics.drag.clone()
 
       h = @sprite.height
