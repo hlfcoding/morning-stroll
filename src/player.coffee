@@ -83,11 +83,13 @@ define [
       @_yOffset = h / 4
       @physics.setSize (w / 2), (h / 2), @_xOffset(), @_yOffset
 
-      @jumpMaxVelocity = -320
-      @jumpTimeRange = { min: 200, max: 500 }
-      @maxVelocity = { x: 200, y: 1500 }
+      @jumpAcceleration = -4000 # A burst of energy on launch.
+      @jumpMaxDuration = 500
+      @maxVelocity =
+        x: 200 # Run velocity.
+        y: 1500 # Escape velocity.
 
-      @_jumpDeacceleration = 60 * @jumpTimeRange.min # Fixes 'being dragged into the air' feeling.
+      @_jumpTimer = @sprite.game.time.create() # This also acts like a flag.
       @_justTurned = no # Because velocity won't be 0 when just turning.
 
     _changeAnimation: (nameOrFrame, interrupt = yes) ->
@@ -115,26 +117,22 @@ define [
 
     _jump: (ending = no) ->
       if ending
-        return unless @_jumpTimer?
+        return unless @_jumpTimer.running
         @acceleration.y = @gravity.y
         @physics.drag.x = @_originalDrag.x
-        clearTimeout @_jumpTimer
-        @_jumpTimer = null
-        @debug 'jump:end'
-
-        @nextState = 'falling'
+        @debug 'jump:end', @_jumpTimer.ms,
+          position: @physics.position.toString()
+        @_jumpTimer.stop()
         return
 
-      # Faster the run, higher the jump.
-      kVelocity = 4 * (1 + Math.abs @velocity.x / @maxVelocity.x)
-      kDuration = kVelocity * (@jumpTimeRange.max - @jumpTimeRange.min)
-      duration = parseInt (@jumpTimeRange.min / 1000) * kDuration
-      @_jumpTimer = setTimeout @_jump.bind(@, yes), duration
-      @debug 'jump:start', duration
+      @_jumpTimer.start()
+      @debug 'jump:start', @physics.position.toString()
 
       @nextAction = 'jump'
       @nextState = 'rising'
-      @acceleration.set 0, -3000
+      # Faster the run, higher the base jump, up to 33% improvement.
+      kVelocity = (3 + Math.abs @velocity.x / @maxVelocity.x) / 4
+      @acceleration.set 0, @jumpAcceleration * kVelocity
       @physics.drag.x = 2 * @_originalDrag.x
 
     _run: (direction) ->
@@ -198,17 +196,25 @@ define [
       tracking of previous velocity is an extra complexity. The possibility of
       hitting the ceiling during jump is another one.
       ###
-      if @cursors.up.isDown and not @isInMidAir() and not @_jumpTimer?
+
+      if @cursors.up.isDown and not @isInMidAir() and not @_jumpTimer.running
         @_jump()
 
-      else if @cursors.up.isUp and @_jumpTimer? # Cancel early.
+      else if @_jumpTimer.running and (@cursors.up.isUp or @_jumpTimer.ms >= @jumpMaxDuration) # Release to cancel early.
         @_jump yes
 
-      # Constrain jump and decay the jump force. Negative is up, positive is down.
-      if @cursors.up.isDown and @_jumpTimer?
-        @velocity.y = Math.max @velocity.y, -320
-        @acceleration.y += (@gravity.y - @acceleration.y) / @_jumpDeacceleration
-        @debug 'jump', 'build'
+      else if @state is 'rising' and @velocity.y > 0
+        @debug 'jump:peak', @physics.y
+        @nextState = 'falling'
+
+      # Speed up by persisting the jump acceleration but with quadratic decay.
+      # The longer the hold, the higher the final jump, but power decays quickly.
+      # Also note that negative is up, positive is down.
+      if @cursors.up.isDown and @_jumpTimer.running
+        kEasing = (1000 - @jumpMaxDuration) + (@jumpMaxDuration - @_jumpTimer.ms)
+        kEasing = Math.pow kEasing / 1000, 2
+        @acceleration.y *= kEasing
+        @debug 'jump:build', kEasing
 
     _xOffset: (direction = @direction) -> direction * 10
 
