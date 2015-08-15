@@ -138,11 +138,16 @@ define [
     _run: (direction) ->
       @nextAction = 'start' if @velocity.x is 0
 
-      factor = 200
+      factor = 1
       if @isInMidAir()
-        # TODO
+        factor = -0.00001 # No force, just air friction.
       else @nextState = 'running'
-      @acceleration.x = factor * direction
+
+      # Always try to push for max velocity.
+      isNegative = @velocity.x < 0
+      @velocity.x = Math.min @maxVelocity.x, Math.abs(@velocity.x)
+      @velocity.x *= -1 if isNegative
+      @acceleration.x = @maxVelocity.x * factor * direction
 
     _turn: (direction) ->
       return if @isRunning(direction)
