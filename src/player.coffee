@@ -89,7 +89,6 @@ define [
 
       @_jumpDeacceleration = 60 * @jumpTimeRange.min # Fixes 'being dragged into the air' feeling.
       @_justTurned = no # Because velocity won't be 0 when just turning.
-      @_prevVelocity = null
 
     _changeAnimation: (nameOrFrame, interrupt = yes) ->
       return if interrupt is no and @animation?.isPlaying
@@ -124,7 +123,6 @@ define [
         @debug 'jump:end'
 
         @nextState = 'falling'
-        @_prevVelocity = @velocity
         return
 
       # Faster the run, higher the jump.
