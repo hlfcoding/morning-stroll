@@ -438,7 +438,6 @@
     # Physics.
     _pVelocity: null
     accelFactor: 0.5
-    jumpAccelDecayFactor: -0.001
 
     # Rendering.
     facing: Collision.NONE
@@ -447,12 +446,6 @@
     # Camera.
     cameraFocus: null
     cameraSpeed: 30 # Basically, 1/n traveled per tween.
-
-    # Events (Signals).
-    animDelegate: null
-
-    # Convenience.
-    _kb: null
 
     # Phaser Methods
     # --------------
@@ -466,14 +459,6 @@
 
       # Declare state events.
       evt.signal = new Signal() for name, evt of @_eAction
-
-      # Bind handlers.
-      _.bindAll @, ['jumpEnd']
-
-      # Setup aliases.
-      @_kb = @_game.input.keyboard
-
-      # TODO: Watch vars: `state`, `nextAction`, `velocity`, `acceleration`.
 
     update: ->
       super
@@ -500,19 +485,8 @@
     # `init`
     init: ->
 
-      # - Setup animation delegation.
-      if @animDelegate?
-        for name, evt of @_eAction
-          handler = @animDelegate[name]
-          if handler?
-            handler = _.partial handler, @
-            evt.signal.add handler, @animDelegate, 9999
-
       # - Start state.
       @dispatchActionStateEvent()
-
-    # TODO: May not work.
-    currentAnimation: -> @animations.currentAnim
 
     dispatchActionStateEvent: ->
       evt = _.findWhere @_eAction, { state: @state }
@@ -525,14 +499,6 @@
 
     jumpStart: ->
       @y-- # Is this a tweak?
-
-    run: (dir=1) ->
-      factor = @accelFactor
-      if @isInMidAir()
-        factor = @jumpAccelDecayFactor
-      else if @state isnt C.RUNNING
-        @state = C.RUNNING
-      @acceleration.x = @drag.x * factor * dir
 
   # Alias class.
   C = Player

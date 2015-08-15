@@ -469,8 +469,6 @@ package
 
     // Player Delegate Methods
     // -----------------------
-    public function playerWillUpdateAnimation():void {}
-    public function playerDidUpdateAnimation():void {}
     // Interruptive, once.
     public function playerWillJump():void
     {
@@ -546,15 +544,6 @@ package
 
     }
 
-    public function init():void
-    {
-      if (this.animDelegate == null)
-      {
-        throw new Error('Player animation delegate is required.');
-      }
-      this.animDelegate.playerIsFalling();
-    }
-
     // Flixel Methods
     // --------------
     override public function destroy():void
@@ -562,7 +551,6 @@ package
       super.destroy();
 
       this.pVelocity = null;
-      this.animDelegate = null;
 
       this.tailOffset = null;
       this.headOffset = null;
@@ -595,25 +583,9 @@ package
         this.cameraFocus.y += FlxU.round((this.y - this.cameraFocus.y) / this.cameraSpeed);
       }
     }
-    // Animations get updated after movement.
-    override protected function updateAnimation():void
-    {
-      this.animDelegate.playerWillUpdateAnimation();
-
-      super.updateAnimation();
-      this.animDelegate.playerDidUpdateAnimation();
-    }
 
     // Update Routines
     // ---------------
-    private function run(direction:int=1):void
-    {
-      var factor:Number = this.accelFactor;
-      if (this.inMidAir())
-      {
-        factor = this.jumpAccelDecayFactor;
-      }
-    }
     private function jumpStart():void
     {
       this.y--;
