@@ -3,16 +3,16 @@
 ## Development
 
 ```bash
-hlf-jquery> npm install
+$ npm install
 
 # to install
-hlf-jquery> grunt install
+$ grunt install
 
 # to read some docs
-hlf-jquery> grunt docs
+$ grunt docs
 
 # to start developing
-hlf-jquery> grunt
+$ grunt
 ```
 
 ### Sample ST2 Project File
