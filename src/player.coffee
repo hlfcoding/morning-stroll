@@ -171,7 +171,7 @@ define [
         when 'running' then @_changeAnimation 'run', no
         when 'still' then @_changeAnimation 17, no        
         when 'falling' then @_changeAnimation 31, no
-        when 'landing' then @_changeAnimation 'land', no
+        when 'landing' then @_changeAnimation 'land'
 
     _updateXMovement: ->
       ###
