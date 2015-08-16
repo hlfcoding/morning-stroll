@@ -15,6 +15,10 @@ define [
     Left: -1
     Right: 1
 
+  RegExps =
+    PrettyHashRemove: /[{}"]/g
+    PrettyHashPad: /[:,]/g
+
   class Player
 
     constructor: (origin, game) ->
@@ -35,6 +39,8 @@ define [
       @cursors = game.input.keyboard.createCursorKeys()
 
       @debugging = on
+      @debugTextItems = {}
+      @tracing = off
 
       # Readonly.
       @animation = null
@@ -44,9 +50,32 @@ define [
 
     debug: (label, value, details) ->
       return unless @debugging
-      label = "player:#{label}"
-      if details? then console.trace label, value, details
-      else console.trace label, value
+
+      value = parseFloat value.toFixed(2) if _.isNumber(value)
+
+      prettyPoint = (point) ->
+        _.chain point
+          .pick 'x', 'y'
+          .mapObject (n) -> parseFloat n.toFixed(2)
+          .value()
+
+      prettyHash = (hash) ->
+        JSON.stringify hash
+          .replace RegExps.PrettyHashRemove,''
+          .replace RegExps.PrettyHashPad, '$& '
+
+      value = prettyHash prettyPoint(value) if value instanceof Phaser.Point
+
+      if details?.position and details.position instanceof Phaser.Point
+        details.position = prettyPoint details.position
+
+      if @tracing
+        label = "player:#{label}"
+        if details? then console.trace label, value, details
+        else console.trace label, value
+      else
+        details = if details? then prettyHash(details) else ''
+        @debugTextItems[label] = "#{label}: #{value} #{details}"
 
     isInMidAir: -> @state is 'rising' or @state is 'falling'
     isRunning: (direction) -> direction is @direction and @velocity.x isnt 0
@@ -122,13 +151,12 @@ define [
         return unless @_jumpTimer.running
         @acceleration.y = @gravity.y
         @physics.drag.x = @_originalDrag.x
-        @debug 'jump:end', @_jumpTimer.ms,
-          position: @physics.position.toString()
+        @debug 'jump:end', @_jumpTimer.ms, { position: @physics.position }
         @_jumpTimer.stop()
         return
 
       @_jumpTimer.start()
-      @debug 'jump:start', @physics.position.toString()
+      @debug 'jump:start', @physics.position
 
       @nextAction = 'jump'
       @nextState = 'rising'
@@ -212,8 +240,8 @@ define [
         @_jump yes
 
       else if @state is 'rising' and @velocity.y > 0
-        @debug 'jump:peak', @physics.y
         @nextState = 'falling'
+        @debug 'jump:peak', @physics.y
 
       # Speed up by persisting the jump acceleration but with quadratic decay.
       # The longer the hold, the higher the final jump, but power decays quickly.

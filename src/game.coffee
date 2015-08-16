@@ -12,6 +12,9 @@ define [
 
   'use strict'
 
+  kPhaserLayoutX = -8
+  kPhaserLineRatio = 1.8
+
   class MorningStroll
 
     @playerH: 72
@@ -20,6 +23,8 @@ define [
 
     constructor: ->
       _.bindAll @, 'onPreload', 'onCreate', 'onUpdate', 'onRender'
+
+      @debugFontSize = 9
 
       width = 416
       height = 600
@@ -35,6 +40,8 @@ define [
 
     onPreload: ->
       @debug = @game.debug
+      @debug.font = "#{@debugFontSize}px Menlo"
+
       @physics = @game.physics
 
       loader = @game.load
@@ -54,8 +61,8 @@ define [
       @player.update()
 
     onRender: ->
-      @debug.body @platforms.ground
-      @debug.body @player.sprite
+      @_updateDebugDisplay()
+      @_updateDebugOverlays()
 
     _addMate: ->
       @mate = @game.add.sprite 0, 0, 'mate', 1
@@ -73,5 +80,24 @@ define [
 
     _updateCollisions: ->
       @physics.arcade.collide @player.sprite, @platforms.group
+
+    _updateDebugDisplay: ->
+      gutter = 2 * @debugFontSize
+      line = kPhaserLineRatio * @debugFontSize
+
+      layoutX = gutter + kPhaserLayoutX
+      layoutY = gutter
+
+      if @player.debugging
+        @debug.bodyInfo @player.sprite, layoutX, layoutY
+        layoutY += 6 * line
+
+        for own label, text of @player.debugTextItems
+          @debug.text text, layoutX, layoutY, null, @debug.font
+          layoutY += line
+
+    _updateDebugOverlays: ->
+      @debug.body @platforms.ground
+      @debug.body @player.sprite if @player.debugging
 
   MorningStroll
