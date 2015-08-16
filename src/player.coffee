@@ -128,7 +128,7 @@ define [
 
       if _.isNumber(nameOrFrame)
         frame = nameOrFrame
-        return if @animations.frame is frame
+        return if @animations.frame is frame and !@animation?
         @animations.frame = frame
         @animation = null
 
