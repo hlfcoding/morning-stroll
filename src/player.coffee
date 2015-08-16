@@ -65,7 +65,7 @@ define [
       @_changeState @nextState
 
     _initAnimations: ->
-      @animations.add 'run', [0..11], 24, on
+      @animations.add 'run', [0..11], 30, on
       @animations.add 'stop', [12..17], 24
       @animations.add 'start', [17..12], 24
       @animations.add 'jump', [18..31], 24
