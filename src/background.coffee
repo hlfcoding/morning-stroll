@@ -10,6 +10,8 @@ define [
   'phaser'
 ], (Phaser) ->
 
+  'use strict'
+
   class Background extends Phaser.Group
 
   Background

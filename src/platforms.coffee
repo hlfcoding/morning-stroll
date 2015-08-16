@@ -7,6 +7,8 @@ define [
   'phaser'
 ], (Phaser) ->
 
+  'use strict'
+
   class Platforms
 
     constructor: (@config, game) ->

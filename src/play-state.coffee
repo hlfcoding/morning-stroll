@@ -15,6 +15,8 @@ define [
   'app/background'
 ], (Phaser, _, Platforms, Player, Background) ->
 
+  'use strict'
+
   class PlayState extends Phaser.State
 
   PlayState

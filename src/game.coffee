@@ -10,6 +10,8 @@ define [
   'app/player'
 ], (Phaser, _, PlayState, Platforms, Player) ->
 
+  'use strict'
+
   class MorningStroll
 
     @playerH: 72

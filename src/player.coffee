@@ -9,6 +9,8 @@ define [
   'phaser'
 ], (Phaser) ->
 
+  'use strict'
+
   Direction =
     Left: -1
     Right: 1
