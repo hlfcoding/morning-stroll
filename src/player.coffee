@@ -94,7 +94,7 @@ define [
       @animations.add 'stop', [12..17], 24
       @animations.add 'start', [17..12], 24
       @animations.add 'jump', [18..31], 24
-      @animations.add 'land', [32,33,18,17], 12
+      @animations.add 'land', [32,33,18,17], 24
       @animations.add 'end', [34...53], 12
 
     _initPhysics: ->
@@ -160,13 +160,20 @@ define [
       @physics.drag.x = 2 * @_originalDrag.x
 
     _run: (direction) ->
-      @nextAction = 'start' if @velocity.x is 0
+      # Chain a start animation to the landing.
+      landed = => @animation?.name is 'land' and @animation.isFinished
+      isStill = @state is 'still' and @velocity.x is 0
+      if @direction is direction and (isStill or landed())
+        @nextAction = 'start'
 
-      factor = 1
       if @isInMidAir()
         factor = -0.00001 # No force, just air friction.
-      else @nextState = 'running'
 
+      else if landed
+        factor = 1
+        @nextState = 'running'
+
+      else return
       # Always try to push for max velocity.
       isNegative = @velocity.x < 0
       @velocity.x = Math.min @maxVelocity.x, Math.abs(@velocity.x)
@@ -196,7 +203,7 @@ define [
 
       switch @nextState
         when 'running' then @_changeAnimation 'run', no
-        when 'still' then @_changeAnimation 17, no        
+        when 'still' then @_changeAnimation 17, @animation?.loop
         when 'falling' then @_changeAnimation 31, no
         when 'landing' then @_changeAnimation 'land'
 
