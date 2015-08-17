@@ -109,6 +109,8 @@ define [
 
       @jumpAcceleration = -4000 # A burst of energy on launch.
       @jumpMaxDuration = 500
+      @jumpVelocityFactor = 1 / 4
+
       @maxVelocity =
         x: 200 # Run velocity.
         y: 1500 # Escape velocity.
@@ -152,8 +154,9 @@ define [
 
       @nextAction = 'jump'
       @nextState = 'rising'
-      # Faster the run, higher the base jump, up to 33% improvement.
-      kVelocity = (3 + Math.abs @velocity.x / @maxVelocity.x) / 4
+      # Faster the run, higher the base jump, up to 25% improvement.
+      ratio = Math.abs(@velocity.x / @maxVelocity.x)
+      kVelocity = (1 - @jumpVelocityFactor) + @jumpVelocityFactor * ratio
       @acceleration.y = @jumpAcceleration * kVelocity
 
     _run: (direction) ->
