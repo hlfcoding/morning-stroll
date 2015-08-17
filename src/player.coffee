@@ -186,15 +186,16 @@ define [
       if @_isTurning and @animation?.isFinished
         @nextAction = 'start'
         @_isTurning = no
+        @debug 'turn:end', @velocity.x
         # Visualize the turn.
         @sprite.scale.x = direction
         @physics.offset = new Phaser.Point @_xOffset(direction), @_yOffset
 
-      else unless (@_isTurning or @nextAction is 'stop' or @velocity.x is 0)
-        @nextAction = 'stop'
-        @_isTurning = yes  
+      else unless (@_isTurning or @nextAction is 'stop')
+        @nextAction = 'stop' unless @velocity.x is 0
+        @_isTurning = yes
         @direction = direction
-        @debug 'turn', @velocity.x
+        @debug 'turn:start', @velocity.x
 
     _updateAnimations: ->
       unless @isInMidAir() or @nextAction is 'none'
@@ -234,7 +235,9 @@ define [
 
       else unless @isInMidAir()
         if @velocity.x isnt 0 then @nextAction = 'stop'
-        else @nextState = 'still'
+        else
+          @nextState = 'still'
+          @_isTurning = no
 
     _updateYMovement: ->
       ###
