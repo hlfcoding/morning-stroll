@@ -121,7 +121,7 @@ define [
         y: 1500 # Escape velocity.
 
       @_jumpTimer = @sprite.game.time.create() # This also acts like a flag.
-      @_justTurned = no # Because velocity won't be 0 when just turning.
+      @_isTurning = no # Because velocity won't be 0 when turning while running.
 
     _changeAnimation: (nameOrFrame, interrupt = yes) ->
       return if interrupt is no and @animation?.isPlaying
@@ -180,23 +180,24 @@ define [
       @acceleration.x = @maxVelocity.x * factor * direction
 
     _turn: (direction) ->
-      return if @isRunning(direction)
+      return if !@_isTurning and @isRunning(direction)
 
-      if @_justTurned
+      if @_isTurning and @animation?.isFinished
         @nextAction = 'start'
-        @_justTurned = no
-      else if @velocity.x isnt 0 and @nextAction isnt 'stop'
-        @nextAction = 'stop'
-        @_justTurned = yes
-        @debug 'turn', @velocity.x
+        @_isTurning = no
+        # Visualize the turn.
+        @sprite.scale.x = direction
+        @physics.offset = new Phaser.Point @_xOffset(direction), @_yOffset
 
-      @direction = direction
-      @sprite.scale.x = direction
-      @physics.offset = new Phaser.Point @_xOffset(direction), @_yOffset
+      else unless (@_isTurning or @nextAction is 'stop' or @velocity.x is 0)
+        @nextAction = 'stop'
+        @_isTurning = yes  
+        @direction = direction
+        @debug 'turn', @velocity.x
 
     _updateAnimations: ->
       unless @isInMidAir() or @nextAction is 'none'
-        @_changeAnimation @nextAction
+        @_changeAnimation @nextAction, @animation?.loop
         return
 
       switch @nextState
