@@ -111,6 +111,8 @@ define [
       @jumpMaxDuration = 500
       @jumpVelocityFactor = 1 / 4
 
+      @runAcceleration = 300
+
       @maxVelocity =
         x: 200 # Run velocity.
         y: 1500 # Escape velocity.
@@ -166,19 +168,19 @@ define [
       if @direction is direction and (isStill or landed())
         @nextAction = 'start'
 
-      if @isInMidAir()
-        factor = -0.00001 # No force, just air friction.
+      # Clamp velocity.
+      @velocity.clampX -@maxVelocity.x, @maxVelocity.x
 
-      else if landed
-        factor = 1
+      if @isInMidAir()
+        # No force, just air friction.
+        @acceleration.x = @runAcceleration / -20 * direction
+        return
+
+      else if isStill or landed()
         @nextState = 'running'
 
-      else return
-      # Always try to push for max velocity.
-      isNegative = @velocity.x < 0
-      @velocity.x = Math.min @maxVelocity.x, Math.abs(@velocity.x)
-      @velocity.x *= -1 if isNegative
-      @acceleration.x = @maxVelocity.x * factor * direction
+      # Otherwise, just step on the pedal.
+      @acceleration.x = @runAcceleration * direction
 
     _turn: (direction) ->
       return if !@_isTurning and @isRunning(direction)
