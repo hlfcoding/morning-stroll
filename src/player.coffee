@@ -81,13 +81,7 @@ define [
     isRunning: (direction) -> direction is @direction and @velocity.x isnt 0
 
     update: ->
-      # Reset any state.
-      @nextAction = 'none'
-
-      if @state is 'falling' and @physics.touching.down
-        @nextState = 'landing'
-      else unless @isInMidAir()
-        @nextState = 'running'
+      @_updateBaseMovement()
 
       @_updateXMovement()
       @_updateYMovement()
@@ -206,6 +200,14 @@ define [
         when 'falling' then @_changeAnimation 31, no
         when 'landing' then @_changeAnimation 'land'
 
+    _updateBaseMovement: ->
+      @nextAction = 'none'
+
+      if @state is 'falling' and @physics.touching.down
+        @nextState = 'landing'
+      else unless @isInMidAir()
+        @nextState = 'running'
+
     _updateXMovement: ->
       ###
       Basically handle switching direction, and running or being still
@@ -229,9 +231,8 @@ define [
 
     _updateYMovement: ->
       ###
-      Basically handle starting and ending of jump, and starting of falling. The
-      tracking of previous velocity is an extra complexity. The possibility of
-      hitting the ceiling during jump is another one.
+      Basically handle starting and ending of jump, and starting of falling.
+      The possibility of hitting the ceiling during jump is a complexity.
       ###
 
       if @cursors.up.isDown and not @isInMidAir() and not @_jumpTimer.running
