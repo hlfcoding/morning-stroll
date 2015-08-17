@@ -12,6 +12,8 @@ requirejs.config
   paths:
     app: '../release'
   shim:
+    'dat.gui':
+      exports: 'dat'
     phaser:
       exports: 'Phaser'
 requirejs [

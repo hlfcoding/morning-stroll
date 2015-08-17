@@ -4,19 +4,23 @@
   "main": "index.html",
   "private": true,
   "dependencies": {
+    "dat-gui": "~0.5.1",
     "phaser": "~2.4.2",
     "requirejs": "~2.1.20",
     "underscore": "~1.8.3"
   },
   "exportsOverride": {
+    "dat-gui": {
+      "js": "build/dat.gui.js"
+    },
+    "phaser": {
+      "js": "build/phaser.js"
+    },
     "requirejs": {
       "js": "require.js"
     },
     "underscore": {
       "js": "underscore.js"
-    },
-    "phaser": {
-      "js": "build/phaser.js"
     }
   }
 }

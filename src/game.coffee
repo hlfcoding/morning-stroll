@@ -3,12 +3,13 @@
 # Configures and controls our Phaser.Game through composition.
 
 define [
+  'dat.gui',
   'phaser'
   'underscore'
   'app/play-state'
   'app/platforms'
   'app/player'
-], (Phaser, _, PlayState, Platforms, Player) ->
+], (dat, Phaser, _, PlayState, Platforms, Player) ->
 
   'use strict'
 
@@ -41,6 +42,7 @@ define [
     onPreload: ->
       @debug = @game.debug
       @debug.font = "#{@debugFontSize}px Menlo"
+      @gui = new dat.GUI()
 
       @physics = @game.physics
 
