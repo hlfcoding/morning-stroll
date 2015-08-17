@@ -78,7 +78,6 @@ define [
         @debugTextItems[label] = "#{label}: #{value} #{details}"
 
     isInMidAir: -> @state is 'rising' or @state is 'falling'
-    isRunning: (direction) -> direction is @direction and @velocity.x isnt 0
 
     update: ->
       @_updateBaseMovement()
@@ -131,8 +130,7 @@ define [
       else
         name = nameOrFrame
         return if @animation?.name is name
-        animation = @animations.play name
-        @animation = animation
+        @animation = @animations.play name
 
       @debug 'animation', nameOrFrame
 
@@ -182,8 +180,6 @@ define [
       @acceleration.x = @runAcceleration * direction
 
     _turn: (direction) ->
-      return if !@_isTurning and @isRunning(direction)
-
       if @_isTurning and @animation?.isFinished
         @nextAction = 'start'
         @_isTurning = no
@@ -192,7 +188,7 @@ define [
         @sprite.scale.x = direction
         @physics.offset = new Phaser.Point @_xOffset(direction), @_yOffset
 
-      else if !@_isTurning and @nextAction isnt 'stop' and @velocity.x isnt 0
+      else if !@_isTurning and direction isnt @direction
         @nextAction = 'stop'
         @_isTurning = yes
         @direction = direction
@@ -200,7 +196,6 @@ define [
 
     _updateAnimations: ->
       unless @isInMidAir() or @nextAction is 'none'
-        return if @nextAction is 'stop' and @animations.frame is 17 # Patch.
         @_changeAnimation @nextAction, @animation?.loop
         return
 
