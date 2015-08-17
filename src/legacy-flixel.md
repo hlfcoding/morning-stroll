@@ -534,14 +534,6 @@ package
 
       this.cameraFocus = new FlxObject(this.x, this.y, this.width, this.height);
       this.updateFocus = true;
-
-      FlxG.watch(this, 'currently', 'Currently');
-      FlxG.watch(this, 'nextAction', 'Next Action');
-      FlxG.watch(this.velocity, 'x', 'X Velocity');
-      FlxG.watch(this.velocity, 'y', 'Y Velocity');
-      FlxG.watch(this.acceleration, 'x', 'X Accel');
-      FlxG.watch(this.acceleration, 'y', 'Y Accel');
-
     }
 
     // Flixel Methods
