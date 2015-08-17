@@ -101,7 +101,6 @@ define [
       @physics.collideWorldBounds = on
 
       @physics.drag.x = 1500
-      @_originalDrag = @physics.drag.clone()
 
       h = @sprite.height
       w = @sprite.width
@@ -144,7 +143,6 @@ define [
       if ending
         return unless @_jumpTimer.running
         @acceleration.y = @gravity.y
-        @physics.drag.x = @_originalDrag.x
         @debug 'jump:end', @_jumpTimer.ms, { position: @physics.position }
         @_jumpTimer.stop()
         return
@@ -156,8 +154,7 @@ define [
       @nextState = 'rising'
       # Faster the run, higher the base jump, up to 33% improvement.
       kVelocity = (3 + Math.abs @velocity.x / @maxVelocity.x) / 4
-      @acceleration.set 0, @jumpAcceleration * kVelocity
-      @physics.drag.x = 2 * @_originalDrag.x
+      @acceleration.y = @jumpAcceleration * kVelocity
 
     _run: (direction) ->
       # Chain a start animation to the landing.
