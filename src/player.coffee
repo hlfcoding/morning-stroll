@@ -236,10 +236,11 @@ define [
         @_run Direction.Right
 
       else unless @isInMidAir()
+        # Without user input, there's no force, so stop, then stay still.
         if @velocity.x isnt 0 then @nextAction = 'stop'
         else
           @nextState = 'still'
-          @_isTurning = no
+          @_isTurning = no # In case of being blocked.
 
     _updateYMovement: ->
       ###
