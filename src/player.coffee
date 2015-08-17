@@ -125,7 +125,6 @@ define [
 
       if _.isNumber(nameOrFrame)
         frame = nameOrFrame
-        return if @animations.frame is frame and !@animation?
         @animations.frame = frame
         @animation = null
 
@@ -193,14 +192,15 @@ define [
         @sprite.scale.x = direction
         @physics.offset = new Phaser.Point @_xOffset(direction), @_yOffset
 
-      else unless (@_isTurning or @nextAction is 'stop')
-        @nextAction = 'stop' unless @velocity.x is 0
+      else if !@_isTurning and @nextAction isnt 'stop' and @velocity.x isnt 0
+        @nextAction = 'stop'
         @_isTurning = yes
         @direction = direction
         @debug 'turn:start', @velocity.x
 
     _updateAnimations: ->
       unless @isInMidAir() or @nextAction is 'none'
+        return if @nextAction is 'stop' and @animations.frame is 17 # Patch.
         @_changeAnimation @nextAction, @animation?.loop
         return
 
