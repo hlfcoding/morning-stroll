@@ -28,15 +28,12 @@ define [
       @animations = @sprite.animations
       @_initAnimations()
 
-      game.physics.arcade.enable @sprite
-      @physics = @sprite.body
-      @velocity = @physics.velocity
-      @acceleration = @physics.acceleration
+      @cursors = game.input.keyboard.createCursorKeys()
       @direction = Direction.Right
+
+      game.physics.arcade.enable @sprite
       @gravity = game.physics.arcade.gravity
       @_initPhysics()
-
-      @cursors = game.input.keyboard.createCursorKeys()
 
       @debugging = on
       @debugTextItems = {}
@@ -97,6 +94,10 @@ define [
       @animations.add 'end', [34...53], 12
 
     _initPhysics: ->
+      @physics = @sprite.body
+      @velocity = @physics.velocity
+      @acceleration = @physics.acceleration
+
       @physics.collideWorldBounds = on
 
       @physics.drag.x = 1500
@@ -110,6 +111,7 @@ define [
       @jumpMaxDuration = 500
       @jumpVelocityFactor = 1 / 4
 
+      @airFrictionRatio = 1 / 20
       @runAcceleration = 300
 
       @maxVelocity =
@@ -170,7 +172,7 @@ define [
 
       if @isInMidAir()
         # No force, just air friction.
-        @acceleration.x = @runAcceleration / -20 * direction
+        @acceleration.x = @runAcceleration * @airFrictionRatio * -direction
         return
 
       else if isStill or landed()
