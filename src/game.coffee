@@ -13,6 +13,17 @@ define [
 
   'use strict'
 
+  # Extend.
+  dat.GUI::addRange = (obj, prop, chain = yes) ->
+    value = obj[prop]
+    [min, max] = [value / 2, 2 * value]
+
+    if value < 0 then gui = @.add obj, prop, max, min
+    else if value > 0 then gui = @.add obj, prop, min, max
+    else gui = @.add obj, prop
+
+    if chain then @ else gui
+
   kPhaserLayoutX = -8
   kPhaserLineRatio = 1.8
 
@@ -25,6 +36,7 @@ define [
     constructor: ->
       _.bindAll @, 'onPreload', 'onCreate', 'onUpdate', 'onRender'
 
+      @debugging = on
       @debugFontSize = 9
 
       width = 416
@@ -40,9 +52,10 @@ define [
       @game = new Phaser.Game width, height, renderer, parentElementId, states
 
     onPreload: ->
-      @debug = @game.debug
-      @debug.font = "#{@debugFontSize}px Menlo"
-      @gui = new dat.GUI()
+      if @debugging
+        @debug = @game.debug
+        @debug.font = "#{@debugFontSize}px Menlo"
+        @gui = new dat.GUI()
 
       @physics = @game.physics
 
@@ -52,7 +65,10 @@ define [
 
     onCreate: ->
       @physics.startSystem Phaser.Physics.ARCADE
+
       @physics.arcade.gravity.y = 600
+      gui = @gui?.addFolder 'gravity'
+      gui.add @physics.arcade.gravity, 'y', 0, 2 * @physics.arcade.gravity.y
 
       @_addMate()
       @_addPlatforms()
@@ -73,12 +89,13 @@ define [
       manager.play 'end' # @test
 
     _addPlatforms: ->
-      @platforms = new Platforms { groundH: MorningStroll.groundH }, @game
+      @platforms = new Platforms { groundH: MorningStroll.groundH }, @game, @gui?.addFolder 'platforms'
 
     _addPlayer: ->
       y = @game.world.height - MorningStroll.playerH - MorningStroll.groundH
       origin = new Phaser.Point 0, y
-      @player = new Player origin, @game
+      @player = new Player origin, @game, @gui?.addFolder 'player'
+      @player.debugging = @debugging
 
     _updateCollisions: ->
       @physics.arcade.collide @player.sprite, @platforms.group

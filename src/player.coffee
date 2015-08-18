@@ -21,7 +21,7 @@ define [
 
   class Player
 
-    constructor: (origin, game) ->
+    constructor: (origin, game, gui) ->
       @sprite = game.add.sprite origin.x, origin.y, 'player', 17
       @sprite.anchor = new Phaser.Point 0.5, 0.5
 
@@ -35,9 +35,7 @@ define [
       @gravity = game.physics.arcade.gravity
       @_initPhysics()
 
-      @debugging = on
-      @debugTextItems = {}
-      @tracing = off
+      @_initDebugging gui
 
       # Readonly.
       @animation = null
@@ -92,6 +90,31 @@ define [
       @animations.add 'jump', [18..31], 24
       @animations.add 'land', [32,33,18,17], 24
       @animations.add 'end', [34...53], 12
+
+    _initDebugging: (gui) ->
+      @gui = gui
+
+      @debugging = on
+      @debugTextItems = {}
+      @gui.add(@, 'debugging').onFinishChange => @debugTextItems = {}
+
+      @tracing = off
+      @gui.add @, 'tracing'
+
+      @gui.addFolder 'drag'
+          .addRange @physics.drag, 'x'
+
+      @gui.addFolder 'maxVelocity'
+          .addRange @maxVelocity, 'x'
+          .addRange @maxVelocity, 'y'
+
+      @gui.addRange @, prop for prop in [
+        'jumpAcceleration'
+        'jumpMaxDuration'
+        'jumpVelocityFactor'
+        'airFrictionRatio'
+        'runAcceleration'
+      ]
 
     _initPhysics: ->
       @physics = @sprite.body
