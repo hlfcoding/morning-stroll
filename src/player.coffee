@@ -186,8 +186,8 @@ define [
     # Computed
     # --------
 
-    _isInMidAir: -> @state is 'rising' or @state is 'falling'
     _isFullyRunning: -> @state is 'running' and @animation?.name is 'run'
+    _isInMidAir: -> @state in ['rising', 'falling']
     _isLanded: -> @animation?.name is 'land' and @animation.isFinished
     _isFullyStill: -> @state is 'still' and (@animations.frame is 17 and not @animation?)
 
