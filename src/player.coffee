@@ -187,8 +187,9 @@ define [
     # --------
 
     _isInMidAir: -> @state is 'rising' or @state is 'falling'
+    _isFullyRunning: -> @state is 'running' and @animation?.name is 'run'
     _isLanded: -> @animation?.name is 'land' and @animation.isFinished
-    _isTrulyStill: -> @state is 'still' and @velocity.x is 0
+    _isFullyStill: -> @state is 'still' and (@animations.frame is 17 and not @animation?)
 
     _xDirectionInput: ->
       if @cursors.left.isDown then Direction.Left
@@ -200,7 +201,7 @@ define [
     # ----
 
     _canBeginJump: ->
-      @cursors.up.isDown and not (@_jumpTimer.running or @_isInMidAir())
+      @cursors.up.isDown and (@_isFullyRunning() or @_isFullyStill())
     _canBuildJump: ->
       @cursors.up.isDown and @_jumpTimer.running
     _canEndJump: ->
@@ -241,7 +242,7 @@ define [
 
     _canBeginRun: ->
       @nextDirection? and @nextDirection is @direction and
-      not @_isInMidAir() and (@_isTrulyStill() or @_isLanded())
+      not @_isInMidAir() and (@_isFullyStill() or @_isLanded())
     _canBuildRun: ->
       @nextDirection?
     _canEndRun: ->
