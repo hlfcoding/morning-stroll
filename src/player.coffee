@@ -7,7 +7,8 @@
 
 define [
   'phaser'
-], (Phaser) ->
+  'underscore'
+], (Phaser, _) ->
 
   'use strict'
 
