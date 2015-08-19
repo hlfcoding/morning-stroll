@@ -27,7 +27,8 @@ $ grunt
       [
         "docs/*",
         "lib/*",
-        "release/*"
+        "release/*",
+        "tests/specs/*"
       ],
       "folder_exclude_patterns":
       [

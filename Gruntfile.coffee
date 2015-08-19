@@ -10,6 +10,9 @@ module.exports = (grunt) ->
       'src/**/*.coffee'
       'README.md'
     ]
+    tests: [
+      'tests/**/*.coffee'
+    ]
 
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
@@ -30,6 +33,10 @@ module.exports = (grunt) ->
       js: ['release/*']
       lib: ['lib/*']
 
+    connect:
+      tests:
+        port: 8000
+
     coffee:
       options:
         sourceMap: yes
@@ -38,7 +45,12 @@ module.exports = (grunt) ->
         src: src.coffee
         dest: 'release/'
         ext: '.js'
-        extDot: 'last'
+        flatten: yes
+      tests:
+        expand: yes
+        src: 'tests/**/*.coffee'
+        dest: 'tests/specs/'
+        ext: '.js'
         flatten: yes
 
     groc:
@@ -46,6 +58,14 @@ module.exports = (grunt) ->
         out: 'docs'
         'repository-url': 'https://bitbucket.org/hlfcoding/morning-stroll'
       docs: src.docs
+
+    jasmine:
+      tests:
+        options:
+          specs: 'tests/specs/*.js'
+          host: 'http://127.0.0.1:8000/'
+          template: require 'grunt-template-jasmine-requirejs'
+          templateOptions: { requireConfigFile: 'release/app.js' }
 
     watch:
       js:
@@ -60,4 +80,5 @@ module.exports = (grunt) ->
   grunt.registerTask 'default', ['clean:js', 'coffee:src', 'watch:js']
   grunt.registerTask 'docs', ['clean:docs', 'groc:docs', 'watch:docs']
   grunt.registerTask 'lib', ['clean:lib', 'bower:lib']
+  grunt.registerTask 'test', ['coffee:tests', 'connect:tests', 'jasmine:tests']
 
