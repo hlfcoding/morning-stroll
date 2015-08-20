@@ -198,6 +198,7 @@ define [
     # Computed
     # --------
 
+    _isAnimationInterruptible: -> @animation?.isFinished or not @animation? or @animation?.loop
     _isFullyRunning: -> @state is 'running' and @animation?.name is 'run'
     _isInMidAir: -> @state in ['rising', 'falling']
     _isLanded: -> @animation?.name is 'land' and @animation.isFinished
@@ -289,7 +290,7 @@ define [
       @nextDirection? and @nextAction isnt 'start' and
       not (@_isTurning or @nextDirection is @direction)
     _canEndTurn: ->
-      @nextDirection? and @animation?.isFinished and
+      @nextDirection? and @_isAnimationInterruptible() and
       @_isTurning and @nextDirection is @direction
 
     _beginTurn: ->
