@@ -7,20 +7,18 @@
 # Configure RequireJS. Dependency references default to the `lib` directory.
 # We're using CoffeeScript, so our `app` package code is in the compiled js
 # directory `release`.
+
 requirejs.config
   baseUrl: 'lib'
-  paths:
-    app: '../release'
+  paths: { app: '../release' }
   shim:
-    'dat.gui':
-      exports: 'dat'
-    phaser:
-      exports: 'Phaser'
+    'dat.gui': { exports: 'dat' }
+    phaser: { exports: 'Phaser' }
+
 requirejs [
   'phaser'
   'app/game'
-],
-(Phaser, MorningStroll) ->
+], (Phaser, MorningStroll) ->
 
   'use strict'
 
