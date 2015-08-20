@@ -22,10 +22,18 @@ define [
 
   class Player
 
+    # Statics
+    # -------
+
+    @Direction: Direction
+
     # Dependencies + Properties
     # -------------------------
 
     constructor: (origin, game, gui) ->
+      @_initialize.apply @, arguments
+
+    _initialize: (origin, game, gui) ->
       @sprite = game.add.sprite origin.x, origin.y, 'player', 17
       @sprite.anchor = new Phaser.Point 0.5, 0.5
 
@@ -33,21 +41,14 @@ define [
       @_initAnimations()
 
       @cursors = game.input.keyboard.createCursorKeys()
-      @direction = Direction.Right
 
       game.physics.arcade.enable @sprite
       @gravity = game.physics.arcade.gravity
       @_initPhysics()
 
-      @_initDebugging gui
+      @_initState()
 
-      # Readonly.
-      # Actions link states. Both correspond to animations.
-      @animation = null
-      @state = 'still' # still, running, rising, falling
-      @nextAction = 'none' # none, start, stop, jump
-      @nextDirection = null
-      @nextState = null
+      @_initDebugging gui
 
     # Public
     # ------
@@ -108,13 +109,13 @@ define [
       @animations.add 'end', [34...53], 12
 
     _initDebugging: (gui) ->
-      @gui = gui
-
       @debugging = on
       @debugTextItems = {}
-      @gui.add(@, 'debugging').onFinishChange => @debugTextItems = {}
-
       @tracing = off
+      return unless gui?
+
+      @gui = gui
+      @gui.add(@, 'debugging').onFinishChange => @debugTextItems = {}
       @gui.add @, 'tracing'
 
       @gui.addFolder 'drag'
@@ -159,6 +160,16 @@ define [
 
       @_jumpTimer = @sprite.game.time.create() # This also acts like a flag.
       @_isTurning = no # Because velocity won't be 0 when turning while running.
+
+    _initState: ->
+      # Readonly.
+      # Actions link states. Both correspond to animations.
+      @animation = null
+      @direction = Direction.Right
+      @state = 'still' # still, running, rising, falling
+      @nextAction = 'none' # none, start, stop, jump
+      @nextDirection = null
+      @nextState = null
 
     # Change
     # ------

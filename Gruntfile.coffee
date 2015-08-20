@@ -65,10 +65,14 @@ module.exports = (grunt) ->
         options:
           specs: [
             'tests/js/*.js'
+            '!tests/js/helpers.js'
           ]
           host: 'http://127.0.0.1:8000/'
           template: require 'grunt-template-jasmine-requirejs'
-          templateOptions: { requireConfigFile: 'release/app.js' }
+          templateOptions:
+            requireConfigFile: 'release/app.js'
+            requireConfig:
+              paths: { test: '../tests/js' }
 
     watch:
       js:
