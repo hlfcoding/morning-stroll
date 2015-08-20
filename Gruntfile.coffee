@@ -49,7 +49,7 @@ module.exports = (grunt) ->
       tests:
         expand: yes
         src: 'tests/**/*.coffee'
-        dest: 'tests/specs/'
+        dest: 'tests/js/'
         ext: '.js'
         flatten: yes
 
@@ -62,7 +62,9 @@ module.exports = (grunt) ->
     jasmine:
       tests:
         options:
-          specs: 'tests/specs/*.js'
+          specs: [
+            'tests/js/*.js'
+          ]
           host: 'http://127.0.0.1:8000/'
           template: require 'grunt-template-jasmine-requirejs'
           templateOptions: { requireConfigFile: 'release/app.js' }
