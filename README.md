@@ -11,6 +11,9 @@ $ grunt install
 # to read some docs
 $ grunt docs
 
+# to run unit tests
+$ grunt test
+
 # to start developing
 $ grunt
 ```
