@@ -6,10 +6,11 @@ define [
   createFakePlayerProps: (player) ->
     sprite:
       body: 
-        drag: {}, setSize: jasmine.createSpy 'setSize'
+        drag: new Phaser.Point(), setSize: jasmine.createSpy 'setSize'
         velocity: new Phaser.Point(), acceleration: new Phaser.Point()
       game:
         time: { create: -> new Phaser.Timer player.sprite.game }
+      scale: new Phaser.Point()
     animations:
       play: jasmine.createSpy('play').and.callFake (name) ->
         { isFinished: no, isPlaying: yes, loop: off, name: name }
