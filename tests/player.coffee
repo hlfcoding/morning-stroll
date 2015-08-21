@@ -13,7 +13,7 @@ define [
       spyOn Player::, '_initialize'
       player = new Player()
       spyOn(player, method).and.callThrough() for method in [
-        '_beginJump'
+        '_beginJump', '_buildJump', '_endJump'
         '_beginRun'
         '_beginTurn', '_endTurn'
         '_playAnimation'
@@ -71,3 +71,60 @@ define [
           expect(player._beginRun).toHaveBeenCalled()
 
         testStartAnimation()
+
+    describe 'when up key is down', ->
+      initialYAcceleration = null
+
+      beforeEach ->
+        player.cursors.up.isDown = yes
+        initialYAcceleration = player.acceleration.y
+        player.update()
+
+      describe 'when still', ->
+        it 'will only begin to jump', ->
+          expect(player.state).toBe 'rising'
+          expect(player._beginJump).toHaveBeenCalled()
+
+          expect(player._buildJump).not.toHaveBeenCalled()
+          expect(player._endJump).not.toHaveBeenCalled()
+
+        it 'will play jump animation', ->
+          expect(player.nextAction).toBe 'jump'
+          expect(player._playAnimation).toHaveBeenCalledWith 'jump', undefined
+
+        it 'will not run on jump', ->
+          expect(player._beginRun).not.toHaveBeenCalled()
+
+        it 'will decrease y acceleration', ->
+          expect(player.acceleration.y).toBeLessThan initialYAcceleration
+
+      describe 'when rising', ->
+        beforeEach ->
+          player.update()
+
+        it 'will only continue and build jump', ->
+          expect(player.state).toBe 'rising'
+          expect(player._buildJump).toHaveBeenCalled()
+
+          expect(player._beginJump.calls.count()).toBe 1
+          expect(player._endJump).not.toHaveBeenCalled()
+
+      describe 'when done building', ->
+        beforeEach ->
+          player.update()
+          player.velocity.y = 1
+          player.cursors.up.isDown = no
+          player.cursors.up.isUp = yes
+          player.update() # End jump.
+          player.update() # Fall.
+
+        it 'will only end the jump and start falling', ->
+          expect(player.acceleration.y).toBe initialYAcceleration
+
+          expect(player._beginJump.calls.count()).toBe 1
+          expect(player._buildJump.calls.count()).toBe 1
+
+          expect(player.state).toBe 'falling'
+
+        it 'will play fall animation', ->
+          expect(player._playAnimation).toHaveBeenCalledWith 31, no
