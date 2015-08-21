@@ -5,7 +5,7 @@ define [
   'test/helpers'
 ], (Phaser, _, Player, helpers) ->
 
-  describe 'player state', ->
+  describe 'Player', ->
     game = null
     player = null
 
@@ -13,6 +13,7 @@ define [
       spyOn Player::, '_initialize'
       player = new Player()
       spyOn(player, method).and.callThrough() for method in [
+        '_beginJump'
         '_beginRun'
         '_beginTurn', '_endTurn'
         '_playAnimation'
@@ -21,6 +22,11 @@ define [
 
       player._initPhysics()
       player._initState()
+
+    testStartAnimation = ->
+      it 'will play start animation', ->
+        expect(player.nextAction).toBe 'start'
+        expect(player._playAnimation).toHaveBeenCalledWith 'start', undefined
 
     describe 'when initialized', ->
       it 'is set to still and facing right', ->
@@ -33,7 +39,7 @@ define [
         expect(player.nextDirection).toBeNull()
         expect(player.nextState).toBeNull()
 
-    describe 'when x cursor is down in same direction', ->
+    describe 'when x cursor key is down in same direction', ->
       beforeEach ->
         player.cursors.right.isDown = yes
         player.update()
@@ -43,15 +49,13 @@ define [
         expect(player.nextDirection).toBe Player.Direction.Right
 
       describe 'when still', ->
-        it 'will begin run', ->
+        it 'will begin to run', ->
           expect(player.state).toBe 'running'
           expect(player._beginRun).toHaveBeenCalled()
 
-        it 'will play start animation', ->
-          expect(player.nextAction).toBe 'start'
-          expect(player._playAnimation).toHaveBeenCalledWith 'start', undefined
+        testStartAnimation()
 
-    describe 'when x cursor is down in opposite direction', ->
+    describe 'when x cursor key is down in opposite direction', ->
       beforeEach ->
         player.cursors.left.isDown = yes
         player.update()
@@ -61,10 +65,10 @@ define [
         expect(player.nextDirection).toBe Player.Direction.Left
 
       describe 'when still', ->
-        it 'will immediately (end) turn abd begin run', ->
-          expect(player.nextAction).toBe 'start'
+        it 'will immediately (end) turn and begin to run', ->
           expect(player._isTurning).toBe no
           expect(player.direction).toBe Player.Direction.Left
           expect(player._endTurn).toHaveBeenCalled()
           expect(player._beginRun).toHaveBeenCalled()
-          expect(player._playAnimation).toHaveBeenCalledWith 'start', undefined
+
+        testStartAnimation()
