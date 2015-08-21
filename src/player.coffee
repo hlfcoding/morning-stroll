@@ -154,9 +154,7 @@ define [
       @airFrictionRatio = 1 / 20
       @runAcceleration = 300
 
-      @maxVelocity =
-        x: 200 # Run velocity.
-        y: 1500 # Escape velocity.
+      @maxVelocity = new Phaser.Point 200, 1500 # Run, escape.
 
       @_jumpTimer = @sprite.game.time.create() # This also acts like a flag.
       @_isTurning = no # Because velocity won't be 0 when turning while running.
@@ -216,7 +214,7 @@ define [
     _canBeginJump: ->
       @cursors.up.isDown and (@_isFullyRunning() or @_isFullyStill())
     _canBuildJump: ->
-      @cursors.up.isDown and @_jumpTimer.running
+      @nextAction isnt 'jump' and @cursors.up.isDown and @_jumpTimer.running
     _canEndJump: ->
       @nextAction isnt 'jump' and @_jumpTimer.running and
       (@cursors.up.isUp or @_jumpTimer.ms >= @jumpMaxDuration) # Release to cancel early.
@@ -290,8 +288,9 @@ define [
       @nextDirection? and @nextAction isnt 'start' and
       not (@_isTurning or @nextDirection is @direction)
     _canEndTurn: ->
-      @nextDirection? and @_isAnimationInterruptible() and
-      @_isTurning and @nextDirection is @direction
+      @nextDirection? and @nextAction isnt 'stop' and 
+      @_isTurning and @nextDirection is @direction and
+      @_isAnimationInterruptible()
 
     _beginTurn: ->
       @nextAction = 'stop'

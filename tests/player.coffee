@@ -66,9 +66,8 @@ define [
 
       describe 'when still', ->
         it 'will immediately (end) turn and begin to run', ->
-          expect(player._isTurning).toBe no
+          expect(player._isTurning).toBe yes
           expect(player.direction).toBe Player.Direction.Left
-          expect(player._endTurn).toHaveBeenCalled()
           expect(player._beginRun).toHaveBeenCalled()
 
         testStartAnimation()
