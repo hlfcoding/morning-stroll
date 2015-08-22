@@ -28,6 +28,27 @@ define [
         expect(player.nextAction).toBe 'start'
         expect(player._playAnimation).toHaveBeenCalledWith 'start', undefined
 
+    initialYAcceleration = null
+    runJumpUpdatesUntil = (stopAt) ->
+      player.cursors.up.isDown = yes
+      initialYAcceleration = player.acceleration.y
+      player.update()
+      return if stopAt is 'rising'
+
+      player.update()
+      return if stopAt is 'building'
+
+      player.cursors.up.isDown = no
+      player.cursors.up.isUp = yes
+      player.velocity.y = 1
+      player.update() # End jump.
+      player.update() # Fall.
+      return if stopAt is 'falling'
+
+      player.physics.touching.down = yes
+      player.update()
+      return if stopAt is 'landing'
+
     describe 'when initialized', ->
       it 'is set to still and facing right', ->
         expect(player.state).toBe 'still'
@@ -73,14 +94,9 @@ define [
         testStartAnimation()
 
     describe 'when up key is down', ->
-      initialYAcceleration = null
-
-      beforeEach ->
-        player.cursors.up.isDown = yes
-        initialYAcceleration = player.acceleration.y
-        player.update()
-
       describe 'when still', ->
+        beforeEach -> runJumpUpdatesUntil 'rising'
+
         it 'will only begin to jump', ->
           expect(player.state).toBe 'rising'
           expect(player._beginJump).toHaveBeenCalled()
@@ -99,8 +115,7 @@ define [
           expect(player.acceleration.y).toBeLessThan initialYAcceleration
 
       describe 'when rising', ->
-        beforeEach ->
-          player.update()
+        beforeEach -> runJumpUpdatesUntil 'building'
 
         it 'will only continue and build jump', ->
           expect(player.state).toBe 'rising'
@@ -109,14 +124,9 @@ define [
           expect(player._beginJump.calls.count()).toBe 1
           expect(player._endJump).not.toHaveBeenCalled()
 
+    describe 'when up key is up', ->
       describe 'when done building', ->
-        beforeEach ->
-          player.update()
-          player.velocity.y = 1
-          player.cursors.up.isDown = no
-          player.cursors.up.isUp = yes
-          player.update() # End jump.
-          player.update() # Fall.
+        beforeEach -> runJumpUpdatesUntil 'falling'
 
         it 'will only end the jump and start falling', ->
           expect(player.acceleration.y).toBe initialYAcceleration
@@ -128,3 +138,12 @@ define [
 
         it 'will play fall animation', ->
           expect(player._playAnimation).toHaveBeenCalledWith 31, no
+
+      describe 'when touching another object below', ->
+        beforeEach -> runJumpUpdatesUntil 'landing'
+
+        it 'will begin to land', ->
+          expect(player.state).toBe 'landing'
+
+        it 'will play land animation', ->
+          expect(player._playAnimation).toHaveBeenCalledWith 'land'

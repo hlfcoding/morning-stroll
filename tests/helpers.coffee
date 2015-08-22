@@ -28,6 +28,7 @@ define [
       body: 
         drag: new Phaser.Point(), setSize: jasmine.createSpy 'setSize'
         velocity: new Phaser.Point(), acceleration: new Phaser.Point()
+        touching: {}
       game:
         time: { create: -> new FakeTimer() }
       scale: new Phaser.Point()
@@ -35,7 +36,7 @@ define [
     animations:
       play: jasmine.createSpy('play').and.callFake (name) ->
         { isFinished: no, isPlaying: yes, loop: off, name: name }
-      frame: 17
+      frame: 17 # Initial.
 
     cursors:
       _.mapObject { left: {}, right: {}, up: {}, down: {} }, (key) ->
