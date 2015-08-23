@@ -14,7 +14,7 @@ define [
       player = new Player()
       spyOn(player, method).and.callThrough() for method in [
         '_beginJump', '_buildJump', '_endJump'
-        '_beginRun'
+        '_beginRun', '_buildRun', '_endRun'
         '_beginTurn', '_endTurn'
         '_playAnimation'
       ]
@@ -49,7 +49,8 @@ define [
       return if stopAt is 'landing'
 
     runRunUpdatesUntil = (stopAt, options) ->
-      if options?.backwards then player.cursors.left.isDown = yes
+      if options?.backwards and not (stopAt in ['turn', 'restart'])
+        player.cursors.left.isDown = yes
       else player.cursors.right.isDown = yes
 
       player.update()
@@ -59,11 +60,35 @@ define [
       player.update()
       return if stopAt is 'running'
 
+      unless options?.backwards
+        player.velocity.x = 1
+        player.cursors.right.isDown = no
+        player.cursors.right.isUp = yes
+        player.update()
+        return if stopAt is 'stop'
+
+        player.velocity.x = 0
+        player.update()
+        return if stopAt is 'still'
+
+      player.cursors.right.isDown = no
+      player.cursors.left.isDown = yes
+      player.update()
+      return if stopAt is 'turn'
+
+      endAnimation()
+      player.update()
+      return if stopAt is 'restart'
+
     testStartAnimation = ->
-      it 'will play start animation', ->
-        expect(player.nextAction).toBe 'start'
-        expect(player._playAnimation).toHaveBeenCalledWith 'start', undefined
-        expect(player._isAnimationInterruptible()).toBe no
+      expect(player.nextAction).toBe 'start'
+      expect(player._playAnimation).toHaveBeenCalledWith 'start', undefined
+      expect(player._isAnimationInterruptible()).toBe no
+
+    testStopAnimation = ->
+      expect(player.nextAction).toBe 'stop'
+      expect(player._playAnimation).toHaveBeenCalledWith 'stop', yes
+      expect(player._isAnimationInterruptible()).toBe no
 
     describe 'when initialized', ->
       it 'is set to still and facing right', ->
@@ -91,18 +116,38 @@ define [
           expect(player.state).toBe 'running'
           expect(player._beginRun).toHaveBeenCalled()
 
-        testStartAnimation()
+        it 'will play start animation', testStartAnimation
 
       describe 'when start animation finishes', ->
         beforeEach -> runRunUpdatesUntil 'running'
 
         it 'will be fully running', ->
           expect(player._isFullyRunning()).toBe yes
+          expect(player._buildRun).toHaveBeenCalled()
 
         it 'will play interruptible run animation in loop', ->
           expect(player._playAnimation).toHaveBeenCalledWith 'run', no
           expect(player.animation.loop).toBe on
           expect(player._isAnimationInterruptible()).toBe yes
+
+    describe 'when x cursor key was down but is up in same direction', ->
+
+      it 'will stop running and cancel turns', ->
+        runRunUpdatesUntil 'stop'
+
+        expect(player._endRun).toHaveBeenCalled()
+
+      it 'will play interrupting stop animation', ->
+        runRunUpdatesUntil 'stop'
+
+        testStopAnimation()
+
+      it 'will become still', ->
+        runRunUpdatesUntil 'still'
+
+        expect(player.state).toBe 'still'
+        expect(player._isTurning).toBe no
+        expect(player._endRun).toHaveBeenCalled()
 
     describe 'when x cursor key is down in opposite direction', ->
       it 'can get and set the right direction from #_xDirectionInput', ->
@@ -119,9 +164,26 @@ define [
           expect(player.direction).toBe Player.Direction.Left
           expect(player._beginRun).toHaveBeenCalled()
 
-        testStartAnimation()
+        it 'will play start animation', testStartAnimation
 
-    # TODO: Test turning.
+      describe 'when running in original direction', ->
+        beforeEach -> runRunUpdatesUntil 'turn', backwards: yes
+
+        it 'will begin turn', ->
+          expect(player._isTurning).toBe yes
+          expect(player.direction).toBe Player.Direction.Left
+          expect(player._beginTurn).toHaveBeenCalled()
+
+        it 'will play interrupting stop animation', testStopAnimation
+
+      describe 'when turning to opposite direction', ->
+        beforeEach -> runRunUpdatesUntil 'restart', backwards: yes
+
+        it 'will end turn', ->
+          expect(player._isTurning).toBe no
+          expect(player._endTurn).toHaveBeenCalled()
+
+        it 'will play start animation', testStartAnimation
 
     describe 'when up key is down', ->
       describe 'when still', ->
