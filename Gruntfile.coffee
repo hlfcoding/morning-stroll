@@ -32,6 +32,7 @@ module.exports = (grunt) ->
       docs: ['docs/*']
       js: ['release/*']
       lib: ['lib/*']
+      tests: ['tests/js/*']
 
     connect:
       tests:
@@ -87,5 +88,5 @@ module.exports = (grunt) ->
   grunt.registerTask 'default', ['clean:js', 'coffee:src', 'watch:js']
   grunt.registerTask 'docs', ['clean:docs', 'groc:docs', 'watch:docs']
   grunt.registerTask 'lib', ['clean:lib', 'bower:lib']
-  grunt.registerTask 'test', ['coffee:tests', 'connect:tests', 'jasmine:tests']
+  grunt.registerTask 'test', ['clean:tests', 'coffee:tests', 'connect:tests', 'jasmine:tests']
 
