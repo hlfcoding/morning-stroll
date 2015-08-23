@@ -35,7 +35,7 @@ define [
 
     animations:
       play: jasmine.createSpy('play').and.callFake (name) ->
-        { isFinished: no, isPlaying: yes, loop: off, name: name }
+        { isFinished: no, isPlaying: yes, loop: name is 'run', name: name }
       frame: 17 # Initial.
 
     cursors:
