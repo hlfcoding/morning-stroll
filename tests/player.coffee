@@ -48,6 +48,17 @@ define [
       player.update()
       return if stopAt is 'landing'
 
+    runRunUpdatesUntil = (stopAt, options) ->
+      if options?.backwards then player.cursors.left.isDown = yes
+      else player.cursors.right.isDown = yes
+
+      player.update()
+      return if stopAt is 'start'
+
+      endAnimation()
+      player.update()
+      return if stopAt is 'running'
+
     testStartAnimation = ->
       it 'will play start animation', ->
         expect(player.nextAction).toBe 'start'
@@ -67,15 +78,15 @@ define [
         expect(player.nextState).toBeNull()
 
     describe 'when x cursor key is down in same direction', ->
-      beforeEach ->
-        player.cursors.right.isDown = yes
-        player.update()
-
       it 'can get and set the right direction from #_xDirectionInput', ->
+        runRunUpdatesUntil 'start'
+
         expect(player._xDirectionInput()).toBe Player.Direction.Right
         expect(player.nextDirection).toBe Player.Direction.Right
 
       describe 'when still', ->
+        beforeEach -> runRunUpdatesUntil 'start'
+
         it 'will begin to run', ->
           expect(player.state).toBe 'running'
           expect(player._beginRun).toHaveBeenCalled()
@@ -83,9 +94,7 @@ define [
         testStartAnimation()
 
       describe 'when start animation finishes', ->
-        beforeEach ->
-          endAnimation()
-          player.update()
+        beforeEach -> runRunUpdatesUntil 'running'
 
         it 'will be fully running', ->
           expect(player._isFullyRunning()).toBe yes
@@ -96,15 +105,15 @@ define [
           expect(player._isAnimationInterruptible()).toBe yes
 
     describe 'when x cursor key is down in opposite direction', ->
-      beforeEach ->
-        player.cursors.left.isDown = yes
-        player.update()
-
       it 'can get and set the right direction from #_xDirectionInput', ->
+        runRunUpdatesUntil 'start', backwards: yes
+
         expect(player._xDirectionInput()).toBe Player.Direction.Left
         expect(player.nextDirection).toBe Player.Direction.Left
 
       describe 'when still', ->
+        beforeEach -> runRunUpdatesUntil 'start', backwards: yes
+
         it 'will immediately (end) turn and begin to run', ->
           expect(player._isTurning).toBe yes
           expect(player.direction).toBe Player.Direction.Left
@@ -162,7 +171,7 @@ define [
 
         it 'will play fall animation', ->
           expect(player._playAnimation).toHaveBeenCalledWith 31, no
-          expect(player._isAnimationInterruptible()).toBe yes
+          expect(player._isAnimationInterruptible()).toBe no
 
       describe 'when touching another object below', ->
         beforeEach -> runJumpUpdatesUntil 'landing'
