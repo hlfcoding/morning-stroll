@@ -20,6 +20,14 @@ define [
       @layers = []
       @topZIndex = 1
 
+      # Main knobs.
+      @parallaxFactor = 0.95
+      @parallaxBuffer = 1.7
+      @parallaxTolerance = -64
+
+      # - full - Each image is a layer of the full original.
+      # - clip - Images are only partial, and clip the transparent leftovers.
+      @layoutMode = 'full' # TODO: Support 'clip'.
 
     addImages: (nameTemplate, topZIndex, bottomZIndex = 1) ->
       for zIndex in [bottomZIndex..topZIndex]
