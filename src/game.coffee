@@ -90,7 +90,7 @@ define [
 
     _addBackground: ->
       @background = new Background @game
-      @background.addImage "bg#{zIndex}" for zIndex in [1..16]
+      @background.addImages _.template('bg<%= zIndex %>'), 16
 
     _addMate: ->
       @mate = @game.add.sprite 0, 0, 'mate', 1

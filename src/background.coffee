@@ -8,7 +8,8 @@
 # ------------
 define [
   'phaser'
-], (Phaser) ->
+  'underscore'
+], (Phaser, _) ->
 
   'use strict'
 
@@ -16,8 +17,16 @@ define [
 
     constructor: (game) ->
       @group = game.add.group()
+      @layers = []
+      @topZIndex = 1
 
-    addImage: (name) ->
-      @group.game.add.sprite 0, 0, name
+
+    addImages: (nameTemplate, topZIndex, bottomZIndex = 1) ->
+      for zIndex in [bottomZIndex..topZIndex]
+        name = nameTemplate { zIndex }
+        sprite = @group.game.add.sprite 0, 0, name
+        @group.addChild sprite
+        @layers.push { sprite, zIndex }
+      console.log @group.getBounds()
 
   Background
