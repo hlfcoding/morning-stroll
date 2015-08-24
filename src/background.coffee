@@ -12,6 +12,12 @@ define [
 
   'use strict'
 
-  class Background extends Phaser.Group
+  class Background
+
+    constructor: (game) ->
+      @group = game.add.group()
+
+    addImage: (name) ->
+      @group.game.add.sprite 0, 0, name
 
   Background

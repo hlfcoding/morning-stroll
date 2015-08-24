@@ -6,10 +6,11 @@ define [
   'dat.gui',
   'phaser'
   'underscore'
+  'app/background'
   'app/play-state'
   'app/platforms'
   'app/player'
-], (dat, Phaser, _, PlayState, Platforms, Player) ->
+], (dat, Phaser, _, Background, PlayState, Platforms, Player) ->
 
   'use strict'
 
@@ -41,6 +42,7 @@ define [
 
       width = 416
       height = 600
+      mapHeight = 2912
       renderer = Phaser.AUTO
       parentElementId = 'morning-stroll'
       states =
@@ -60,6 +62,9 @@ define [
       @physics = @game.physics
 
       loader = @game.load
+      for zIndex in [16..1]
+        id = (16 - zIndex + 10000).toString().substr(1)
+        loader.image "bg#{zIndex}", "assets/bg-_#{id}_#{zIndex}.png", @width, @mapHeight
       loader.spritesheet 'mate', 'assets/mate.png', MorningStroll.playerW, MorningStroll.playerH
       loader.spritesheet 'player', 'assets/player.png', MorningStroll.playerW, MorningStroll.playerH
 
@@ -70,6 +75,7 @@ define [
       gui = @gui?.addFolder 'gravity'
       gui.add @physics.arcade.gravity, 'y', 0, 2 * @physics.arcade.gravity.y
 
+      @_addBackground()
       @_addMate()
       @_addPlatforms()
       @_addPlayer()
@@ -81,6 +87,10 @@ define [
     onRender: ->
       @_updateDebugDisplay()
       @_updateDebugOverlays()
+
+    _addBackground: ->
+      @background = new Background @game
+      @background.addImage "bg#{zIndex}" for zIndex in [1..16]
 
     _addMate: ->
       @mate = @game.add.sprite 0, 0, 'mate', 1
