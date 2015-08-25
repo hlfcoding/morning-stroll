@@ -33,6 +33,7 @@ define [
     @playerH: 72
     @playerW: 72
     @groundH: 20
+    @mapH = 2912
 
     constructor: ->
       _.bindAll @, 'onPreload', 'onCreate', 'onUpdate', 'onRender'
@@ -42,7 +43,6 @@ define [
 
       width = 416
       height = 600
-      mapHeight = 2912
       renderer = Phaser.AUTO
       parentElementId = 'morning-stroll'
       states =
@@ -64,7 +64,7 @@ define [
       loader = @game.load
       for zIndex in [16..1]
         id = (16 - zIndex + 10000).toString().substr(1)
-        loader.image "bg#{zIndex}", "assets/bg-_#{id}_#{zIndex}.png", @width, @mapHeight
+        loader.image "bg#{zIndex}", "assets/bg-_#{id}_#{zIndex}.png", @width, MorningStroll.mapH
       loader.spritesheet 'mate', 'assets/mate.png', MorningStroll.playerW, MorningStroll.playerH
       loader.spritesheet 'player', 'assets/player.png', MorningStroll.playerW, MorningStroll.playerH
 
@@ -89,8 +89,9 @@ define [
       @_updateDebugOverlays()
 
     _addBackground: ->
-      @background = new Background @game
+      @background = new Background MorningStroll.mapH, @game
       @background.addImages _.template('bg<%= zIndex %>'), 16
+      @background.layout()
 
     _addMate: ->
       @mate = @game.add.sprite 0, 0, 'mate', 1
