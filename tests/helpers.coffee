@@ -23,6 +23,17 @@ define [
       clearInterval @_interval
       @running = no
 
+  createFakeBackgroundProps: (background) ->
+    group:
+      game:
+        height: 600
+    layers: [
+      { zIndex: 1, sprite: { y: 0, height: 1000, scrollFactorY: 1 } }
+      { zIndex: 2, sprite: { y: 0, height: 1000, scrollFactorY: 1 } }
+      { zIndex: 3, sprite: { y: 0, height: 1000, scrollFactorY: 1 } }
+    ]
+    width: 300
+
   createFakePlayerProps: (player) ->
     sprite:
       body: 

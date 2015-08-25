@@ -16,8 +16,6 @@ define [
   class Background
 
     constructor: (@height, game) ->
-      @group = game.add.group()
-      @width = @group.game.width
       @layers = []
       @topZIndex = 1
 
@@ -29,6 +27,12 @@ define [
       # - full - Each image is a layer of the full original.
       # - clip - Images are only partial, and clip the transparent leftovers.
       @layoutMode = 'full' # TODO: Support 'clip'.
+
+      @_initialize game
+
+    _initialize: (game) ->
+      @group = game.add.group()
+      @width = @group.game.width
 
     addImages: (nameTemplate, topZIndex, bottomZIndex = 1) ->
       @topZIndex = topZIndex
@@ -57,11 +61,11 @@ define [
         # Set scroll factor.
         sprite.scrollFactorY = factor
         # Set shift.
-        shift = -farthest.sprite.y if zIndex is farthest.zIndex
-        sprite.y += shift if shift?
+        shift = if zIndex is farthest.zIndex then -farthest.sprite.y else 0
+        sprite.y += shift
 
       # TODO: Remove the need for this magical-number hack.
-      nearest.sprite.y += 12
+      # nearest.sprite.y += 12
       # @group.height = shift + nearest.sprite.height / (@parallaxFactor ** 0.32)
 
       @group.y = -(@group.height - @group.game.height)
