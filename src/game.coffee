@@ -62,6 +62,7 @@ define [
       @physics = @game.physics
 
       loader = @game.load
+      loader.image 'balcony', 'assets/tiles-auto-balcony.png'
       for zIndex in [16..1]
         id = (16 - zIndex + 10000).toString().substr(1)
         loader.image "bg#{zIndex}", "assets/bg-_#{id}_#{zIndex}.png", @width, MorningStroll.mapH
@@ -101,7 +102,11 @@ define [
       manager.play 'end' # @test
 
     _addPlatforms: ->
-      @platforms = new Platforms { groundH: MorningStroll.groundH }, @game, @gui?.addFolder 'platforms'
+      @platforms = new Platforms 
+        groundH: MorningStroll.groundH
+        tileImageKey: 'balcony'
+      , @game, @gui?.addFolder 'platforms'
+      @platforms.makeMap()
 
     _addPlayer: ->
       y = @game.world.height - MorningStroll.playerH - MorningStroll.groundH
