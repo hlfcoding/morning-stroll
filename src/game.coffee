@@ -72,8 +72,9 @@ define [
       @physics.startSystem Phaser.Physics.ARCADE
 
       @physics.arcade.gravity.y = 600
-      gui = @gui?.addFolder 'gravity'
-      gui.add @physics.arcade.gravity, 'y', 0, 2 * @physics.arcade.gravity.y
+      if @debugging
+        gui = @gui?.addFolder 'gravity'
+        gui.add @physics.arcade.gravity, 'y', 0, 2 * @physics.arcade.gravity.y
 
       @_addBackground()
       @_addMate()
@@ -112,6 +113,8 @@ define [
       @physics.arcade.collide @player.sprite, @platforms.group
 
     _updateDebugDisplay: ->
+      return unless @debugging
+
       gutter = 2 * @debugFontSize
       line = kPhaserLineRatio * @debugFontSize
 
@@ -127,6 +130,8 @@ define [
           layoutY += line
 
     _updateDebugOverlays: ->
+      return unless @debugging
+
       @debug.body @platforms.ground
       @debug.body @player.sprite if @player.debugging
 
