@@ -25,41 +25,11 @@ package
     // Tileset that works with OFF mode (do what you want mode)
     [Embed(source='data/tiles-manual-placeholder.png')]private static var ImgCustomTiles:Class;
 
-    [Embed(source='data/player.png')]private static var ImgPlayer:Class;
-    [Embed(source='data/mate.png')]private static var ImgMate:Class;
-
     [Embed(source="data/morning-stroll.mp3")]private static var SndMain:Class;
-
-    // From farthest to closest.
-    [Embed(source='data/bg-_0015_1.png')]private static var ImgBg1:Class;
-    [Embed(source='data/bg-_0014_2.png')]private static var ImgBg2:Class;
-    [Embed(source='data/bg-_0013_3.png')]private static var ImgBg3:Class;
-    [Embed(source='data/bg-_0012_4.png')]private static var ImgBg4:Class;
-    [Embed(source='data/bg-_0011_5.png')]private static var ImgBg5:Class;
-    [Embed(source='data/bg-_0010_6.png')]private static var ImgBg6:Class;
-    [Embed(source='data/bg-_0009_7.png')]private static var ImgBg7:Class;
-    [Embed(source='data/bg-_0008_8.png')]private static var ImgBg8:Class;
-    [Embed(source='data/bg-_0007_9.png')]private static var ImgBg9:Class;
-    [Embed(source='data/bg-_0006_10.png')]private static var ImgBg10:Class;
-    [Embed(source='data/bg-_0005_11.png')]private static var ImgBg11:Class;
-    [Embed(source='data/bg-_0004_12.png')]private static var ImgBg12:Class;
-    [Embed(source='data/bg-_0003_13.png')]private static var ImgBg13:Class;
-    [Embed(source='data/bg-_0002_14.png')]private static var ImgBg14:Class;
-    [Embed(source='data/bg-_0001_15.png')]private static var ImgBg15:Class;
-    [Embed(source='data/bg-_0000_16.png')]private static var ImgBg16:Class;
 
     // The dynamically generated and extended FlxTilemap.
     private var platform:Platform;
     private static const FLOOR_HEIGHT:uint = 32;
-
-    // The extend FlxSprite.
-    private static const PLAYER_WIDTH:uint = 72;
-    private static const PLAYER_HEIGHT:uint = 72;
-    private var player:Player;
-    private var mate:FlxSprite;
-
-    // The background with parallax.
-    private var bg:Background;
 
     // Some game switches.
     private var fallChecking:Boolean;
@@ -91,12 +61,6 @@ package
       setupPlatform();
       setupPlatformAfter();
       setupPlatformAndPlayerAfter();
-
-      // For now, we add things in order to get correct layering.
-      add(bg);
-      add(platform);
-      add(mate);
-      add(player);
 
       // Internals.
       // Don't do expensive operations too often, if possible.
@@ -137,8 +101,6 @@ package
     // The platform is the first thing that gets set up.
     private function setupPlatform():void
     {
-      setupBg();
-
       // Creates a new tilemap with no arguments.
       platform = new Platform();
 
@@ -262,36 +224,6 @@ package
       updateAudio(true);
       FlxG.music.play();
       FlxG.watch(FlxG.music, 'volume', 'Volume');
-    }
-    private function setupBg():void
-    {
-      // Load our scenery.
-      bg = new Background();
-      bg.bounds.x = 0;
-      bg.bounds.y = 0;
-      bg.parallaxFactor = 0.95; // Our first bg is more "foreground".
-      bg.parallaxBuffer = 1.7;
-      bg.parallaxTolerance = -64;
-
-      // This is the lamest image loading ever.
-      bg.addImage(ImgBg1);
-      bg.addImage(ImgBg2);
-      bg.addImage(ImgBg3);
-      bg.addImage(ImgBg4);
-      bg.addImage(ImgBg5);
-      bg.addImage(ImgBg6);
-      bg.addImage(ImgBg7);
-      bg.addImage(ImgBg8);
-      bg.addImage(ImgBg9);
-      bg.addImage(ImgBg10);
-      bg.addImage(ImgBg11);
-      bg.addImage(ImgBg12);
-      bg.addImage(ImgBg13);
-      bg.addImage(ImgBg14);
-      bg.addImage(ImgBg15);
-      bg.addImage(ImgBg16);
-
-      bg.layout();
     }
 
     // Update Routines

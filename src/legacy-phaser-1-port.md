@@ -1,75 +1,8 @@
-```coffee
-  Group = Phaser.Group
-  Rectangle = Phaser.Rectangle
-
-  class Background extends Phaser.Group
-
-    # Properties
-    # ----------
-
-    # Main knobs.
-    parallaxFactor: 0.9
-    parallaxBuffer: 2.0
-    parallaxTolerance: 0
-
-    # To work with our foreground.
-    bounds: null
-
-    # Modes enum:
-    #
-    # - Clip backgrounds: Images are only partial, and clip the transparent leftovers.
-    # - Full backgrounds: Each image is the full original.
-    mode: 0
-    @CLIP_BGS: 1
-    @FULL_BGS: 2
-
-    # Phaser Methods
-    # --------------
-
-    constructor: (@game, @maxSize=0) ->
-      @bounds = new Rectangle()
-      @mode = C.FULL_BGS
-      super @game, @maxSize
-    destroy: ->
-      super()
-      @bounds = null
-
-    # Own Methods
-    # -----------
-
-    layout: ->
-
-  # Alias class.
-  C = Background
-```
 
 ```coffee
   Tilemap = Phaser.Tilemap
 
   class MorningStroll extends Phaser.Game
-
-    # Properties
-    # ----------
-
-    @WIDTH:   416
-    @HEIGHT:  600
-    @ID:      'morning-stroll'
-
-    @BGS:  [1..16]
-
-    # Phaser Methods
-    # --------------
-
-    constructor: (width, height, renderer, parent, state, transparent, antialias) ->
-      width = C.WIDTH
-      height = C.HEIGHT
-      renderer = Phaser.AUTO
-      parent = C.ID
-      state =
-        preload: @onPreload
-        create: @onCreate
-        update: @onUpdate
-      super arguments...
 
     # Own Methods
     # -----------
@@ -77,22 +10,6 @@
     onPreload: ->
       @load.tilemap 'balcony', @assetURL('tiles-auto-balcony.png'), null, '', Tilemap.CSV
       @load.audio 'bgm', ['morning-stroll.mp3'], yes
-      pad = '0000'
-      for i in [1...C.BGS]
-        @load.image "bg#{i}", @bgAssetURL(i)
-
-    onCreate: ->
-      @switchState new PlayState @
-    onUpdate: ->
-
-    start: ->
-
-    assetURL: (file) -> "assets/#{file}"
-
-    bgAssetURL: (n) ->
-      file = ("#{pad}#{i}").slice -pad.length
-      file = "bg-_#{file}_i.png"
-      @assetURL file
 
   # Alias class.
   C = MorningStroll
@@ -295,20 +212,16 @@
       @world = @game.world
       add = _.bind @world.group.add, @world.group
       @didSetupBg.add ->
-        add @_bg
         @_setupPlatform()
         console.log 'Did setup background.'
       , @
       @didSetupPlatform.add ->
-        add @_platform
         @_setupPlayer @_platform.startingPoint
         @_setupPlayerToPlatform()
         @_setupMate @_platform.endingPoint
         console.log 'Did setup platform.'
       , @
       @didSetupCharacters.add ->
-        add @_mate
-        add @_player
         @_setupCamera()
         @_setupAudio()
         console.log 'Did setup characters.'
@@ -374,23 +287,6 @@
       while @_platform.overlaps(@_player)
         if @_player.x <= 0 then @_player.x = @game.width
         @_player.x -= @_platform.tileWidth
-
-    _setupMate: (point) ->
-
-    # `_setupBg`
-    _setupBg: ->
-
-      # - Load our scenery.
-      @_bg = new Background @game
-      @_bg.bounds.x = @_bg.bounds.y = 0
-      @_bg.parallaxFactor = 0.95
-      @_bg.parallaxBuffer = 1.7
-      @_bg.parallaxTolerance = -64
-      # - TODO: Image loading.
-      @_bg.layout()
-
-      # - Hook.
-      @didSetupBg.dispatch()
 
     _setupCamera: ->
     _setupAudio: ->
