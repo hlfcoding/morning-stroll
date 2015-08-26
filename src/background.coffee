@@ -42,16 +42,16 @@ define [
         @group.addChild sprite
         @layers.push { sprite, zIndex }
 
-    # Apply the scroll factors using a simple algorithm:
-    # - Exponential distance (and scroll factor).
-    # - Apply a factor to that to increase, as well as a buffer to decrease.
-    # Also set the bounds on the entire group, based on the nearest (last) layer.
     layout: ->
+      # Offset group by its original (map) height while it's not resized from
+      # the layer shifting below.
+      @group.y = -(@group.height - @group.game.height)
+
+      # Set vertical scroll factor and offset.
       nearest = @nearestLayer()
       farthest = @farthestLayer()
-
       for {sprite, zIndex} in @layers
-        # Factor in exponentially and constrain.
+        # Factor in z-index exponentially and constrain.
         factor = (zIndex / @layers.length) ** 2 * @parallaxFactor
         # Add buffer to further constrain.
         factor = (factor + @parallaxBuffer / 2) / @parallaxBuffer
@@ -67,8 +67,6 @@ define [
       # TODO: Remove the need for this magical-number hack.
       # nearest.sprite.y += 12
       # @group.height = shift + nearest.sprite.height / (@parallaxFactor ** 0.32)
-
-      @group.y = -(@group.height - @group.game.height)
 
     farthestLayer: -> _.findWhere @layers, { zIndex: 1 }
     nearestLayer: -> _.findWhere @layers, { zIndex: @topZIndex }
