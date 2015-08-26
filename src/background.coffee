@@ -15,7 +15,9 @@ define [
 
   class Background
 
-    constructor: (@height, game) ->
+    constructor: (@config, game) ->
+      @height = @config.height
+
       @layers = []
       @topZIndex = 1
 

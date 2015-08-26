@@ -11,7 +11,7 @@ define [
 
     beforeEach ->
       spyOn Background::, '_initialize'
-      bg = new Background 1000
+      bg = new Background { height: 1000 }
       _.extend bg, helpers.createFakeBackgroundProps(bg)
 
     describe 'when initialized', ->

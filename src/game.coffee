@@ -90,7 +90,7 @@ define [
       @_updateDebugOverlays()
 
     _addBackground: ->
-      @background = new Background MorningStroll.mapH, @game
+      @background = new Background { height: MorningStroll.mapH }, @game
       @background.addImages _.template('bg<%= zIndex %>'), 16
       @background.layout()
 
@@ -106,7 +106,7 @@ define [
     _addPlayer: ->
       y = @game.world.height - MorningStroll.playerH - MorningStroll.groundH
       origin = new Phaser.Point 0, y
-      @player = new Player origin, @game, @gui?.addFolder 'player'
+      @player = new Player { origin }, @game, @gui?.addFolder 'player'
       @player.debugging = @debugging
 
     _updateCollisions: ->

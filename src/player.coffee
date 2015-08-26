@@ -30,11 +30,11 @@ define [
     # Dependencies + Properties
     # -------------------------
 
-    constructor: (origin, game, gui) ->
-      @_initialize.apply @, arguments
+    constructor: (@config, game, gui) ->
+      @_initialize game, gui
 
-    _initialize: (origin, game, gui) ->
-      @sprite = game.add.sprite origin.x, origin.y, 'player', 17
+    _initialize: (game, gui) ->
+      @sprite = game.add.sprite @config.origin.x, @config.origin.y, 'player', 17
       @sprite.anchor = new Phaser.Point 0.5, 0.5
 
       @animations = @sprite.animations
