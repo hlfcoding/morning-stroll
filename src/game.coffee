@@ -65,7 +65,7 @@ define [
       loader.image 'balcony', 'assets/tiles-auto-balcony.png'
       for zIndex in [16..1]
         id = (16 - zIndex + 10000).toString().substr(1)
-        loader.image "bg#{zIndex}", "assets/bg-_#{id}_#{zIndex}.png", @width, MorningStroll.mapH
+        loader.image "bg#{zIndex}", "assets/bg-_#{id}_#{zIndex}.png"
       loader.spritesheet 'mate', 'assets/mate.png', MorningStroll.playerW, MorningStroll.playerH
       loader.spritesheet 'player', 'assets/player.png', MorningStroll.playerW, MorningStroll.playerH
 
