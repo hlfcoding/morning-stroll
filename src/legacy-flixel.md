@@ -664,15 +664,6 @@ package
         cEnd = 0;
         rType = EMPTY_ROW;
       };
-      // Prepare for full plot.
-      setupFloorRow = function():void
-      {
-        col = [];
-        cStart = 0;
-        cEnd = cols;
-        rSpacing = 0;
-        rType = SOLID_ROW;
-      };
       // Prepare for partial plot. This just does a simple random, anything
       // more complicated is delegated.
       setupLedgeRow = function():void
@@ -698,28 +689,12 @@ package
         // Prepare for next ledge.
         rSpacing = this.minLedgeSpacing.y + int(Math.random() * spacingRange);
       };
-      // Reset on each row.
-      setupEachRow = function():void
-      {
-        inverse = false;
-        if (l == 0) {
-          col = [];
-        }
-      };
       for ( // For each row.
         r = rStart;
         (dir == TOP_BOTTOM && r < rEnd) || (dir == BOTTOM_TOP && r >= rEnd);
         (dir == TOP_BOTTOM) ? r++ : r--
       ) 
       {
-        if (r == rStart && this.hasFloor)
-        {
-          setupFloorRow.call(this);
-          rSpacing = this.minLedgeSpacing.y;
-        }
-        else
-        {
-          setupEachRow.call(this);
           if (
             (dir == TOP_BOTTOM && r+rClearance >= rEnd) ||
             (dir == BOTTOM_TOP && r-rClearance <= rEnd) 
@@ -757,7 +732,6 @@ package
               l = 0;
             }
           }
-        }
         addRow.call(this);
       }
 //      FlxG.log('Ledges: '+rL);

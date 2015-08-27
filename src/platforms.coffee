@@ -32,7 +32,6 @@ define [
       @_initPhysics game.world
 
       @tilemap = game.add.tilemap null, @tileWidth, @tileHeight
-      console.log @tilemap.width
       @ledges = []
 
     _initPhysics: (world) ->
@@ -47,14 +46,60 @@ define [
       @tilemap.createFromTiles @tiles, null, @config.tileImageKey, 0, @group
 
     _generateTiles: ->
-      @_generator = {}
+      mapSize = @group.game.world.getBounds()
+
+      vars =
+        facing: 'right' # left, right
+
+        iCol: -1
+        iColStart: -1
+        iColEnd: -1
+
+        iRow: -1
+        iRowStart: -1
+        iRowEnd: 0
+
+        iLedge: -1
+        iLedgeLayer: -1
+
+        numCols: Math.floor mapSize.height / @tileHeight
+        numRows: Math.floor mapSize.width / @tileWidth
+
+        rowSpacing: -1
+        rowTiles: null
+        rowType: null # empty, ledge, solid
+
+        tileTypeInverse: off
+
       @tiles = []
+
+      vars.iRow = vars.iRowStart = vars.numRows - 1
+      until vars.iRow < vars.iRowEnd
+        if vars.iRow is vars.iRowStart
+          @_setupFloorRow vars
+        else
+          @_setupEachRow vars
+
+        vars.iRow--
+
 
     _addRow: ->
     _setupEmptyRow: ->
-    _setupFloorRow: ->
+
+    _setupFloorRow: (vars) ->
+      # Prepare for full plot.
+      vars.iColStart = 0
+      vars.iColEnd = vars.numCols - 1
+      vars.rowSpacing = @minLedgeSpacing.y
+      vars.rowTiles = []
+      vars.rowType = 'solid'
+
     _setupLedgeRow: ->
-    _setupEachRow: ->
+
+    _setupEachRow: (vars) ->
+      # Reset on each row.
+      vars.tileTypeInverse = off
+      vars.rowTiles = [] if vars.iLedgeLayer is 0
 
   class Ledge
 

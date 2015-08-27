@@ -50,9 +50,6 @@
     # Own Methods
     # -----------
 
-    numRows: -> Math.floor @bounds.height / @tileHeight
-    numCols: -> Math.floor @bounds.width / @tileWidth
-
     generateData: ->
       rows = @numRows()
       cols = @numCols()
