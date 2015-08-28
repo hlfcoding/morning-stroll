@@ -605,10 +605,6 @@ package
       var addRow:Function, setupEmptyRow:Function, setupFloorRow:Function,
           setupLedgeRow:Function, setupEachRow:Function;
 
-      // Estimate the ledge row count.
-      this.ledgeRowCount = rows /
-        ((this.maxLedgeSpacing.y + this.minLedgeSpacing.y) / 2 +
-          (this.ledgeThickness - 1));
 //      FlxG.log('Ledge row count: '+this.ledgeRowCount);
       // Plot the row, given the type. 
       addRow = function():void
@@ -649,76 +645,6 @@ package
         }
         mapData = col.join(',')+"\n" + mapData;
       };
-      // Prepare for partial plot. This just does a simple random, anything
-      // more complicated is delegated.
-      setupLedgeRow = function():void
-      {
-        rL++;
-        rSize = this.minLedgeSize + uint(Math.random() * sizeRange);
-        pFacing = facing;
-        if (facing == FlxObject.LEFT)
-        {
-          cStart = 0;
-          cEnd = rSize;
-          // Prepare for next ledge.
-          facing = FlxObject.RIGHT;
-        }
-        else if (facing == FlxObject.RIGHT)
-        {
-          cStart = cols - rSize;
-          cEnd = cols;
-          // Prepare for next ledge.
-          facing = FlxObject.LEFT;
-        }
-        rType = LEDGE_ROW;
-        // Prepare for next ledge.
-        rSpacing = this.minLedgeSpacing.y + int(Math.random() * spacingRange);
-      };
-      for ( // For each row.
-        r = rStart;
-        (dir == TOP_BOTTOM && r < rEnd) || (dir == BOTTOM_TOP && r >= rEnd);
-        (dir == TOP_BOTTOM) ? r++ : r--
-      ) 
-      {
-          if (
-            (dir == TOP_BOTTOM && r+rClearance >= rEnd) ||
-            (dir == BOTTOM_TOP && r-rClearance <= rEnd) 
-          )
-          {
-            setupEmptyRow.call(this);
-            if (l > 0)
-            {
-              l--;
-              // TODO - Temp fix.
-              PlatformLedge(this.ledges[this.ledges.length-1]).rowIndex =
-                (dir == TOP_BOTTOM) ? r : rStart - r;
-//              FlxG.log('Finishing up last row...');
-            }
-            else
-            {
-              col = [];
-            }
-          }
-          else
-          {
-            if (rSpacing == 0)
-            {
-              setupLedgeRow.call(this);
-              l = this.ledgeThickness-1;
-            }
-            else if (l > 0)
-            {
-              l--;
-            }
-            else
-            {
-              setupEmptyRow.call(this);
-              rSpacing--;
-              l = 0;
-            }
-          }
-        addRow.call(this);
-      }
 //      FlxG.log('Ledges: '+rL);
 //      FlxG.log('Map: '+this.mapData);
 

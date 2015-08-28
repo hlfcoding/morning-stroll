@@ -50,28 +50,6 @@
     # Own Methods
     # -----------
 
-    generateData: ->
-      rows = @numRows()
-      cols = @numCols()
-      mapData = ''
-      sizeRange = @maxLedgeSize - @minLedgeSize
-      spacingRange = @maxLedgeSpacing.y - @minLedgeSpacing.y
-      rClearance = @minLedgeSpacing.y + @ledgeThickness
-      facing = Collision.RIGHT
-      if @tilingStart is Collision.FLOOR
-        rStart = rows - 1
-        rEnd = 0
-        dir = C._BOTTOM_TOP
-      else
-        rEnd = rows - 1
-        rStart = 0
-        dir = C._TOP_BOTTOM
-      # Estimate the ledge row count.
-      @ledgeRowCount = rows /
-        ((@maxLedgeSpacing.y + @minLedgeSpacing.y) / 2 +
-          (@ledgeThickness - 1))
-      #console.log 'Ledge row count', @ledgeRowCount
-
     isAtEndingPoint: (gameObject) ->
       # Bottom-to-top.
       if @endingPoint.y < @startingPoint.y then gameObject <= @endingPoint.y
