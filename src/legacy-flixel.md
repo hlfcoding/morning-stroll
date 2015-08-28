@@ -605,14 +605,6 @@ package
       var addRow:Function, setupEmptyRow:Function, setupFloorRow:Function,
           setupLedgeRow:Function, setupEachRow:Function;
 
-      mapData = '';
-      sizeRange = (this.maxLedgeSize - this.minLedgeSize);
-      spacingRange = (this.maxLedgeSpacing.y - this.minLedgeSpacing.y);
-      rClearance = this.minLedgeSpacing.y + this.ledgeThickness;
-      facing = FlxObject.RIGHT;
-      rStart = rows-1;
-      rEnd = 0;
-      dir = BOTTOM_TOP;
       // Estimate the ledge row count.
       this.ledgeRowCount = rows /
         ((this.maxLedgeSpacing.y + this.minLedgeSpacing.y) / 2 +
@@ -656,13 +648,6 @@ package
           }
         }
         mapData = col.join(',')+"\n" + mapData;
-      };
-      // Prepare for emply plot.
-      setupEmptyRow = function():void
-      {
-        cStart = 0;
-        cEnd = 0;
-        rType = EMPTY_ROW;
       };
       // Prepare for partial plot. This just does a simple random, anything
       // more complicated is delegated.

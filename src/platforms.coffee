@@ -64,6 +64,11 @@ define [
 
         numCols: Math.floor mapSize.height / @tileHeight
         numRows: Math.floor mapSize.width / @tileWidth
+        numRowsClearance: @minLedgeSpacing.y + @ledgeThickness
+        numLedgeRows: -1
+
+        rangeLedgeSize: @maxLedgeSize - @minLedgeSize
+        rangeRowSpacing: @maxLedgeSpacing.y - @minLedgeSpacing.y
 
         rowSpacing: -1
         rowTiles: null
@@ -73,18 +78,28 @@ define [
 
       @tiles = []
 
+      numRowsLedge = (@maxLedgeSpacing.y + @minLedgeSpacing.y) / 2 + (@ledgeThickness - 1)
+      vars.ledgeRowCount = vars.numRows / numRowsLedge
       vars.iRow = vars.iRowStart = vars.numRows - 1
+
       until vars.iRow < vars.iRowEnd
         if vars.iRow is vars.iRowStart
           @_setupFloorRow vars
         else
           @_setupEachRow vars
+          if (vars.iRow - vars.numRowsClearance) <= vars.iRowEnd
+            # Fill out the last rows after last ledge.
+            @_setupEmptyRow vars
 
         vars.iRow--
 
-
     _addRow: ->
-    _setupEmptyRow: ->
+
+    _setupEmptyRow: (vars) ->
+      # Prepare for emply plot.
+      vars.iColStart = 0
+      vars.iColEnd = 0
+      vars.rowType = 'empty'
 
     _setupFloorRow: (vars) ->
       # Prepare for full plot.
