@@ -48,6 +48,8 @@ define [
     _generateTiles: ->
       mapSize = @group.game.world.getBounds()
 
+    _createTileGeneratorState: ->
+      mapSize = @group.game.world.getBounds()
       vars =
         facing: 'right' # left, right
         prevFacing: null
@@ -77,6 +79,9 @@ define [
         rowType: null # empty, ledge, solid
 
         tileTypeInverse: off
+
+    _generateTiles: ->
+      vars = @_createTileGeneratorState()
 
       @tiles = []
 
@@ -120,7 +125,35 @@ define [
 
       console.log @tiles, vars.iRowStart
 
+    _addLedgeDifficulty: (ledge) -> ledge
+
     _addRow: (vars) ->
+      if vars.rowType is 'ledge'
+        ledge = new Ledge()
+        ledge.index = vars.iLedgeRow
+        ledge.rowIndex = vars.iRowStart - vars.iRow
+        ledge.size = vars.rowSize
+        ledge.spacing = vars.rowSpacing
+        ledge.start = vars.iColStart
+        ledge.end = vars.iColEnd
+        ledge.facing = vars.prevFacing
+        # Transform.
+        ledge = @_addLedgeDifficulty ledge
+        # Save.
+        @ledges.push ledge
+        # Unpack.
+        vars.iColStart = ledge.start
+        vars.iColEnd = ledge.end
+      # Build row's tiles.
+      unless vars.rowTiles.length
+        for c in [0...vars.iColStart]
+          vars.rowTiles.push if vars.tileTypeInverse then Tile.Solid else Tile.Empty
+        for c in [vars.iColStart...vars.iColEnd]
+          vars.rowTiles.push if vars.tileTypeInverse then Tile.Empty else Tile.Solid
+        for c in [vars.iColEnd...vars.numCols]
+          vars.rowTiles.push if vars.tileTypeInverse then Tile.Solid else Tile.Empty
+      # Add tiles.
+      @tiles.push vars.rowTiles
 
     _setupEmptyRow: (vars) ->
       # Prepare for emply plot.
@@ -162,7 +195,14 @@ define [
 
   class Ledge
 
-    constructor: (@index, @rowIndex, @size, @spacing, @start, @end, @facing) ->
+    constructor: ->
+      @index = -1
+      @rowIndex = -1
+      @size = -1
+      @spacing = -1
+      @start = -1
+      @end = -1
+      @facing = 'left'
 
 
   Platforms
