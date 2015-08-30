@@ -31,8 +31,8 @@ define [
       @group.enableBody = on
       @_initPhysics game.world
 
-      @tilemap = game.add.tilemap null, @tileWidth, @tileHeight
       @ledges = []
+      @makeMap game
 
     _initPhysics: (world) ->
       @ground = @group.create 0, world.height - @config.groundH # @test
@@ -41,12 +41,14 @@ define [
       @ground.body.collideWorldBounds = on
       @ground.body.immovable = on
 
-    makeMap: ->
+    makeMap: (game) ->
       @_generateTiles() unless @tiles?
-      @tilemap.createFromTiles @tiles, null, @config.tileImageKey, 0, @group
 
-    _generateTiles: ->
-      mapSize = @group.game.world.getBounds()
+      tilesCSV = (rowCSV = row.join ',' for row in @tiles).join "\n"
+      game.load.tilemap 'platforms', null, tilesCSV
+
+      @tilemap = game.add.tilemap 'platforms', @tileWidth, @tileHeight
+      @tilemap.addTilesetImage @config.tileImageKey
 
     _createTileGeneratorState: ->
       mapSize = @group.game.world.getBounds()

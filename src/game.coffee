@@ -106,7 +106,6 @@ define [
         groundH: MorningStroll.groundH
         tileImageKey: 'balcony'
       , @game, @gui?.addFolder 'platforms'
-      @platforms.makeMap()
 
     _addPlayer: ->
       y = @game.world.height - MorningStroll.playerH - MorningStroll.groundH
