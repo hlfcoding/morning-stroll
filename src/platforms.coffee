@@ -127,7 +127,18 @@ define [
 
       console.log @tiles, vars.iRowStart
 
-    _addLedgeDifficulty: (ledge) -> ledge
+    _addLedgeDifficulty: (ledge) ->
+      easiness = Math.pow (@numLedgeRows / ledge.index * 3), 0.3
+      # Amplify.
+      ledge.spacing = Math.round ledge.spacing / easiness
+      ledge.size = Math.round ledge.size * easiness
+      # Normalize.
+      ledge.spacing = Phaser.Math.clamp ledge.spacing, @minLedgeSpacing.y, @maxLedgeSpacing.y
+      ledge.size = Phaser.Math.clamp ledge.size, @minLedgeSize, @maxLedgeSize
+      # Update.
+      switch ledge.facing
+        when 'left' then ledge.end = ledge.size
+        when 'right' then ledge.start = ledge.end - ledge.size
 
     _addRow: (vars) ->
       if vars.rowType is 'ledge'
@@ -140,7 +151,7 @@ define [
         ledge.end = vars.iColEnd
         ledge.facing = vars.prevFacing
         # Transform.
-        ledge = @_addLedgeDifficulty ledge
+        @_addLedgeDifficulty ledge
         # Save.
         @ledges.push ledge
         # Unpack.

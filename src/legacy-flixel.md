@@ -352,43 +352,6 @@ package
       }
     }
 
-    // Platform Delegate Methods
-    // -------------------------
-    // Tweak the ledge drawing to directly control difficulty.
-    // Ledges should get smaller as the ending comes closer.
-    public function platformWillSetupLedgeRow(ledge:PlatformLedge):PlatformLedge
-    {
-      // TODO - Harden into config.
-      var facing:String = (ledge.facing == FlxObject.LEFT) ? 'left' : 'right';
-
-      // FlxG.log('Before: '+[facing, ledge.spacing, ledge.size]);
-
-      // The amplifier for the size. Should limit it to 0.5 to 1.5.
-      var factor:Number = Math.pow(Number(platform.ledgeRowCount) / (Number(ledge.index) * 3), 0.3);
-
-      // Amplify.
-      ledge.spacing = FlxU.round(ledge.spacing / factor);
-      ledge.size = FlxU.round(ledge.size * factor);
-
-      // Normalize.
-      ledge.spacing = FlxU.bound(ledge.spacing, platform.minLedgeSpacing.y, platform.maxLedgeSpacing.y);
-      ledge.size = FlxU.bound(ledge.size, platform.minLedgeSize, platform.maxLedgeSize);
-
-      // Update.
-      if (ledge.facing == FlxObject.LEFT)
-      {
-        ledge.end = ledge.size;
-      }
-      else if (ledge.facing == FlxObject.RIGHT)
-      {
-        ledge.start = ledge.end - ledge.size;
-      }
-
-      // FlxG.log('After: '+[facing, ledge.spacing, ledge.size, factor]);
-
-      return ledge;
-    }
-
     // Player Delegate Methods
     // -----------------------
     // Interruptive, once.
