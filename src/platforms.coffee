@@ -175,8 +175,8 @@ define [
       # Prepare for partial plot. This just does a simple random, anything
       # more complicated is delegated.
       vars.iLedgeRow++
-      vars.rowSize = @minLedgeSize + parseInt(Math.random() * vars.sizeRange)
-      vars.rowSpacing = @minLedgeSpacing.y + parseInt(Math.random() * vars.spacingRange) # Prepare for next ledge.
+      vars.rowSize = @minLedgeSize + parseInt(Math.random() * vars.rangeLedgeSize)
+      vars.rowSpacing = @minLedgeSpacing.y + parseInt(Math.random() * vars.rangeRowSpacing) # Prepare for next ledge.
       vars.rowType = 'ledge'
 
       vars.prevFacing = vars.facing
