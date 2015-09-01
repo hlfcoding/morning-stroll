@@ -34,6 +34,8 @@ define [
     ]
     width: 300
 
+  createFakePlatformsProps: (platform) -> {}
+
   createFakePlayerProps: (player) ->
     sprite:
       body: 

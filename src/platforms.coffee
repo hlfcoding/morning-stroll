@@ -17,9 +17,6 @@ define [
   class Platforms
 
     constructor: (@config, game, gui) ->
-      @_initialize game, gui
-
-    _initialize: (game, gui) ->
       @minLedgeSize = 3
       @maxLedgeSize = 5
       @minLedgeSpacing = new Phaser.Point 4, 2
@@ -27,6 +24,9 @@ define [
       @ledgeThickness = 2
       @tileWidth = @tileHeight = 32
 
+      @_initialize game, gui
+
+    _initialize: (game, gui) ->
       @group = game.add.group()
       @group.enableBody = on
       @_initPhysics game.world
