@@ -14,13 +14,10 @@ define [
       bg = new Background { height: 1000 }
       _.extend bg, helpers.createFakeBackgroundProps(bg)
 
-    describe 'when initialized', ->
+    describe 'when constructed', ->
       it 'should have set dimensions', ->
         expect(bg.height).toBeDefined()
         expect(bg.width).toBeDefined()
-
-      it 'should have added group to game', ->
-        expect(bg.group).toBeDefined()
 
       it 'should be using "full" layout mode', ->
         expect(bg.layoutMode).toBe 'full'
@@ -34,15 +31,15 @@ define [
         oldSprites = _.chain(sprites).map(_.clone).value()
         bg.layout()
 
-      it 'should update scroll-factors on each layer', ->
+      it 'updates scroll-factors on each layer', ->
         oldFactors = _.pluck oldSprites, 'scrollFactorY'
         newFactors = _.pluck sprites, 'scrollFactorY'
         expect(newFactors).not.toEqual oldFactors
 
-      it 'should decrease scroll-factor with z-index', ->
+      it 'decreases scroll-factor with z-index', ->
         expect(sprites[0].scrollFactorY).toBeLessThan _.last(sprites).scrollFactorY
 
-      it 'should update y offset for all but nearest layer', ->
+      it 'updates y offset for all but nearest layer', ->
         oldOffsets = _.pluck oldSprites, 'y'
         newOffsets = _.pluck sprites, 'y'
         expect(_.difference(newOffsets, oldOffsets).length).toBe (sprites.length - 1)
