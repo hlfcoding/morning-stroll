@@ -27,3 +27,21 @@ define [
 
       it 'should have empty ledges array', ->
         expect(platforms.ledges).toEqual []
+
+    describe '_createTileGeneratorState', ->
+      state = null
+
+      beforeEach ->
+        helpers.configurePlatformsWithDefaults platforms
+        state = platforms._createTileGeneratorState()
+
+      it 'returns expected number of columns and rows', ->
+        expect(state.numCols).toBe 13
+        expect(state.numRows).toBe 91
+
+      it 'returns expected ledge size and row spacing ranges', ->
+        expect(state.rangeLedgeSize).toBe 2
+        expect(state.rangeRowSpacing).toBe 2
+
+      it 'returns expected base number of ledges', ->
+        expect(state.numLedgeRows).toBe 23

@@ -64,11 +64,11 @@ define [
         iRowStart: -1
         iRowEnd: 0
 
-        iLedgeRow: -1
+        iLedgeRow: -1 # when used, starts at 1
         iLedgeLayer: -1
 
-        numCols: Math.floor mapSize.height / @tileHeight
-        numRows: Math.floor mapSize.width / @tileWidth
+        numCols: Math.floor mapSize.width / @tileWidth
+        numRows: Math.floor mapSize.height / @tileHeight
         numRowsClearance: @minLedgeSpacing.y + @ledgeThickness
         numLedgeRows: -1
 
@@ -82,15 +82,18 @@ define [
 
         tileTypeInverse: off
 
+      numRowsLedge = (@maxLedgeSpacing.y + @minLedgeSpacing.y) / 2 + (@ledgeThickness - 1)
+      vars.numLedgeRows = Math.round vars.numRows / numRowsLedge
+
+      vars
+
     _generateTiles: ->
       vars = @_createTileGeneratorState()
 
       @tiles = []
 
-      numRowsLedge = (@maxLedgeSpacing.y + @minLedgeSpacing.y) / 2 + (@ledgeThickness - 1)
-      vars.numLedgeRows = vars.numRows / numRowsLedge
-      vars.iRow = vars.iRowStart = vars.numRows - 1
 
+      vars.iRow = vars.iRowStart = vars.numRows - 1
       until vars.iRow < vars.iRowEnd
         if vars.iRow is vars.iRowStart
           @_setupFloorRow vars

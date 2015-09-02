@@ -23,6 +23,14 @@ define [
       clearInterval @_interval
       @running = no
 
+  configurePlatformsWithDefaults: (platforms) ->
+    platforms.minLedgeSize = 3
+    platforms.maxLedgeSize = 5
+    platforms.minLedgeSpacing = new Phaser.Point 4, 2
+    platforms.maxLedgeSpacing = new Phaser.Point 8, 4
+    platforms.ledgeThickness = 2
+    platforms.tileWidth = platforms.tileHeight = 32
+
   createFakeBackgroundProps: (background) ->
     group:
       game:
@@ -34,7 +42,11 @@ define [
     ]
     width: 300
 
-  createFakePlatformsProps: (platform) -> {}
+  createFakePlatformsProps: (platform) ->
+    group:
+      game:
+        world:
+          getBounds: -> { width: 416, height: 2912 } # FIXME: Link to source.
 
   createFakePlayerProps: (player) ->
     sprite:
