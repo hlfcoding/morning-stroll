@@ -23,6 +23,7 @@ define [
       @maxLedgeSpacing = new Phaser.Point 8, 4
       @ledgeThickness = 2
       @tileWidth = @tileHeight = 32
+      @ledges = []
 
       @_initialize game, gui
 
@@ -31,7 +32,6 @@ define [
       @group.enableBody = on
       @_initPhysics game.world
 
-      @ledges = []
       @makeMap game
 
     _initPhysics: (world) ->

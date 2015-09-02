@@ -5,7 +5,7 @@ define [
   'test/helpers'
 ], (Phaser, _, Platforms, helpers) ->
 
-  describe 'Platforms', ->
+  fdescribe 'Platforms', ->
     game = null
     platforms = null
 
@@ -14,9 +14,16 @@ define [
       platforms = new Platforms {}
       _.extend platforms, helpers.createFakePlatformsProps(platforms)
 
-    fdescribe 'when initialized', ->
+    describe 'when constructed', ->
       it 'should have set ledge constraints', ->
         expect(platforms.minLedgeSize).toBeDefined()
         expect(platforms.maxLedgeSize).toBeDefined()
         expect(platforms.minLedgeSpacing).toBeDefined()
         expect(platforms.maxLedgeSpacing).toBeDefined()
+
+      it 'should have configured sizes', ->
+        expect(platforms.tileWidth).toBeDefined()
+        expect(platforms.tileHeight).toBeDefined()
+
+      it 'should have empty ledges array', ->
+        expect(platforms.ledges).toEqual []
