@@ -92,6 +92,8 @@ define [
 
       @tiles = []
 
+      vars.iLedgeLayer = 0
+      vars.iLedgeRow = 0
 
       vars.iRow = vars.iRowStart = vars.numRows - 1
       until vars.iRow < vars.iRowEnd
@@ -130,8 +132,8 @@ define [
 
       console.log @tiles, vars.iRowStart
 
-    _addLedgeDifficulty: (ledge) ->
-      easiness = Math.pow (@numLedgeRows / ledge.index * 3), 0.3
+    _addLedgeDifficulty: (ledge, vars) ->
+      easiness = Math.pow (vars.numLedgeRows / ledge.index), 0.3
       # Amplify.
       ledge.spacing = Math.round ledge.spacing / easiness
       ledge.size = Math.round ledge.size * easiness
@@ -140,7 +142,7 @@ define [
       ledge.size = Phaser.Math.clamp ledge.size, @minLedgeSize, @maxLedgeSize
       # Update.
       switch ledge.facing
-        when 'left' then ledge.end = ledge.size
+        when 'left' then ledge.end = ledge.size - 1
         when 'right' then ledge.start = ledge.end - ledge.size
 
     _addRow: (vars) ->
@@ -154,7 +156,7 @@ define [
         ledge.end = vars.iColEnd
         ledge.facing = vars.prevFacing
         # Transform.
-        @_addLedgeDifficulty ledge
+        @_addLedgeDifficulty ledge, vars
         # Save.
         @ledges.push ledge
         # Unpack.
@@ -220,5 +222,6 @@ define [
       @end = -1
       @facing = 'left'
 
+  Platforms.Ledge = Ledge
 
   Platforms
