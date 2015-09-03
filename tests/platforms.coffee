@@ -81,3 +81,32 @@ define [
         platforms._addLedgeDifficulty ledge, vars
 
         expect(ledge.start).toBe 7
+
+    describe '_addRow', ->
+      vars =
+        iColStart: 0
+        iColEnd: 3
+        numLedgeRows: 23
+        rowTiles: []
+        rowType: 'empty'
+
+      it 'generates and adds a row of tiles', ->
+        prevLength = platforms.tiles.length
+        platforms._addRow vars
+
+        expect(vars.rowTiles.length).toBeGreaterThan 0
+        expect(platforms.tiles[0]).toEqual vars.rowTiles
+
+      it 'adds the same row of tiles if called again', ->
+        platforms._addRow vars
+        prevRowTiles = vars.rowTiles
+        platforms._addRow vars
+
+        expect(vars.rowTiles).toBe prevRowTiles
+        expect(platforms.tiles[1]).toEqual platforms.tiles[0]
+
+      it 'adds a ledge if provided correct row type', ->
+        vars.rowType = 'ledge'
+        platforms._addRow vars
+
+        expect(platforms.ledges[0] instanceof Platforms.Ledge).toBe yes

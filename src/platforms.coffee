@@ -24,6 +24,7 @@ define [
       @ledgeThickness = 2
       @tileWidth = @tileHeight = 32
       @ledges = []
+      @tiles = []
 
       @_initialize game, gui
 
@@ -42,7 +43,7 @@ define [
       @ground.body.immovable = on
 
     makeMap: (game) ->
-      @_generateTiles() unless @tiles?
+      @_generateTiles() unless @tiles.length
 
       tilesCSV = (rowCSV = row.join ',' for row in @tiles).join "\n"
       game.load.tilemap 'platforms', null, tilesCSV
@@ -90,7 +91,7 @@ define [
     _generateTiles: ->
       vars = @_createTileGeneratorState()
 
-      @tiles = []
+      @tiles = [] # Reset.
 
       vars.iLedgeLayer = 0
       vars.iLedgeRow = 0
