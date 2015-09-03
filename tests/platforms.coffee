@@ -13,6 +13,7 @@ define [
       spyOn Platforms::, '_initialize'
       platforms = new Platforms {}
       _.extend platforms, helpers.createFakePlatformsProps(platforms)
+      helpers.configurePlatformsWithDefaults platforms
 
     describe 'when constructed', ->
       it 'should have set ledge constraints', ->
@@ -31,9 +32,7 @@ define [
     describe '_createTileGeneratorState', ->
       state = null
 
-      beforeEach ->
-        helpers.configurePlatformsWithDefaults platforms
-        state = platforms._createTileGeneratorState()
+      beforeEach -> state = platforms._createTileGeneratorState()
 
       it 'returns expected number of columns and rows', ->
         expect(state.numCols).toBe 13
@@ -51,7 +50,6 @@ define [
       vars = { numLedgeRows: 23 }
 
       beforeEach ->
-        helpers.configurePlatformsWithDefaults platforms
         ledge = new Platforms.Ledge()
         ledge.index = 1
         ledge.rowIndex = 4
