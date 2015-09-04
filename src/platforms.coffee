@@ -81,8 +81,6 @@ define [
         rowTiles: null
         rowType: null # empty, ledge, solid
 
-        tileTypeInverse: off
-
       numRowsLedge = (@maxLedgeSpacing.y + @minLedgeSpacing.y) / 2 + (@ledgeThickness - 1)
       vars.numLedgeRows = Math.round vars.numRows / numRowsLedge
 
@@ -165,12 +163,9 @@ define [
         vars.iColEnd = ledge.end
       # Build row's tiles.
       unless vars.rowTiles.length
-        for c in [0...vars.iColStart]
-          vars.rowTiles.push if vars.tileTypeInverse then Tile.Solid else Tile.Empty
-        for c in [vars.iColStart...vars.iColEnd]
-          vars.rowTiles.push if vars.tileTypeInverse then Tile.Empty else Tile.Solid
-        for c in [vars.iColEnd...vars.numCols]
-          vars.rowTiles.push if vars.tileTypeInverse then Tile.Solid else Tile.Empty
+        vars.rowTiles.push Tile.Empty for c in [0...vars.iColStart]
+        vars.rowTiles.push Tile.Solid for c in [vars.iColStart...vars.iColEnd]
+        vars.rowTiles.push Tile.Empty for c in [vars.iColEnd...vars.numCols]
       # Add tiles.
       @tiles.push vars.rowTiles
 
@@ -209,7 +204,6 @@ define [
 
     _setupEachRow: (vars) ->
       # Reset on each row.
-      vars.tileTypeInverse = off
       vars.rowTiles = [] if vars.iLedgeLayer is 0
 
   class Ledge
@@ -224,5 +218,6 @@ define [
       @facing = 'left'
 
   Platforms.Ledge = Ledge
+  Platforms.Tile = Tile
 
   Platforms

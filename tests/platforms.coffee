@@ -86,6 +86,7 @@ define [
       vars =
         iColStart: 0
         iColEnd: 3
+        numCols: 13
         numLedgeRows: 23
         rowTiles: []
         rowType: 'empty'
@@ -110,3 +111,10 @@ define [
         platforms._addRow vars
 
         expect(platforms.ledges[0] instanceof Platforms.Ledge).toBe yes
+
+      it 'sets row tiles so only those within start and end indexes are solid', ->
+        vars.rowType = 'ledge'
+        platforms._addRow vars
+
+        expect(platforms.tiles[0][...vars.iColEnd]).not.toContain Platforms.Tile.Empty
+        expect(platforms.tiles[0][vars.iColEnd...]).not.toContain Platforms.Tile.Solid
