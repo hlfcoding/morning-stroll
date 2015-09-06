@@ -129,7 +129,7 @@ define [
 
         vars.iRow--
 
-      console.log @tiles, vars.iRowStart
+      console.table @tiles
 
     _addLedgeDifficulty: (ledge, vars) ->
       easiness = Math.pow (vars.numLedgeRows / ledge.index), 0.3
@@ -142,7 +142,7 @@ define [
       # Update.
       switch ledge.facing
         when 'left' then ledge.end = ledge.size - 1
-        when 'right' then ledge.start = ledge.end - ledge.size
+        when 'right' then ledge.start = ledge.end + 1 - ledge.size
 
     _addRow: (vars) ->
       if vars.rowType is 'ledge'
@@ -161,11 +161,20 @@ define [
         # Unpack.
         vars.iColStart = ledge.start
         vars.iColEnd = ledge.end
+
       # Build row's tiles.
       unless vars.rowTiles.length
-        vars.rowTiles.push Tile.Empty for c in [0...vars.iColStart]
-        vars.rowTiles.push Tile.Solid for c in [vars.iColStart...vars.iColEnd]
-        vars.rowTiles.push Tile.Empty for c in [vars.iColEnd...vars.numCols]
+        for index in [0...vars.numCols]
+          vars.rowTiles.push Tile.Empty if (
+            (0 <= index < vars.iColStart) or
+            (vars.iColEnd < index < vars.numCols) or
+            (vars.iColStart is vars.iColEnd)
+          )
+          vars.rowTiles.push Tile.Solid if (
+            (vars.iColStart <= index <= vars.iColEnd) and
+            (vars.iColStart isnt vars.iColEnd)
+          )
+
       # Add tiles.
       @tiles.push vars.rowTiles
 
@@ -195,11 +204,11 @@ define [
       switch vars.facing
         when 'left'
           vars.iColStart = 0
-          vars.iColEnd = vars.rowSize
+          vars.iColEnd = vars.rowSize - 1
           vars.facing = 'right' # Prepare for next ledge.
         when 'right'
           vars.iColStart = vars.numCols - vars.rowSize
-          vars.iColEnd = vars.numCols
+          vars.iColEnd = vars.numCols - 1
           vars.facing = 'left' # Prepare for next ledge.
 
     _setupEachRow: (vars) ->

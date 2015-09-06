@@ -80,7 +80,7 @@ define [
         ledge.end = 12
         platforms._addLedgeDifficulty ledge, vars
 
-        expect(ledge.start).toBe 7
+        expect(ledge.start).toBe 8
 
     describe '#_addRow', ->
       vars = null
@@ -119,8 +119,8 @@ define [
         vars.rowType = 'ledge'
         platforms._addRow vars
 
-        expect(platforms.tiles[0][...vars.iColEnd]).not.toContain Platforms.Tile.Empty
-        expect(platforms.tiles[0][vars.iColEnd...]).not.toContain Platforms.Tile.Solid
+        expect(platforms.tiles[0][..vars.iColEnd]).not.toContain Platforms.Tile.Empty
+        expect(platforms.tiles[0][vars.iColEnd + 1...]).not.toContain Platforms.Tile.Solid
 
     describe '#_setupEmptyRow', ->
       vars = null
