@@ -83,13 +83,16 @@ define [
         expect(ledge.start).toBe 7
 
     describe '#_addRow', ->
-      vars =
-        iColStart: 0
-        iColEnd: 3
-        numCols: 13
-        numLedgeRows: 23
-        rowTiles: []
-        rowType: 'empty'
+      vars = null
+
+      beforeEach ->
+        vars =
+          iColStart: 0
+          iColEnd: 3
+          numCols: 13
+          numLedgeRows: 23
+          rowTiles: []
+          rowType: 'empty'
 
       it 'generates and adds a row of tiles', ->
         prevLength = platforms.tiles.length
