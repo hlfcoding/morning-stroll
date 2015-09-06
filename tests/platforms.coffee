@@ -188,3 +188,17 @@ define [
 
         expect(vars.iLedgeRow).toBe 1
         expect(vars.prevFacing).toBe 'left'
+
+    describe '#_setupEachRow', ->
+      vars = null
+
+      beforeEach -> vars = { iLedgeLayer: 0 }
+
+      it 'resets row tiles for upcoming row only on first ledge layer', ->
+        platforms._setupEachRow vars
+        expect(vars.rowTiles).toEqual []
+
+        vars.iLedgeLayer++
+        vars.rowTiles.push Platforms.Tile.Solid for c in [0...13]
+        platforms._setupEachRow vars
+        expect(vars.rowTiles).not.toEqual []
