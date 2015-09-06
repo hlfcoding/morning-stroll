@@ -151,3 +151,40 @@ define [
         expect(vars.rowSpacing).toBeDefined()
         expect(vars.rowTiles).toEqual []
         expect(vars.rowType).toBe 'solid'
+
+    describe '#_setupLedgeRow', ->
+      vars = null
+
+      beforeEach ->
+        vars =
+          facing: 'left'
+          iLedgeRow: 0
+          numCols: 13
+          rangeLedgeSize: 2
+          rangeRowSpacing: 2
+
+      it 'resets column indexes for upcoming ledge facing left, with variance', ->
+        platforms._setupLedgeRow vars
+
+        expect(vars.iColStart).toBe 0
+        expect(vars.iColEnd >= platforms.minLedgeSize - 1).toBe yes
+
+      it 'resets column indexes for upcoming ledge facing right, with variance', ->
+        vars.facing = 'right'
+        platforms._setupLedgeRow vars
+
+        expect(vars.iColStart <= 13 - platforms.minLedgeSize).toBe yes
+        expect(vars.iColEnd).toBe 12
+
+      it 'resets row data for upcoming row, with variance', ->
+        platforms._setupLedgeRow vars
+
+        expect(vars.rowSize >= platforms.minLedgeSize).toBe yes
+        expect(vars.rowSpacing >= platforms.minLedgeSpacing.y).toBe yes
+        expect(vars.rowType).toBe 'ledge'
+
+      it 'updates other related state', ->
+        platforms._setupLedgeRow vars
+
+        expect(vars.iLedgeRow).toBe 1
+        expect(vars.prevFacing).toBe 'left'

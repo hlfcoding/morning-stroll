@@ -194,7 +194,7 @@ define [
 
     _setupLedgeRow: (vars) ->
       # Prepare for partial plot. This just does a simple random, anything
-      # more complicated is delegated.
+      # more complicated is delegated to _addLedgeDifficulty.
       vars.iLedgeRow++
       vars.rowSize = @minLedgeSize + parseInt(Math.random() * vars.rangeLedgeSize)
       vars.rowSpacing = @minLedgeSpacing.y + parseInt(Math.random() * vars.rangeRowSpacing) # Prepare for next ledge.
