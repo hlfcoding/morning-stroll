@@ -170,7 +170,7 @@ define [
       @tiles.push vars.rowTiles
 
     _setupEmptyRow: (vars) ->
-      # Prepare for emply plot.
+      # Prepare for empty plot.
       vars.iColStart = 0
       vars.iColEnd = 0
       vars.rowType = 'empty'

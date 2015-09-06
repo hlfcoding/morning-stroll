@@ -121,3 +121,17 @@ define [
 
         expect(platforms.tiles[0][...vars.iColEnd]).not.toContain Platforms.Tile.Empty
         expect(platforms.tiles[0][vars.iColEnd...]).not.toContain Platforms.Tile.Solid
+
+    describe '#_setupEmptyRow', ->
+      vars = null
+
+      beforeEach ->
+        vars = {}
+        platforms._setupEmptyRow vars
+
+      it 'resets column indexes for upcoming row', ->
+        expect(vars.iColStart).toBe 0
+        expect(vars.iColEnd).toBe 0
+
+      it 'resets row type for upcoming row', ->
+        expect(vars.rowType).toBe 'empty'
