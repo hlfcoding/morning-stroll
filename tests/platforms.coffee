@@ -29,7 +29,7 @@ define [
       it 'should have empty ledges array', ->
         expect(platforms.ledges).toEqual []
 
-    describe '_createTileGeneratorState', ->
+    describe '#_createTileGeneratorState', ->
       state = null
 
       beforeEach -> state = platforms._createTileGeneratorState()
@@ -45,7 +45,7 @@ define [
       it 'returns expected base number of ledges', ->
         expect(state.numLedgeRows).toBe 23
 
-    describe '_addLedgeDifficulty', ->
+    describe '#_addLedgeDifficulty', ->
       ledge = null
       vars = { numLedgeRows: 23 }
 
@@ -82,7 +82,7 @@ define [
 
         expect(ledge.start).toBe 7
 
-    describe '_addRow', ->
+    describe '#_addRow', ->
       vars =
         iColStart: 0
         iColEnd: 3
