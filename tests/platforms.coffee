@@ -135,3 +135,19 @@ define [
 
       it 'resets row type for upcoming row', ->
         expect(vars.rowType).toBe 'empty'
+
+    describe '#_setupFloorRow', ->
+      vars = null
+
+      beforeEach ->
+        vars = { numCols: 13 }
+        platforms._setupFloorRow vars
+
+      it 'resets column indexes for upcoming row', ->
+        expect(vars.iColStart).toBe 0
+        expect(vars.iColEnd).toBe 12
+
+      it 'resets row data for upcoming row', ->
+        expect(vars.rowSpacing).toBeDefined()
+        expect(vars.rowTiles).toEqual []
+        expect(vars.rowType).toBe 'solid'
