@@ -202,3 +202,32 @@ define [
         vars.rowTiles.push Platforms.Tile.Solid for c in [0...13]
         platforms._setupEachRow vars
         expect(vars.rowTiles).not.toEqual []
+
+    describe '#_generateTiles', ->
+
+      it 'calls #_addRow for each row', ->
+        spyOn(platforms, '_addRow').and.callThrough()
+        platforms._generateTiles()
+
+        expect(platforms._addRow.calls.count()).toBe platforms.tiles.length
+
+      it 'calls #_setupFloorRow once and #_setupEachRow for the rest', ->
+        spyOn(platforms, '_setupFloorRow').and.callThrough()
+        spyOn(platforms, '_setupEachRow').and.callThrough()
+        platforms._generateTiles()
+
+        expect(platforms._setupFloorRow.calls.count()).toBe 1
+        expect(platforms._setupEachRow.calls.count()).toBe platforms.tiles.length - 1
+
+      it 'calls #_setupLedgeRow for each ledge and #_setupEmptyRow for the rest of the non-floor rows', ->
+        spyOn(platforms, '_setupLedgeRow').and.callThrough()
+        spyOn(platforms, '_setupEmptyRow').and.callThrough()
+        platforms._generateTiles()
+
+        # FIXME: Not sure why rounding is needed.
+        expect(platforms._setupLedgeRow.calls.count()).toBe(
+          Math.round(platforms.ledges.length / platforms.ledgeThickness)
+        )
+        expect(platforms._setupEmptyRow.calls.count()).toBe(
+          platforms.tiles.length - platforms.ledges.length - 1
+        )

@@ -129,7 +129,7 @@ define [
 
         vars.iRow--
 
-      console.table @tiles
+      console.table? @tiles
 
     _addLedgeDifficulty: (ledge, vars) ->
       easiness = Math.pow (vars.numLedgeRows / ledge.index), 0.3
