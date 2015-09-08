@@ -36,11 +36,6 @@ define [
       @makeMap game
 
     _initPhysics: (world) ->
-      @ground = @group.create 0, world.height - @config.groundH # @test
-      @ground.width = world.width
-      @ground.height = @config.groundH
-      @ground.body.collideWorldBounds = on
-      @ground.body.immovable = on
 
     makeMap: (game) ->
       @_generateTiles() unless @tiles.length

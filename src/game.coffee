@@ -136,7 +136,6 @@ define [
     _updateDebugOverlays: ->
       return unless @debugging
 
-      @debug.body @platforms.ground
       @debug.body @player.sprite if @player.debugging
 
   MorningStroll
