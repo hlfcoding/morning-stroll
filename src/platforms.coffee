@@ -51,6 +51,9 @@ define [
       @tilemap = game.add.tilemap 'platforms', @tileWidth, @tileHeight
       @tilemap.addTilesetImage @config.tileImageKey
 
+      layer = @tilemap.createLayer 0
+      layer.resizeWorld()
+
     _createTileGeneratorState: ->
       mapSize = @group.game.world.getBounds()
       vars =
