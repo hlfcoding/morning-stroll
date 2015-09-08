@@ -5,7 +5,7 @@ define [
   'test/helpers'
 ], (Phaser, _, Platforms, helpers) ->
 
-  fdescribe 'Platforms', ->
+  describe 'Platforms', ->
     game = null
     platforms = null
 
