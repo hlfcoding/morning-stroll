@@ -8,17 +8,14 @@
 define [
   'phaser'
   'underscore'
-], (Phaser, _) ->
+  'app/helpers'
+], (Phaser, _, Helpers) ->
 
   'use strict'
 
   Direction =
     Left: -1
     Right: 1
-
-  RegExps =
-    PrettyHashRemove: /[{}"]/g
-    PrettyHashPad: /[:,]/g
 
   class Player
 
@@ -52,23 +49,6 @@ define [
 
     # Public
     # ------
-
-    debug: (label, value, details) ->
-      return unless @debugging
-
-      value = parseFloat value.toFixed(2) if _.isNumber(value)
-      value = @_prettyHash @_prettyPoint(value) if value instanceof Phaser.Point
-
-      if details?.position and details.position instanceof Phaser.Point
-        details.position = @_prettyPoint details.position
-
-      if @tracing
-        label = "player:#{label}"
-        if details? then console.trace label, value, details
-        else console.trace label, value
-      else
-        details = if details? then @_prettyHash(details) else ''
-        @debugTextItems[label] = "#{label}: #{value} #{details}"
 
     update: ->
       # First.
@@ -109,14 +89,10 @@ define [
       @animations.add 'end', [34...53], 12
 
     _initDebugging: (gui) ->
-      @debugging = on
-      @debugTextItems = {}
-      @tracing = off
-      return unless gui?
+      @debugNamespace = 'player'
 
-      @gui = gui
-      @gui.add(@, 'debugging').onFinishChange => @debugTextItems = {}
-      @gui.add @, 'tracing'
+      completedInit = @_initDebugMixin gui
+      return unless completedInit
 
       @gui.addFolder 'drag'
           .addRange @physics.drag, 'x'
@@ -325,15 +301,6 @@ define [
 
       @debug 'animation', nameOrFrame
 
-    _prettyPoint: (point) ->
-      _.chain point
-        .pick 'x', 'y'
-        .mapObject (n) -> parseFloat n.toFixed(2)
-        .value()
-
-    _prettyHash: (hash) ->
-      JSON.stringify hash
-        .replace RegExps.PrettyHashRemove,''
-        .replace RegExps.PrettyHashPad, '$& '
+  _.extend Player::, Helpers.DebugMixin
 
   Player
