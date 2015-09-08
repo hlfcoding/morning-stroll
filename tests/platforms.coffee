@@ -231,3 +231,8 @@ define [
         expect(platforms._setupEmptyRow.calls.count()).toBe(
           platforms.tiles.length - platforms.ledges.length - 1
         )
+
+      it 'ensures floor row is at the bottom', ->
+        platforms._generateTiles()
+
+        expect(_.last(platforms.tiles)).not.toContain(Platforms.Tile.Empty);

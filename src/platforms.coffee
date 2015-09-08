@@ -129,6 +129,7 @@ define [
 
         vars.iRow--
 
+      @tiles.reverse()
       console.table? @tiles
 
     _addLedgeDifficulty: (ledge, vars) ->
