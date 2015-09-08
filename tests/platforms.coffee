@@ -2,8 +2,8 @@ define [
   'phaser'
   'underscore'
   'app/platforms'
-  'test/helpers'
-], (Phaser, _, Platforms, helpers) ->
+  'test/fakes'
+], (Phaser, _, Platforms, fakes) ->
 
   describe 'Platforms', ->
     game = null
@@ -12,8 +12,8 @@ define [
     beforeEach ->
       spyOn Platforms::, '_initialize'
       platforms = new Platforms {}
-      _.extend platforms, helpers.createFakePlatformsProps(platforms)
-      helpers.configurePlatformsWithDefaults platforms
+      _.extend platforms, fakes.createPlatformsProps(platforms)
+      fakes.configurePlatformsWithDefaults platforms
 
     describe 'when constructed', ->
       it 'should have set ledge constraints', ->

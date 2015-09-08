@@ -2,8 +2,8 @@ define [
   'phaser'
   'underscore'
   'app/background'
-  'test/helpers'
-], (Phaser, _, Background, helpers) ->
+  'test/fakes'
+], (Phaser, _, Background, fakes) ->
 
   describe 'Background', ->
     game = null
@@ -12,7 +12,7 @@ define [
     beforeEach ->
       spyOn Background::, '_initialize'
       bg = new Background { height: 1000 }
-      _.extend bg, helpers.createFakeBackgroundProps(bg)
+      _.extend bg, fakes.createBackgroundProps(bg)
 
     describe 'when constructed', ->
       it 'should have set dimensions', ->

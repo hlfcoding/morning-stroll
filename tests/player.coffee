@@ -2,8 +2,8 @@ define [
   'phaser'
   'underscore'
   'app/player'
-  'test/helpers'
-], (Phaser, _, Player, helpers) ->
+  'test/fakes'
+], (Phaser, _, Player, fakes) ->
 
   describe 'Player', ->
     game = null
@@ -18,7 +18,7 @@ define [
         '_beginTurn', '_endTurn'
         '_playAnimation'
       ]
-      _.extend player, helpers.createFakePlayerProps(player)
+      _.extend player, fakes.createPlayerProps(player)
 
       player._initPhysics()
       player._initState()
