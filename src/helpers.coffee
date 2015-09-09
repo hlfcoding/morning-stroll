@@ -37,7 +37,7 @@ define [
         else console.trace label, value
       else
         details = if details? then @_prettyHash(details) else ''
-        @debugTextItems[label] = "#{label}: #{value} #{details}"
+        @debugTextItems[label] = "#{label}: #{value} #{details}".trim()
 
     _prettyPoint: (point) ->
       _.chain point
