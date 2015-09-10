@@ -5,7 +5,9 @@
 
 define [
   'phaser'
-], (Phaser) ->
+  'underscore'
+  'app/helpers'
+], (Phaser, _, Helpers) ->
 
   'use strict'
 
@@ -30,7 +32,16 @@ define [
 
     _initialize: (game, gui) ->
       @game = game # FIXME: Not great, but easy.
+
+      @_initDebugging gui
+
       @makeMap game
+
+    _initDebugging: (gui) ->
+      @debugNamespace = 'platforms'
+
+      completedInit = @_initDebugMixin gui
+      return unless completedInit
 
     makeMap: (game) ->
       @_generateTiles() unless @tiles.length
@@ -124,7 +135,7 @@ define [
         vars.iRow--
 
       @tiles.reverse()
-      console.table? @tiles
+      @debug 'tiles', @tiles
 
     _addLedgeDifficulty: (ledge, vars) ->
       easiness = Math.pow (vars.numLedgeRows / ledge.index), 0.3
@@ -220,6 +231,8 @@ define [
       @start = -1
       @end = -1
       @facing = 'left'
+
+  _.extend Platforms::, Helpers.DebugMixin
 
   Platforms.Ledge = Ledge
   Platforms.Tile = Tile

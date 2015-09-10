@@ -55,6 +55,16 @@ define [
         expect(console.trace).toHaveBeenCalledWith 'obj:someItem', 'value'
         expect(obj.debugTextItems).toEqual {}
 
+      it 'calls console.table instead for values that are 2D arrays', ->
+        # Since they are too big to render on game screen.
+        if console.table? then spyOn(console, 'table') else console.table = jasmine.createSpy('table')
+        obj.debugNamespace = 'obj'
+
+        obj.debug 'someTable', [[0],[1]]
+        expect(console.trace).toHaveBeenCalledWith 'obj:someTable'
+        expect(console.table).toHaveBeenCalledWith [[0],[1]]
+        expect(obj.debugTextItems).toEqual {}
+
       it 'truncates float values to 2 fixed decimal places', ->
         obj.debug 'someFloat', 1.2345
         expect(obj.debugTextItems.someFloat).toBe 'someFloat: 1.23'
