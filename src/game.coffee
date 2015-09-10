@@ -114,7 +114,6 @@ define [
       @player.debugging = @debugging
 
     _updateCollisions: ->
-      @physics.arcade.collide @player.sprite, @platforms.group
 
     _updateDebugDisplay: ->
       return unless @debugging

@@ -29,13 +29,8 @@ define [
       @_initialize game, gui
 
     _initialize: (game, gui) ->
-      @group = game.add.group()
-      @group.enableBody = on
-      @_initPhysics game.world
-
+      @game = game # FIXME: Not great, but easy.
       @makeMap game
-
-    _initPhysics: (world) ->
 
     makeMap: (game) ->
       @_generateTiles() unless @tiles.length
@@ -50,7 +45,7 @@ define [
       layer.resizeWorld()
 
     _createTileGeneratorState: ->
-      mapSize = @group.game.world.getBounds()
+      mapSize = @game.world.getBounds()
       vars =
         facing: 'right' # left, right
         prevFacing: null

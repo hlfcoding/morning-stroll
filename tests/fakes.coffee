@@ -43,10 +43,9 @@ define [
     width: 300
 
   createPlatformsProps: (platform) ->
-    group:
-      game:
-        world:
-          getBounds: -> { width: 416, height: 2912 } # FIXME: Link to source.
+    game:
+      world:
+        getBounds: -> { width: 416, height: 2912 } # FIXME: Link to source.
 
   createPlayerProps: (player) ->
     sprite:
