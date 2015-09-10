@@ -40,9 +40,10 @@ define [
 
       @tilemap = game.add.tilemap 'platforms', @tileWidth, @tileHeight
       @tilemap.addTilesetImage @config.tileImageKey
+      @tilemap.setCollisionBetween 1, 1
 
-      layer = @tilemap.createLayer 0
-      layer.resizeWorld()
+      @layer = @tilemap.createLayer 0
+      @layer.resizeWorld()
 
     _createTileGeneratorState: ->
       mapSize = @game.world.getBounds()

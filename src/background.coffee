@@ -47,7 +47,7 @@ define [
     layout: ->
       # Offset group by its original (map) height while it's not resized from
       # the layer shifting below.
-      @group.y = -(@group.height - @group.game.height)
+      # @group.y = -(@group.height - @group.game.height)
 
       # Set vertical scroll factor and offset.
       nearest = @nearestLayer()

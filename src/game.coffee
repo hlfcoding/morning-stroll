@@ -82,6 +82,8 @@ define [
       @_addPlatforms()
       @_addPlayer()
 
+      @game.camera.follow @player.sprite
+
     onUpdate: ->
       @_updateCollisions()
       @player.update()
@@ -114,6 +116,7 @@ define [
       @player.debugging = @debugging
 
     _updateCollisions: ->
+      @physics.arcade.collide @player.sprite, @platforms.layer
 
     _updateDebugDisplay: ->
       return unless @debugging
