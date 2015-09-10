@@ -52,7 +52,7 @@ define [
       body: 
         drag: new Phaser.Point(), setSize: jasmine.createSpy 'setSize'
         velocity: new Phaser.Point(), acceleration: new Phaser.Point()
-        touching: {}
+        onFloor: -> no
       game:
         time: { create: -> new FakeTimer() }
       scale: new Phaser.Point()

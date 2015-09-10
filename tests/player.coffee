@@ -44,7 +44,7 @@ define [
       player.update() # Fall.
       return if stopAt is 'falling'
 
-      player.physics.touching.down = yes
+      spyOn(player.physics, 'onFloor').and.returnValue yes
       player.update()
       return if stopAt is 'landing'
 
@@ -235,7 +235,7 @@ define [
           expect(player._playAnimation).toHaveBeenCalledWith 31, no
           expect(player._isAnimationInterruptible()).toBe no
 
-      describe 'when touching another object below', ->
+      describe 'when on floor', ->
         beforeEach -> runJumpUpdatesUntil 'landing'
 
         it 'will begin to land', ->

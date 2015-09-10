@@ -198,7 +198,7 @@ define [
     _canFall: ->
       not @_jumpTimer.running and @state is 'rising' and @velocity.y > 0
     _canLand: ->
-      @state is 'falling' and @physics.touching.down
+      @state is 'falling' and @physics.onFloor()
 
     _beginJump: ->
       @_jumpTimer.start()
