@@ -115,6 +115,7 @@ define [
       @acceleration = @physics.acceleration
 
       @physics.collideWorldBounds = on
+      @physics.tilePadding = new Phaser.Point 0, @sprite.height
 
       @physics.drag.x = 1500
 
