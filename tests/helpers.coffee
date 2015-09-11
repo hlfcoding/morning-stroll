@@ -86,3 +86,18 @@ define [
       it 'stringifies and simplifies a hash into readable text', ->
         hash = { a: 1, b: { c: 2 } }
         expect(obj._prettyHash(hash)).toBe 'a: 1, b: c: 2'
+
+  describe 'Helpers.autoSetTiles', ->
+    it 'sets solid tiles to correct variants based on adjacent tiles', ->
+      results = Helpers.autoSetTiles [
+        [0,0,0,0,0]
+        [1,1,0,1,1]
+        [1,1,0,1,1]
+        [0,0,0,0,0]
+      ]
+      expect(results).toEqual [
+        [0,0,0,0,0]
+        [15,13,0,7,15]
+        [12,10,0,4,12]
+        [0,0,0,0,0]
+      ]

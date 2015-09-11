@@ -51,7 +51,7 @@ define [
 
       @tilemap = game.add.tilemap 'platforms', @tileWidth, @tileHeight
       @tilemap.addTilesetImage @config.tileImageKey
-      @tilemap.setCollisionBetween 1, 1
+      @tilemap.setCollisionBetween 1, 16
 
       @layer = @tilemap.createLayer 0
       @layer.resizeWorld()
@@ -135,6 +135,9 @@ define [
         vars.iRow--
 
       @tiles.reverse()
+
+      @tiles = Helpers.autoSetTiles @tiles
+
       @debug 'tiles', @tiles
 
     _addLedgeDifficulty: (ledge, vars) ->
