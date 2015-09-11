@@ -39,6 +39,7 @@ define [
       _.bindAll @, 'onPreload', 'onCreate', 'onUpdate', 'onRender'
 
       @debugging = on
+      @developing = on
       @debugFontSize = 9
 
       width = 416
@@ -57,7 +58,11 @@ define [
       if @debugging
         @debug = @game.debug
         @debug.font = "#{@debugFontSize}px Menlo"
+
+      if @developing
         @gui = new dat.GUI()
+        @gui.add @, 'debugging'
+          .onFinishChange => @debug.reset() unless @debugging
 
       @physics = @game.physics
 
@@ -73,7 +78,7 @@ define [
       @physics.startSystem Phaser.Physics.ARCADE
 
       @physics.arcade.gravity.y = 600
-      if @debugging
+      if @developing
         gui = @gui?.addFolder 'gravity'
         gui.add @physics.arcade.gravity, 'y', 0, 2 * @physics.arcade.gravity.y
 
