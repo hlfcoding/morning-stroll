@@ -77,7 +77,7 @@ define [
     onCreate: ->
       @physics.startSystem Phaser.Physics.ARCADE
 
-      @physics.arcade.gravity.y = 600
+      @physics.arcade.gravity.y = 500
       if @developing
         gui = @gui?.addFolder 'gravity'
         gui.add @physics.arcade.gravity, 'y', 0, 2 * @physics.arcade.gravity.y
