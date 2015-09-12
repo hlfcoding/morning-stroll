@@ -27,25 +27,9 @@
     # Properties
     # ----------
 
-    hasCeiling: no
-    hasFloor: no
-
-    mapData: null
-
     startingPoint: null
     endingPoint: null
     distanceToTravel: null
-
-    delegate: null
-
-    ledgesRowCount: 0
-
-    @EMPTY_ROW: 0
-    @LEDGE_ROW: 1
-    @SOLID_ROW: 2
-
-    @_TOP_BOTTOM: 1
-    @_BOTTOM_TOP: 2
 
     # Own Methods
     # -----------
@@ -64,7 +48,6 @@
   Collision = Phaser.Collision
   Point = Phaser.Point
   Rectangle = Phaser.Rectangle
-  Signal = Phaser.Signal
   # Requires inherited properties:
   State = Phaser.State
 
@@ -72,22 +55,6 @@
 
     # Properties
     # ----------
-
-    # The dynamically generated and extended Tilemap.
-    _platform: null
-    @FLOOR_HEIGHT: 32
-    didSetupPlatform: null
-
-    # The extend Sprite.
-    _player: null
-    _mate: null
-    @PLAYER_WIDTH: 72
-    @PLAYER_HEIGHT: 72
-    didSetupCharacters: null
-
-    # The background with parallax.
-    _bg: null
-    didSetupBg: null
 
     # Some game switches.
     _shouldCheckFalling: undefined
@@ -115,34 +82,6 @@
       @_shouldCheckFalling = off
       @_shouldPlayMusic = not window.DEBUG
 
-      # - Set dispatch queues for events.
-      @didSetupPlatform = new Signal()
-      @didSetupCharacters = new Signal()
-      @didSetupBg = new Signal()
-
-      # - Setup our setup chain.
-      #   For now, we add things in order to get correct layering.
-      @world = @game.world
-      add = _.bind @world.group.add, @world.group
-      @didSetupBg.add ->
-        @_setupPlatform()
-        console.log 'Did setup background.'
-      , @
-      @didSetupPlatform.add ->
-        @_setupPlayer @_platform.startingPoint
-        @_setupPlayerToPlatform()
-        @_setupMate @_platform.endingPoint
-        console.log 'Did setup platform.'
-      , @
-      @didSetupCharacters.add ->
-        @_setupCamera()
-        @_setupAudio()
-        console.log 'Did setup characters.'
-      , @
-
-      # - Start our setup chain.
-      @_setupBg()
-
       # - Internals.
       #   Don't do expensive operations too often, if possible.
       _didEnding = no
@@ -153,46 +92,16 @@
       # - Creates a new tilemap with no arguments.
       @_platform = new Platform @game, 'balcony', 0, 0, no, 32, 32
 
-      # - Customize our tile generation.
-      #   Vertical ledge spacing and horizontal ledge size affect difficulty.
-      @_platform.minLedgeSize = 3
-      @_platform.maxLedgeSize = 5
-      @_platform.minLedgeSpacing = new Point 4, 2
-      @_platform.maxLedgeSpacing = new Point 8, 4
-      @_platform.ledgeThickness = 2
-
-      # - Set the bounds based on the background.
-      #   FIXME: Parallax bug.
-      @_platform.bounds = new Rectangle(
-        @_bg.bounds.x, @_bg.bounds.y,
-        @_bg.bounds.width, @_bg.bounds.height + C.FLOOR_HEIGHT
-      )
-
-      # - Make our platform.
-      #   TODO: Image.
-      @_platform.makeMap()
-
       # - Set points.
       #   TODO: Ledge.
       @_platform.startingPoint.x = C.PLAYER_WIDTH
       @_platform.startingPoint.y = @_platform.height - C.PLAYER_HEIGHT
       ledge = @_platform.ledges[@_platform.ledges.length-1]
-      ###
+
       @_platform.endingPoint.y = (@_platform.numRows-1 - ledge.rowIndex) * @_platform.tileHeight
       @_platform.endingPoint.x = (ledge.size * @_platform.tileWidth) / 2
       if ledge.facing is Collision.RIGHT
         @_platform.endingPoint.x = @_platform.bounds.width - @_platform.endingPoint.x
-      ###
-
-      # - Hook.
-      @didSetupPlatform.dispatch()
-
-    # `_setupPlayer`
-    _setupPlayer: (point) ->
-
-      # - Hook.
-      #   TODO: Use `_.after`.
-      @didSetupCharacters.dispatch()
 
     _setupPlayerToPlatform: ->
 
@@ -201,17 +110,6 @@
         if @_player.x <= 0 then @_player.x = @game.width
         @_player.x -= @_platform.tileWidth
 
-    _setupCamera: ->
-    _setupAudio: ->
-
-    # Own Methods
-    # -----------
-
-    playerIsStill: (player) ->
-      console.log 'I am still.', player
-
-    playerIsFalling: (player) ->
-
   # Alias class.
   C = PlayState
 ```
@@ -219,9 +117,7 @@
 ```coffee
   Collision = Phaser.Collision
   GameObject = Phaser.GameObject
-  Keyboard = Phaser.Keyboard
   Point = Phaser.Point
-  Signal = Phaser.Signal
   # Requires inherited properties:
   #
   # - `acceleration`, `velocity`
@@ -266,9 +162,6 @@
       @cameraFocus = new GameObject @_game, @x, @y, @width, @height
       @flags |= C.NEEDS_CAMERA_REFOCUS
 
-      # Declare state events.
-      evt.signal = new Signal() for name, evt of @_eAction
-
     update: ->
       super
 
@@ -284,30 +177,6 @@
       if @flags & C.NEEDS_CAMERA_REFOCUS
         @cameraFocus.x += Math.round (@x - @cameraFocus.x) / @cameraSpeed
         @cameraFocus.y += Math.round (@y - @cameraFocus.y) / @cameraSpeed
-      # TODO: This may need to go elsewhere.
-      @dispatchActionStateEvent()
-
-    # Own Methods
-    # -----------
-    # Alphabetized.
-
-    # `init`
-    init: ->
-
-      # - Start state.
-      @dispatchActionStateEvent()
-
-    dispatchActionStateEvent: ->
-      evt = _.findWhere @_eAction, { state: @state }
-      evt.signal.dispatch()
-
-    dispatchActionCommandEvent: (name) -> @_eAction[name].signal.dispatch()
-
-    # TODO: Figure out how to map this to `animations`.
-    isFinished: -> yes
-
-    jumpStart: ->
-      @y-- # Is this a tweak?
 
   # Alias class.
   C = Player

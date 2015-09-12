@@ -5,7 +5,6 @@ package
   import org.flixel.FlxG;
   import org.flixel.FlxObject;
   import org.flixel.FlxPoint;
-  import org.flixel.FlxRect;
   import org.flixel.FlxSound;
   import org.flixel.FlxSprite;
   import org.flixel.FlxState;
@@ -18,18 +17,9 @@ package
   // camera are set up around it.
 
   public class PlayState extends FlxState
-    implements IPlayerAnimationDelegate, IPlatformDelegate
+    implements IPlayerAnimationDelegate
   {
-    // Tileset that works with AUTO mode (best for thin walls)
-    [Embed(source='data/tiles-auto-balcony.png')]private static var ImgAutoTiles:Class;
-    // Tileset that works with OFF mode (do what you want mode)
-    [Embed(source='data/tiles-manual-placeholder.png')]private static var ImgCustomTiles:Class;
-
     [Embed(source="data/morning-stroll.mp3")]private static var SndMain:Class;
-
-    // The dynamically generated and extended FlxTilemap.
-    private var platform:Platform;
-    private static const FLOOR_HEIGHT:uint = 32;
 
     // Some game switches.
     private var fallChecking:Boolean;
@@ -57,11 +47,6 @@ package
       FlxG.debug = false;
       playMusic = !FlxG.debug;
 
-      // Start our setup chain.
-      setupPlatform();
-      setupPlatformAfter();
-      setupPlatformAndPlayerAfter();
-
       // Internals.
       // Don't do expensive operations too often, if possible.
       gameStatePollInterval = new FlxTimer();
@@ -81,20 +66,6 @@ package
       gameStatePollInterval.destroy();
     }
 
-    override public function update():void
-    {
-      // Start our update chain.
-      updatePlatform();
-      updatePlatformAfter();
-      updatePlatformAndPlayerAfter();
-
-      super.update();
-    }
-    override public function draw():void
-    {
-      super.draw();
-    }
-
     // Setup Routines
     // --------------
     // Since the observer pattern is too slow, we'll just name our functions to be like hooks.
@@ -103,16 +74,6 @@ package
     {
       // Creates a new tilemap with no arguments.
       platform = new Platform();
-
-      // Hook into delegated methods.
-      platform.delegate = this;
-
-      // Set the bounds based on the background.
-      // TODO - Fix parallax bug.
-      platform.bounds = new FlxRect(bg.bounds.x, bg.bounds.y, bg.bounds.width, bg.bounds.height + FLOOR_HEIGHT);
-
-      // Make our platform.
-      platform.makeMap(ImgAutoTiles);
 
       // Set points.
       platform.startingPoint.x = PLAYER_WIDTH;
@@ -124,10 +85,6 @@ package
       {
         platform.endingPoint.x = platform.bounds.width - platform.endingPoint.x;
       }
-
-      // Process settings.
-      platform.init();
-      // FlxG.log('Ending point: '+[platform.numRows-1 - ledge.rowIndex, platform.endingPoint.x, platform.endingPoint.y]);
     }
     // Hooks.
     private function setupPlatformAfter():void
@@ -160,31 +117,8 @@ package
       player = new Player(start.x, start.y);
 
       // Bounding box tweaks.
-      player.height = player.frameHeight / 2;
-      player.offset.y = player.frameHeight - player.height - 2;
       player.tailOffset.x = 35;
       player.headOffset.x = 10;
-      player.width = player.frameWidth - player.tailOffset.x;
-      player.face(FlxObject.RIGHT);
-
-      // These are just set as a base to derive player physics
-      player.naturalForces.x = 1000; // Friction.
-      player.naturalForces.y = 600; // Gravity.
-
-      // Basic player physics.
-      player.maxVelocity.x = 220; // This gets achieved rather quickly.
-      player.maxVelocity.y = 1500; // Freefall.
-
-      // Player jump physics.
-      // The bare minimum to clear the biggest possible jump.
-      player.jumpMaxVelocity.y = -320; // This gets achieved rather quickly.
-      player.jumpAccel.y = -2800; // Starting jump force.
-
-      // Animations.
-      // Make sure to add end transitions, otherwise the last frame is skipped if framerate is low.
-      player.addAnimation('still',[17], 12);
-      player.addAnimation('idle', [], 12, false);
-      player.animDelegate = this;
 
       // Process settings.
       player.init();
@@ -253,10 +187,6 @@ package
           player.nextAction = Player.STOP;
         }
         pos = pPos = null;
-      }
-      else
-      {
-        player.x = FlxU.bound(player.x, 0, (platform.width - player.width));
       }
     }
     private function updateMate():void
@@ -364,19 +294,10 @@ package
 
 package
 {
-  import org.flixel.FlxG;
   import org.flixel.FlxObject;
   import org.flixel.FlxPoint;
   import org.flixel.FlxSprite;
-  import org.flixel.FlxTimer;
   import org.flixel.FlxU;
-  import org.flixel.system.FlxAnim;
-
-  // Player that has more complex running and jumping abilities.
-  // It makes use of an animation delegate and has a simple state
-  // tracking system. It also takes into account custom offsets.
-  // It also allows for custom camera tracking.
-  // This class is meant to be very configurable and has many hooks.
 
   public class Player extends FlxSprite
   {
@@ -384,17 +305,11 @@ package
     public var currently:uint;
     public static const LANDING:uint = 2;
 
-    // Note this is not always cleared.
-    public var nextAction:uint;
-
     public var controlled:Boolean;
 
     public var animDelegate:IPlayerAnimationDelegate;
 
     public var pVelocity:FlxPoint;
-    public var accelFactor:Number = 0.5;
-    // This should be small. Negative creates some drag.
-    public var jumpAccelDecayFactor:Number = -0.001;
 
     public var tailOffset:FlxPoint;
     public var headOffset:FlxPoint;
@@ -472,49 +387,20 @@ package
 
 package
 {
-  import org.flixel.FlxG;
   import org.flixel.FlxObject;
   import org.flixel.FlxPoint;
-  import org.flixel.FlxRect;
   import org.flixel.FlxTilemap;
-  import org.flixel.FlxU;
 
-  // Platform that can dynamically generate a map, and track the dynamically
-  // generated ledges. This makes up for FlxTilemap's lack of an API to get
-  // tile groups (ledges) that have meta-data. Only supports the `SIDE_TO_SIDE`
-  // generation scheme for now.
-  
   public class Platform extends FlxTilemap
   {
-
-    public var hasCeiling:Boolean;
-    public var hasFloor:Boolean;
-
-    public var mapData:String;
-
     public var startingPoint:FlxPoint;
     public var endingPoint:FlxPoint;
     
-    public var delegate:IPlatformDelegate;
-    // To help the delegate.
-    public var ledges:Array;
-    public var ledgeRowCount:uint;
-    
-    public static const EMPTY_ROW:uint = 0;
-    public static const LEDGE_ROW:uint = 1;
-    public static const SOLID_ROW:uint = 2;
-    
-    protected static const TOP_BOTTOM:uint = 1;
-    protected static const BOTTOM_TOP:uint = 2;
-    
-
     public function Platform()
     {
       super();
-      this.hasFloor = true;
       this.startingPoint = new FlxPoint();
       this.endingPoint = new FlxPoint();
-      this.ledges = [];
     }
     
     // Flixel Methods
@@ -536,31 +422,6 @@ package
       
       this.bounds = null;
       this.delegate = null;
-    }
-    
-    public function get numRows():uint
-    {
-      return Math.floor(this.bounds.height / this.tileHeight);
-    }
-    
-    public function get numCols():uint
-    {
-      return Math.floor(this.bounds.width / this.tileWidth);
-    }
-    
-    public function makeMap(tileGraphic:Class):FlxTilemap
-    {
-      if (mapData == null)
-      {
-        this.generateData();
-      }
-
-      return super.loadMap(
-        mapData,
-        tileGraphic,
-        this.tileWidth, this.tileHeight,
-        this.tilingMode
-      );
     }
 
     public function isAtEndingPoint(obj:FlxObject):Boolean
