@@ -38,7 +38,7 @@ define [
     constructor: ->
       _.bindAll @, 'onPreload', 'onCreate', 'onUpdate', 'onRender'
 
-      @debugging = off
+      @debugging = on # Turn off here to disable entirely (@release).
       @developing = on
       @debugFontSize = 9
 
@@ -88,6 +88,8 @@ define [
       @_addPlayer()
 
       @game.camera.follow @player.sprite
+
+      @debugging = off # Off by default for performance. Doing this after setup.
 
     onUpdate: ->
       @_updateCollisions()
