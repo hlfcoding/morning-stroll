@@ -126,7 +126,7 @@ define [
       @_yOffset = h / 4
       @physics.setSize (w / 2), (h / 2), @_xOffset(), @_yOffset
 
-      @jumpAcceleration = -4000 # A burst of energy on launch.
+      @jumpAcceleration = -4250 # A burst of energy on launch.
       @jumpMaxDuration = 500
       @jumpVelocityFactor = 1 / 4
 
