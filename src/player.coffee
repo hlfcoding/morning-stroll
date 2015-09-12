@@ -54,6 +54,8 @@ define [
       # First.
       @nextAction = 'none'
       @nextDirection = @_xDirectionInput()
+      @velocity.clampY -@maxVelocity.y, @maxVelocity.y
+      @velocity.clampX -@maxVelocity.x, @maxVelocity.x
 
       # Second.
       @nextState = 'running' if @_canKeepRunning()
@@ -131,7 +133,7 @@ define [
       @airFrictionRatio = 1 / 20
       @runAcceleration = 300
 
-      @maxVelocity = new Phaser.Point 200, 1500 # Run, escape.
+      @maxVelocity = new Phaser.Point 200, 800 # Run and terminal velocities.
 
       @_jumpTimer = @sprite.game.time.create() # This also acts like a flag.
       @_isTurning = no # Because velocity won't be 0 when turning while running.
@@ -243,7 +245,6 @@ define [
       @nextState = 'running'
 
     _buildRun: ->
-      @velocity.clampX -@maxVelocity.x, @maxVelocity.x
       @acceleration.x =
         # No force, just air friction.
         if @_isInMidAir() then @runAcceleration * @airFrictionRatio * -@nextDirection
