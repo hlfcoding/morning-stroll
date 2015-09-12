@@ -38,7 +38,7 @@ define [
     constructor: ->
       _.bindAll @, 'onPreload', 'onCreate', 'onUpdate', 'onRender'
 
-      @debugging = on
+      @debugging = off
       @developing = on
       @debugFontSize = 9
 
