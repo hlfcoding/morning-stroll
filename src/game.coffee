@@ -96,8 +96,8 @@ define [
       @player.update()
 
     onRender: ->
-      @_updateDebugDisplay()
-      @_updateDebugOverlays()
+      @_renderDebugDisplay()
+      @_renderDebugOverlays()
 
     _addBackground: ->
       @background = new Background { height: MorningStroll.mapH }, @game
@@ -122,10 +122,7 @@ define [
       @player = new Player { origin }, @game, @gui?.addFolder 'player'
       @player.debugging = @debugging
 
-    _updateCollisions: ->
-      @physics.arcade.collide @player.sprite, @platforms.layer
-
-    _updateDebugDisplay: ->
+    _renderDebugDisplay: ->
       return unless @debugging
 
       gutter = 2 * @debugFontSize
@@ -142,9 +139,12 @@ define [
           @debug.text text, layoutX, layoutY, null, @debug.font
           layoutY += line
 
-    _updateDebugOverlays: ->
+    _renderDebugOverlays: ->
       return unless @debugging
 
       @debug.body @player.sprite if @player.debugging
+
+    _updateCollisions: ->
+      @physics.arcade.collide @player.sprite, @platforms.layer
 
   MorningStroll
