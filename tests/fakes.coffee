@@ -36,9 +36,9 @@ define [
       game:
         height: 600
     layers: [
-      { zIndex: 1, sprite: { y: 0, height: 1000, scrollFactorY: 1 } }
-      { zIndex: 2, sprite: { y: 0, height: 1000, scrollFactorY: 1 } }
-      { zIndex: 3, sprite: { y: 0, height: 1000, scrollFactorY: 1 } }
+      { zIndex: 1, image: { y: 0, height: 1000 }, scrollFactor: 1 }
+      { zIndex: 2, image: { y: 0, height: 1000 }, scrollFactor: 1 }
+      { zIndex: 3, image: { y: 0, height: 1000 }, scrollFactor: 1 }
     ]
     width: 300
 

@@ -40,9 +40,8 @@ define [
       @topZIndex = topZIndex
       for zIndex in [bottomZIndex..topZIndex]
         name = nameTemplate { zIndex }
-        sprite = @group.game.add.tileSprite 0, 0, @width, @height, name
-        @group.addChild sprite
-        @layers.push { sprite, zIndex }
+        image = @group.game.add.image 0, 0, name, @group
+        @layers.push { image, zIndex }
 
     layout: ->
       # Offset group by its original (map) height while it's not resized from
@@ -52,19 +51,20 @@ define [
       # Set vertical scroll factor and offset.
       nearest = @nearestLayer()
       farthest = @farthestLayer()
-      for {sprite, zIndex} in @layers
+      for layer in @layers
+        {image, zIndex} = layer
         # Factor in z-index exponentially and constrain.
         factor = (zIndex / @layers.length) ** 2 * @parallaxFactor
         # Add buffer to further constrain.
         factor = (factor + @parallaxBuffer / 2) / @parallaxBuffer
         # Shift based on scroll factor for full bg visibility.
         unless zIndex is nearest.zIndex
-          sprite.y -= @group.game.height * (1 - factor) - @parallaxTolerance
+          image.y -= @group.game.height * (1 - factor) - @parallaxTolerance
         # Set scroll factor.
-        sprite.scrollFactorY = factor
+        layer.scrollFactor = factor
         # Set shift.
-        shift = if zIndex is farthest.zIndex then -farthest.sprite.y else 0
-        sprite.y += shift
+        shift = if zIndex is farthest.zIndex then -farthest.image.y else 0
+        image.y += shift
 
       # TODO: Remove the need for this magical-number hack.
       # nearest.sprite.y += 12
