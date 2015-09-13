@@ -41,6 +41,7 @@ define [
       @debugging = on # Turn off here to disable entirely (@release).
       @developing = on
       @debugFontSize = 9
+      @detachedCamera = off
 
       width = 416
       height = 600
@@ -63,6 +64,8 @@ define [
         @gui = new dat.GUI()
         @gui.add @, 'debugging'
           .onFinishChange => @debug.reset() unless @debugging
+        @gui.add @, 'detachedCamera'
+          .onFinishChange => @_toggleCameraAttachment()
 
       @physics = @game.physics
 
@@ -89,12 +92,13 @@ define [
       @_addPlatforms()
       @_addPlayer()
 
-      @game.camera.follow @player.sprite
+      @_toggleCameraAttachment on
 
       @debugging = off # Off by default for performance. Doing this after setup.
 
     onUpdate: ->
       @_updateCollisions()
+      @_updateDebugging()
       @player.update()
 
     onRender: ->
@@ -146,7 +150,24 @@ define [
 
       @debug.body @player.sprite if @player.debugging
 
+    _toggleCameraAttachment: (attached) ->
+      attached ?= not @detachedCamera
+      if attached
+        @game.camera.follow @player.sprite
+        @player.cursors ?= @cursors
+      else
+        @game.camera.unfollow()
+        @player.cursors = null
+
     _updateCollisions: ->
       @physics.arcade.collide @player.sprite, @platforms.layer
+
+    _updateDebugging: ->
+      if @detachedCamera
+        step = 4
+        if @cursors.up.isDown then @game.camera.y -= step
+        else if @cursors.down.isDown then @game.camera.y += step
+        else if @cursors.left.isDown then @game.camera.x -= step
+        else if @cursors.right.isDown then @game.camera.x += step
 
   MorningStroll

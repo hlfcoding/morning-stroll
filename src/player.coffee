@@ -180,8 +180,8 @@ define [
     _isFullyStill: -> @state is 'still' and (@animations.frame is 17 and not @animation?)
 
     _xDirectionInput: ->
-      if @cursors.left.isDown then Direction.Left
-      else if @cursors.right.isDown then Direction.Right
+      if @cursors?.left.isDown then Direction.Left
+      else if @cursors?.right.isDown then Direction.Right
 
     _xOffset: (direction = @direction) -> direction * 10
 
@@ -189,12 +189,12 @@ define [
     # ----
 
     _canBeginJump: ->
-      @cursors.up.isDown and (@_isFullyRunning() or @_isFullyStill())
+      @cursors?.up.isDown and (@_isFullyRunning() or @_isFullyStill())
     _canBuildJump: ->
-      @nextAction isnt 'jump' and @cursors.up.isDown and @_jumpTimer.running
+      @nextAction isnt 'jump' and @cursors?.up.isDown and @_jumpTimer.running
     _canEndJump: ->
       @nextAction isnt 'jump' and @_jumpTimer.running and
-      (@cursors.up.isUp or @_jumpTimer.ms >= @jumpMaxDuration) # Release to cancel early.
+      (@cursors?.up.isUp or @_jumpTimer.ms >= @jumpMaxDuration) # Release to cancel early.
 
     _canFall: ->
       not @_jumpTimer.running and @state is 'rising' and @velocity.y > 0
