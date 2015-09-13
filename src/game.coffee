@@ -82,6 +82,8 @@ define [
         gui = @gui?.addFolder 'gravity'
         gui.add @physics.arcade.gravity, 'y', 0, 2 * @physics.arcade.gravity.y
 
+      @cursors = @game.input.keyboard.createCursorKeys()
+
       @_addBackground()
       @_addMate()
       @_addPlatforms()
@@ -119,7 +121,7 @@ define [
     _addPlayer: ->
       y = @game.world.height - MorningStroll.playerH - MorningStroll.groundH
       origin = new Phaser.Point 0, y
-      @player = new Player { origin }, @game, @gui?.addFolder 'player'
+      @player = new Player { origin }, @game, @cursors, @gui?.addFolder 'player'
       @player.debugging = @debugging
 
     _renderDebugDisplay: ->

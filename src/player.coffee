@@ -27,7 +27,7 @@ define [
     # Dependencies + Properties
     # -------------------------
 
-    constructor: (@config, game, gui) ->
+    constructor: (@config, game, @cursors, gui) ->
       @_initialize game, gui
 
     _initialize: (game, gui) ->
@@ -36,8 +36,6 @@ define [
 
       @animations = @sprite.animations
       @_initAnimations()
-
-      @cursors = game.input.keyboard.createCursorKeys()
 
       game.physics.arcade.enable @sprite
       @gravity = game.physics.arcade.gravity
