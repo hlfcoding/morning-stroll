@@ -55,6 +55,10 @@ define [
 
       @game = new Phaser.Game width, height, renderer, parentElementId, states
 
+      @debug = @gui = null
+      @cursors = @physics = null
+      @background = @mate = @platforms = @player = null
+
     onPreload: ->
       if @debugging
         @debug = @game.debug
