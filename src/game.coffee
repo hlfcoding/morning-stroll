@@ -103,6 +103,7 @@ define [
     onUpdate: ->
       @_updateCollisions()
       @_updateDebugging()
+      @background.update()
       @player.update()
 
     onRender: ->

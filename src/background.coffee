@@ -37,6 +37,8 @@ define [
       @group = game.add.group()
       @width = @group.game.width
 
+      @camera = game.camera
+
       @_initDebugging()
 
     _initDebugging: () ->
@@ -68,6 +70,7 @@ define [
         factor = (zIndex / @layers.length) ** 2 * @parallaxFactor
         # Add buffer to further constrain.
         factor = (factor + @parallaxBuffer / 2) / @parallaxBuffer
+        factor = Math.min 1, factor
         # TODO: Shift based on scroll factor for full bg visibility.
         # unless zIndex is nearest.zIndex
           # image.y -= @group.game.height * (1 - factor) - @parallaxTolerance
@@ -82,6 +85,11 @@ define [
       # @group.height = shift + nearest.sprite.height / (@parallaxFactor ** 0.32)
 
       @debug 'layers', @layers
+
+    update: ->
+      for {image, scrollFactor} in @layers
+        # y-offset decreases with closer layers
+        image.y = @camera.y * (1 - scrollFactor)
 
     # Helpers
     # -------
