@@ -68,14 +68,14 @@ define [
         factor = (zIndex / @layers.length) ** 2 * @parallaxFactor
         # Add buffer to further constrain.
         factor = (factor + @parallaxBuffer / 2) / @parallaxBuffer
-        # Shift based on scroll factor for full bg visibility.
-        unless zIndex is nearest.zIndex
-          image.y -= @group.game.height * (1 - factor) - @parallaxTolerance
+        # TODO: Shift based on scroll factor for full bg visibility.
+        # unless zIndex is nearest.zIndex
+          # image.y -= @group.game.height * (1 - factor) - @parallaxTolerance
         # Set scroll factor.
         layer.scrollFactor = factor
-        # Set shift.
+        # TODO: Set shift.
         shift = if zIndex is farthest.zIndex then -farthest.image.y else 0
-        image.y += shift
+        # image.y += shift
 
       # TODO: Remove the need for this magical-number hack.
       # nearest.sprite.y += 12
