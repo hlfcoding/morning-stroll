@@ -237,7 +237,4 @@ define [
 
   _.extend Platforms::, Helpers.DebugMixin
 
-  Platforms.Ledge = Ledge
-  Platforms.Tile = Tile
-
-  Platforms
+  _.extend Platforms, { Ledge, Tile }
