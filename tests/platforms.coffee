@@ -136,22 +136,6 @@ define [
       it 'resets row type for upcoming row', ->
         expect(vars.rowType).toBe 'empty'
 
-    describe '#_setupFloorRow', ->
-      vars = null
-
-      beforeEach ->
-        vars = { numCols: 13 }
-        platforms._setupFloorRow vars
-
-      it 'resets column indexes for upcoming row', ->
-        expect(vars.iColStart).toBe 0
-        expect(vars.iColEnd).toBe 12
-
-      it 'resets row data for upcoming row', ->
-        expect(vars.rowSpacing).toBeDefined()
-        expect(vars.rowTiles).toEqual []
-        expect(vars.rowType).toBe 'solid'
-
     describe '#_setupLedgeRow', ->
       vars = null
 
@@ -211,15 +195,13 @@ define [
 
         expect(platforms._addRow.calls.count()).toBe platforms.tiles.length
 
-      it 'calls #_setupFloorRow once and #_setupEachRow for the rest', ->
-        spyOn(platforms, '_setupFloorRow').and.callThrough()
+      it 'calls #_setupEachRow for the each row', ->
         spyOn(platforms, '_setupEachRow').and.callThrough()
         platforms._generateTiles()
 
-        expect(platforms._setupFloorRow.calls.count()).toBe 1
-        expect(platforms._setupEachRow.calls.count()).toBe platforms.tiles.length - 1
+        expect(platforms._setupEachRow.calls.count()).toBe platforms.tiles.length
 
-      it 'calls #_setupLedgeRow for each ledge and #_setupEmptyRow for the rest of the non-floor rows', ->
+      it 'calls #_setupLedgeRow for each ledge and #_setupEmptyRow for the rest', ->
         spyOn(platforms, '_setupLedgeRow').and.callThrough()
         spyOn(platforms, '_setupEmptyRow').and.callThrough()
         platforms._generateTiles()
@@ -229,10 +211,5 @@ define [
           Math.round(platforms.ledges.length / platforms.ledgeThickness)
         )
         expect(platforms._setupEmptyRow.calls.count()).toBe(
-          platforms.tiles.length - platforms.ledges.length - 1
+          platforms.tiles.length - platforms.ledges.length
         )
-
-      it 'ensures floor row is at the bottom', ->
-        platforms._generateTiles()
-
-        expect(_.last(platforms.tiles)).not.toContain(Platforms.Tile.Empty);

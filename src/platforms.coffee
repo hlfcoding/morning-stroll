@@ -98,37 +98,34 @@ define [
 
       vars.iLedgeLayer = 0
       vars.iLedgeRow = 0
+      vars.rowSpacing = @minLedgeSpacing.y
 
       vars.iRow = vars.iRowStart = vars.numRows - 1
       until vars.iRow < vars.iRowEnd
-        if vars.iRow is vars.iRowStart
-          @_setupFloorRow vars
+        @_setupEachRow vars
+
+        if (vars.iRow - vars.numRowsClearance) <= vars.iRowEnd
+          # Fill out the last rows after last ledge.
+          @_setupEmptyRow vars
+
+          if vars.iLedgeLayer > 0
+            vars.iLedgeLayer--
+            _.last(@ledges).rowIndex = vars.iRowStart - vars.iRow
+          else
+            vars.rowTiles = []
 
         else
-          @_setupEachRow vars
+          if vars.rowSpacing is 0
+            @_setupLedgeRow vars
+            vars.iLedgeLayer = @ledgeThickness - 1
 
-          if (vars.iRow - vars.numRowsClearance) <= vars.iRowEnd
-            # Fill out the last rows after last ledge.
-            @_setupEmptyRow vars
-
-            if vars.iLedgeLayer > 0
-              vars.iLedgeLayer--
-              _.last(@ledges).rowIndex = vars.iRowStart - vars.iRow
-            else
-              vars.rowTiles = []
+          else if vars.iLedgeLayer > 0
+            vars.iLedgeLayer--
 
           else
-            if vars.rowSpacing is 0
-              @_setupLedgeRow vars
-              vars.iLedgeLayer = @ledgeThickness - 1
-
-            else if vars.iLedgeLayer > 0
-              vars.iLedgeLayer--
-
-            else
-              @_setupEmptyRow vars
-              vars.rowSpacing--
-              vars.iLedgeLayer = 0
+            @_setupEmptyRow vars
+            vars.rowSpacing--
+            vars.iLedgeLayer = 0
 
         @_addRow vars
 
@@ -192,14 +189,6 @@ define [
       vars.iColStart = 0
       vars.iColEnd = 0
       vars.rowType = 'empty'
-
-    _setupFloorRow: (vars) ->
-      # Prepare for full plot.
-      vars.iColStart = 0
-      vars.iColEnd = vars.numCols - 1
-      vars.rowSpacing = @minLedgeSpacing.y
-      vars.rowTiles = []
-      vars.rowType = 'solid'
 
     _setupLedgeRow: (vars) ->
       # Prepare for partial plot. This just does a simple random, anything
