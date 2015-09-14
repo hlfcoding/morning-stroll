@@ -38,8 +38,9 @@ define [
       else
         if _.isArray(value) and (_.isArray(value[0]) or _.isPlainObject(value[0]))
           label = "#{@debugNamespace}:#{label}"
-          console.trace label
+          console.groupCollapsed label
           console.table? value
+          console.groupEnd()
         else
           details = if details? then @_prettyHash(details) else ''
           @debugTextItems[label] = "#{label}: #{value} #{details}".trim()

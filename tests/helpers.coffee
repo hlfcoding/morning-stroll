@@ -58,11 +58,14 @@ define [
       it 'calls console.table instead for values that are 2D arrays', ->
         # Since they are too big to render on game screen.
         if console.table? then spyOn(console, 'table') else console.table = jasmine.createSpy('table')
+        spyOn console, 'groupCollapsed'
+        spyOn console, 'groupEnd'
         obj.debugNamespace = 'obj'
 
         obj.debug 'someTable', [[0],[1]]
-        expect(console.trace).toHaveBeenCalledWith 'obj:someTable'
+        expect(console.groupCollapsed).toHaveBeenCalledWith 'obj:someTable'
         expect(console.table).toHaveBeenCalledWith [[0],[1]]
+        expect(console.groupEnd).toHaveBeenCalled()
         expect(obj.debugTextItems).toEqual {}
 
       it 'truncates float values to 2 fixed decimal places', ->
