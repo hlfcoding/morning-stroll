@@ -9,7 +9,8 @@
 define [
   'phaser'
   'underscore'
-], (Phaser, _) ->
+  'app/helpers'
+], (Phaser, _, Helpers) ->
 
   'use strict'
 
@@ -35,6 +36,13 @@ define [
     _initialize: (game) ->
       @group = game.add.group()
       @width = @group.game.width
+
+      @_initDebugging()
+
+    _initDebugging: () ->
+      @debugNamespace = 'background'
+
+      @_initDebugMixin()
 
     addImages: (nameTemplate, topZIndex, bottomZIndex = 1) ->
       @topZIndex = topZIndex
@@ -70,7 +78,11 @@ define [
       # nearest.sprite.y += 12
       # @group.height = shift + nearest.sprite.height / (@parallaxFactor ** 0.32)
 
+      @debug 'layers', @layers
+
     farthestLayer: -> _.findWhere @layers, { zIndex: 1 }
     nearestLayer: -> _.findWhere @layers, { zIndex: @topZIndex }
+
+  _.extend Background::, Helpers.DebugMixin
 
   Background

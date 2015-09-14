@@ -36,7 +36,7 @@ define [
         if details? then console.trace label, value, details
         else console.trace label, value
       else
-        if _.isArray(value) and _.isArray(value[0])
+        if _.isArray(value) and (_.isArray(value[0]) or _.isPlainObject(value[0]))
           label = "#{@debugNamespace}:#{label}"
           console.trace label
           console.table? value
@@ -89,5 +89,9 @@ define [
         row[c] = tile
 
     result
+
+  isPlainObject = (arg) -> _.isObject(arg) and not _.isFunction(arg)
+
+  _.mixin { isPlainObject }
 
   { DebugMixin, RegExps, autoSetTiles }
