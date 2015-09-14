@@ -44,6 +44,9 @@ define [
 
       @_initDebugMixin()
 
+    # Public
+    # ------
+
     addImages: (nameTemplate, topZIndex, bottomZIndex = 1) ->
       @topZIndex = topZIndex
       for zIndex in [bottomZIndex..topZIndex]
@@ -57,8 +60,8 @@ define [
       # @group.y = -(@group.height - @group.game.height)
 
       # Set vertical scroll factor and offset.
-      nearest = @nearestLayer()
-      farthest = @farthestLayer()
+      nearest = @_nearestLayer()
+      farthest = @_farthestLayer()
       for layer in @layers
         {image, zIndex} = layer
         # Factor in z-index exponentially and constrain.
@@ -80,8 +83,11 @@ define [
 
       @debug 'layers', @layers
 
-    farthestLayer: -> _.findWhere @layers, { zIndex: 1 }
-    nearestLayer: -> _.findWhere @layers, { zIndex: @topZIndex }
+    # Helpers
+    # -------
+
+    _farthestLayer: -> _.findWhere @layers, { zIndex: 1 }
+    _nearestLayer: -> _.findWhere @layers, { zIndex: @topZIndex }
 
   _.extend Background::, Helpers.DebugMixin
 
