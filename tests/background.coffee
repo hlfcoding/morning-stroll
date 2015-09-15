@@ -11,7 +11,7 @@ define [
 
     beforeEach ->
       spyOn Background::, '_initialize'
-      bg = new Background { height: 1000 }
+      bg = new Background { mapH: 3152 }
       _.extend bg, fakes.createBackgroundProps(bg)
 
     describe 'when constructed', ->

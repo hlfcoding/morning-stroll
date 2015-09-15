@@ -74,7 +74,7 @@ define [
         iLedgeLayer: -1
 
         numCols: Math.floor mapSize.width / @tileWidth
-        numRows: Math.floor mapSize.height / @tileHeight
+        numRows: Math.floor @config.mapH / @tileHeight
         numRowsClearance: @minLedgeSpacing.y + @ledgeThickness
         numLedgeRows: -1
 

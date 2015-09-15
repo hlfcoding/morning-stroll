@@ -33,7 +33,7 @@ define [
     @playerH: 72
     @playerW: 72
     @groundH: 20
-    @mapH = 2912
+    @mapH: 3152 # 2912 + 240
 
     constructor: ->
       _.bindAll @, 'onPreload', 'onCreate', 'onUpdate', 'onRender'
@@ -111,7 +111,7 @@ define [
       @_renderDebugOverlays()
 
     _addBackground: ->
-      @background = new Background { height: MorningStroll.mapH }, @game
+      @background = new Background { mapH: MorningStroll.mapH }, @game
       @background.addImages _.template('bg<%= zIndex %>'), 16
       @background.layout()
 
@@ -124,6 +124,7 @@ define [
     _addPlatforms: ->
       @platforms = new Platforms 
         groundH: MorningStroll.groundH
+        mapH: MorningStroll.mapH
         tileImageKey: 'balcony'
       , @game, @gui?.addFolder 'platforms'
 

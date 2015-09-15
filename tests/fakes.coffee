@@ -43,6 +43,7 @@ define [
     width: 300
 
   createPlatformsProps: (platform) ->
+    config: { mapH: 3152 }
     game:
       world:
         getBounds: -> { width: 416, height: 2912 } # FIXME: Link to source.

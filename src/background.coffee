@@ -23,7 +23,7 @@ define [
       # Main knobs.
       @parallaxFactor = 0.95
       @parallaxBuffer = 1.7
-      @parallaxTolerance = -64
+      @parallaxTolerance = @config.mapH - 2912
 
       # - full - Each image is a layer of the full original.
       # - clip - Images are only partial, and clip the transparent leftovers.
