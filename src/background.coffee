@@ -61,18 +61,22 @@ define [
         factor = (zIndex / @layers.length) ** 2 * @parallaxFactor
         # Add buffer to further constrain.
         factor = (factor + @parallaxBuffer / 2) / @parallaxBuffer
-        factor = Math.min 1, factor
-        # Set scroll factor.
-        layer.scrollFactor = factor
-
+        # Set scroll factor and inverse.
+        layer.scrollFactor = Math.min 1, factor
+        layer.scrollResistance = Math.max 0, (1 - factor)
 
       @debug 'layers', @layers
 
     update: ->
-      for {image, scrollFactor} in @layers
-        # y-offset decreases with closer layers
-        image.y = @camera.y * (1 - scrollFactor)
+      for {image, zIndex, scrollFactor, scrollResistance} in @layers
+        # Closer images change more with camera.
+        image.y = @camera.y * scrollResistance
 
+        # Shift based on scroll factor for full visibility of current bg images.
+        unless zIndex is 1 # Not farthest.
+          image.y += @parallaxTolerance 
+          unless zIndex is @topZIndex # Or nearest.
+            image.y -= @parallaxTolerance * scrollFactor ** (1 / 3)
 
   _.extend Background::, Helpers.DebugMixin
 
