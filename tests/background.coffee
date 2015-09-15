@@ -15,10 +15,6 @@ define [
       _.extend bg, fakes.createBackgroundProps(bg)
 
     describe 'when constructed', ->
-      it 'should have set dimensions', ->
-        expect(bg.height).toBeDefined()
-        expect(bg.width).toBeDefined()
-
       it 'should be using "full" layout mode', ->
         expect(bg.layoutMode).toBe 'full'
 

@@ -17,8 +17,6 @@ define [
   class Background
 
     constructor: (@config, game) ->
-      @height = @config.height
-
       @layers = []
       @topZIndex = 1
 
@@ -35,7 +33,6 @@ define [
 
     _initialize: (game) ->
       @group = game.add.group()
-      @width = @group.game.width
 
       @camera = game.camera
 
@@ -57,13 +54,7 @@ define [
         @layers.push { image, zIndex }
 
     layout: ->
-      # Offset group by its original (map) height while it's not resized from
-      # the layer shifting below.
-      # @group.y = -(@group.height - @group.game.height)
-
       # Set vertical scroll factor and offset.
-      nearest = @_nearestLayer()
-      farthest = @_farthestLayer()
       for layer in @layers
         {image, zIndex} = layer
         # Factor in z-index exponentially and constrain.
@@ -71,18 +62,9 @@ define [
         # Add buffer to further constrain.
         factor = (factor + @parallaxBuffer / 2) / @parallaxBuffer
         factor = Math.min 1, factor
-        # TODO: Shift based on scroll factor for full bg visibility.
-        # unless zIndex is nearest.zIndex
-          # image.y -= @group.game.height * (1 - factor) - @parallaxTolerance
         # Set scroll factor.
         layer.scrollFactor = factor
-        # TODO: Set shift.
-        shift = if zIndex is farthest.zIndex then -farthest.image.y else 0
-        # image.y += shift
 
-      # TODO: Remove the need for this magical-number hack.
-      # nearest.sprite.y += 12
-      # @group.height = shift + nearest.sprite.height / (@parallaxFactor ** 0.32)
 
       @debug 'layers', @layers
 
@@ -91,11 +73,6 @@ define [
         # y-offset decreases with closer layers
         image.y = @camera.y * (1 - scrollFactor)
 
-    # Helpers
-    # -------
-
-    _farthestLayer: -> _.findWhere @layers, { zIndex: 1 }
-    _nearestLayer: -> _.findWhere @layers, { zIndex: @topZIndex }
 
   _.extend Background::, Helpers.DebugMixin
 
