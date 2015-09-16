@@ -14,17 +14,6 @@ define [
 
   'use strict'
 
-  # Extend.
-  dat.GUI::addRange = (obj, prop, chain = yes) ->
-    value = obj[prop]
-    [min, max] = [value / 2, 2 * value]
-
-    if value < 0 then gui = @.add obj, prop, max, min
-    else if value > 0 then gui = @.add obj, prop, min, max
-    else gui = @.add obj, prop
-
-    if chain then @ else gui
-
   kPhaserLayoutX = -8
   kPhaserLineRatio = 1.8
 

@@ -3,9 +3,10 @@
 # Misc. utilities and bits of custom functionality not specific to the game.
 
 define [
+  'dat.gui'
   'phaser'
   'underscore'
-], (Phaser, _) ->
+], (dat, Phaser, _) ->
 
   RegExps =
     PrettyHashRemove: /[{}"]/g
@@ -62,6 +63,21 @@ define [
       JSON.stringify hash
         .replace RegExps.PrettyHashRemove,''
         .replace RegExps.PrettyHashPad, '$& '
+
+  # Developing
+  # ----------
+
+  addRange = (obj, prop, chain = yes) ->
+    value = obj[prop]
+    [min, max] = [value / 2, 2 * value]
+
+    if value < 0 then gui = @.add obj, prop, max, min
+    else if value > 0 then gui = @.add obj, prop, min, max
+    else gui = @.add obj, prop
+
+    if chain then @ else gui
+
+  _.extend dat.GUI::, { addRange }
 
   # Flixel shims
   # ------------
