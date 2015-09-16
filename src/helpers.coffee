@@ -1,3 +1,7 @@
+# Helpers
+# =======
+# Misc. utilities and bits of custom functionality not specific to the game.
+
 define [
   'phaser'
   'underscore'
@@ -6,6 +10,9 @@ define [
   RegExps =
     PrettyHashRemove: /[{}"]/g
     PrettyHashPad: /[:,]/g
+
+  # Debugging
+  # ---------
 
   DebugMixin =
 
@@ -56,6 +63,9 @@ define [
         .replace RegExps.PrettyHashRemove,''
         .replace RegExps.PrettyHashPad, '$& '
 
+  # Flixel shims
+  # ------------
+
   # Same behavior as Flixel, but a different, more straightforward implementation.
   autoSetTiles = (tiles) ->
     result = (_.clone row for row in tiles)
@@ -90,6 +100,9 @@ define [
         row[c] = tile
 
     result
+
+  # Underscore mixins
+  # -----------------
 
   isPlainObject = (arg) -> _.isObject(arg) and not _.isFunction(arg)
 

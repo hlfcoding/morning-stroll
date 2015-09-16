@@ -4,8 +4,6 @@
 # We're extending `FlxGroup` b/c there's nothing else. ArrayList would
 # be better.
 
-# Dependencies
-# ------------
 define [
   'phaser'
   'underscore'

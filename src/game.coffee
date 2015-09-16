@@ -3,7 +3,7 @@
 # Configures and controls our Phaser.Game through composition.
 
 define [
-  'dat.gui',
+  'dat.gui'
   'phaser'
   'underscore'
   'app/background'
