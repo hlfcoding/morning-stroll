@@ -33,7 +33,8 @@ define [
     @playerH: 72
     @playerW: 72
     @groundH: 20
-    @mapH: 3152 # 2912 + 240
+    @artH: 2912
+    @mapH: 3152 # +240
 
     constructor: ->
       _.bindAll @, 'onPreload', 'onCreate', 'onUpdate', 'onRender'
@@ -111,7 +112,8 @@ define [
       @_renderDebugOverlays()
 
     _addBackground: ->
-      @background = new Background { mapH: MorningStroll.mapH }, @game
+      parallaxTolerance = MorningStroll.mapH - MorningStroll.artH
+      @background = new Background { parallaxTolerance }, @game
       @background.addImages _.template('bg<%= zIndex %>'), 16
       @background.layout()
 

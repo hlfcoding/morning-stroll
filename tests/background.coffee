@@ -11,12 +11,8 @@ define [
 
     beforeEach ->
       spyOn Background::, '_initialize'
-      bg = new Background { mapH: 3152 }
+      bg = new Background { parallaxTolerance: 240 }
       _.extend bg, fakes.createBackgroundProps(bg)
-
-    describe 'when constructed', ->
-      it 'should be using "full" layout mode', ->
-        expect(bg.layoutMode).toBe 'full'
 
     describe '#layout', ->
       it 'updates scroll-factors on each layer', ->
