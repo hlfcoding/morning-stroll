@@ -64,6 +64,33 @@ define [
         .replace RegExps.PrettyHashRemove,''
         .replace RegExps.PrettyHashPad, '$& '
 
+  kPhaserLayoutX = -8
+  kPhaserLineRatio = 1.8
+
+  DebugDisplayMixin =
+
+    _initDebugDisplayMixin: (game) ->
+      @debugFontSize ?= 9
+      # Compute sizes.
+      @_debugGutter = 2 * @debugFontSize
+      @_debugLine = kPhaserLineRatio * @debugFontSize
+
+      @debug = game.debug
+      @debug.font = "#{@debugFontSize}px Menlo"
+
+    resetDebugDisplayLayout: ->
+      @_layoutX = @_debugGutter + kPhaserLayoutX
+      @_layoutY = @_debugGutter
+
+    renderDebugDisplayItems: (items, lines) ->
+      if _.isFunction(items) and lines?
+        items @_layoutX, @_layoutY
+        @_layoutY += lines * @_debugLine
+
+      else for own label, text of items
+        @debug.text text, @_layoutX, @_layoutY, null, @debug.font
+        @_layoutY += @_debugLine
+
   # Developing
   # ----------
 
@@ -78,6 +105,13 @@ define [
     if chain then @ else gui
 
   _.extend dat.GUI::, { addRange }
+
+  moveDetachedCamera = (camera, cursors) ->
+    step = 4
+    if cursors.up.isDown then camera.y -= step
+    else if cursors.down.isDown then camera.y += step
+    else if cursors.left.isDown then camera.x -= step
+    else if cursors.right.isDown then camera.x += step
 
   # Flixel shims
   # ------------
@@ -124,4 +158,6 @@ define [
 
   _.mixin { isPlainObject }
 
-  { DebugMixin, RegExps, autoSetTiles }
+  # Export.
+
+  { DebugMixin, DebugDisplayMixin, RegExps, autoSetTiles, moveDetachedCamera }

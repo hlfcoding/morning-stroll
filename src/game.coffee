@@ -7,15 +7,13 @@ define [
   'phaser'
   'underscore'
   'app/background'
+  'app/helpers'
   'app/play-state'
   'app/platforms'
   'app/player'
-], (dat, Phaser, _, Background, PlayState, Platforms, Player) ->
+], (dat, Phaser, _, Background, Helpers, PlayState, Platforms, Player) ->
 
   'use strict'
-
-  kPhaserLayoutX = -8
-  kPhaserLineRatio = 1.8
 
   class MorningStroll
 
@@ -29,7 +27,6 @@ define [
 
       @debugging = on # Turn off here to disable entirely (@release).
       @developing = on
-      @debugFontSize = 9
       @detachedCamera = off
 
       width = 416
@@ -49,9 +46,7 @@ define [
       @background = @mate = @platforms = @player = null
 
     onPreload: ->
-      if @debugging
-        @debug = @game.debug
-        @debug.font = "#{@debugFontSize}px Menlo"
+      @_initDebugDisplayMixin @game if @debugging
 
       if @developing
         @gui = new dat.GUI()
@@ -90,14 +85,16 @@ define [
       @debugging = off # Off by default for performance. Doing this after setup.
 
     onUpdate: ->
-      @_updateCollisions()
-      @_updateDebugging()
+      @physics.arcade.collide @player.sprite, @platforms.layer
+
       @background.update()
       @player.update()
 
+      Helpers.moveDetachedCamera @game.camera, @cursors if @detachedCamera
+
     onRender: ->
-      @_renderDebugDisplay()
-      @_renderDebugOverlays()
+      @_renderDebugDisplay() if @debugging
+      @_renderDebugOverlays() if @debugging
 
     _addBackground: ->
       parallaxTolerance = MorningStroll.mapH - MorningStroll.artH
@@ -124,25 +121,15 @@ define [
       @player.debugging = @debugging
 
     _renderDebugDisplay: ->
-      return unless @debugging
-
-      gutter = 2 * @debugFontSize
-      line = kPhaserLineRatio * @debugFontSize
-
-      layoutX = gutter + kPhaserLayoutX
-      layoutY = gutter
+      @resetDebugDisplayLayout()
 
       if @player.debugging
-        @debug.bodyInfo @player.sprite, layoutX, layoutY
-        layoutY += 6 * line
-
-        for own label, text of @player.debugTextItems
-          @debug.text text, layoutX, layoutY, null, @debug.font
-          layoutY += line
+        @renderDebugDisplayItems (layoutX, layoutY) =>
+          @debug.bodyInfo @player.sprite, layoutX, layoutY
+        , 6
+        @renderDebugDisplayItems @player.debugTextItems
 
     _renderDebugOverlays: ->
-      return unless @debugging
-
       @debug.body @player.sprite if @player.debugging
 
     _toggleCameraAttachment: (attached) ->
@@ -154,15 +141,6 @@ define [
         @game.camera.unfollow()
         @player.cursors = null
 
-    _updateCollisions: ->
-      @physics.arcade.collide @player.sprite, @platforms.layer
-
-    _updateDebugging: ->
-      if @detachedCamera
-        step = 4
-        if @cursors.up.isDown then @game.camera.y -= step
-        else if @cursors.down.isDown then @game.camera.y += step
-        else if @cursors.left.isDown then @game.camera.x -= step
-        else if @cursors.right.isDown then @game.camera.x += step
+  _.extend MorningStroll::, Helpers.DebugDisplayMixin
 
   MorningStroll
