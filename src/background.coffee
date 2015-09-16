@@ -74,7 +74,7 @@ define [
 
         # Shift based on scroll factor for full visibility of current bg images.
         unless zIndex is 1 # Not farthest.
-          image.y += @parallaxTolerance 
+          image.y += @parallaxTolerance
           unless zIndex is @_topZIndex # Or nearest.
             image.y -= @parallaxTolerance * scrollFactor ** (1 / 3)
 
