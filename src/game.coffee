@@ -32,7 +32,6 @@ define [
 
     @playerH: 72
     @playerW: 72
-    @groundH: 20
     @artH: 2912
     @mapH: 3152 # +240
 
@@ -125,13 +124,12 @@ define [
 
     _addPlatforms: ->
       @platforms = new Platforms 
-        groundH: MorningStroll.groundH
         mapH: MorningStroll.mapH
         tileImageKey: 'balcony'
       , @game, @gui?.addFolder 'platforms'
 
     _addPlayer: ->
-      y = @game.world.height - MorningStroll.playerH - MorningStroll.groundH
+      y = @game.world.height - MorningStroll.playerH
       origin = new Phaser.Point 0, y
       @player = new Player { origin }, @game, @cursors, @gui?.addFolder 'player'
       @player.debugging = @debugging
