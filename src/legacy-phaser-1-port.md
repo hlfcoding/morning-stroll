@@ -86,30 +86,6 @@
       #   Don't do expensive operations too often, if possible.
       _didEnding = no
 
-    # `_setupPlatform`
-    _setupPlatform: ->
-
-      # - Creates a new tilemap with no arguments.
-      @_platform = new Platform @game, 'balcony', 0, 0, no, 32, 32
-
-      # - Set points.
-      #   TODO: Ledge.
-      @_platform.startingPoint.x = C.PLAYER_WIDTH
-      @_platform.startingPoint.y = @_platform.height - C.PLAYER_HEIGHT
-      ledge = @_platform.ledges[@_platform.ledges.length-1]
-
-      @_platform.endingPoint.y = (@_platform.numRows-1 - ledge.rowIndex) * @_platform.tileHeight
-      @_platform.endingPoint.x = (ledge.size * @_platform.tileWidth) / 2
-      if ledge.facing is Collision.RIGHT
-        @_platform.endingPoint.x = @_platform.bounds.width - @_platform.endingPoint.x
-
-    _setupPlayerToPlatform: ->
-
-      # - Move until we don't overlap.
-      while @_platform.overlaps(@_player)
-        if @_player.x <= 0 then @_player.x = @game.width
-        @_player.x -= @_platform.tileWidth
-
   # Alias class.
   C = PlayState
 ```

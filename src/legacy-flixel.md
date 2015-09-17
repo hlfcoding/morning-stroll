@@ -66,44 +66,7 @@ package
       gameStatePollInterval.destroy();
     }
 
-    // Setup Routines
-    // --------------
-    // Since the observer pattern is too slow, we'll just name our functions to be like hooks.
-    // The platform is the first thing that gets set up.
-    private function setupPlatform():void
-    {
-      // Creates a new tilemap with no arguments.
-      platform = new Platform();
-
-      // Set points.
-      platform.startingPoint.x = PLAYER_WIDTH;
-      platform.startingPoint.y = platform.height - PLAYER_HEIGHT;
-      var ledge:PlatformLedge = platform.ledges[platform.ledges.length-1]; // Always reads top-to-bottom.
-      platform.endingPoint.y = (platform.numRows-1 - ledge.rowIndex) * platform.tileHeight;
-      platform.endingPoint.x = (ledge.size * platform.tileWidth) / 2;
-      if (ledge.facing == FlxObject.RIGHT)
-      {
-        platform.endingPoint.x = platform.bounds.width - platform.endingPoint.x;
-      }
-    }
     // Hooks.
-    private function setupPlatformAfter():void
-    {
-      // Draw player at the bottom.
-      setupPlayer(platform.startingPoint);
-
-      // Move until we don't overlap.
-      while (platform.overlaps(player))
-      {
-        if (player.x <= 0)
-        {
-          player.x = FlxG.width;
-        }
-        player.x -= platform.tileWidth;
-      }
-      // Draw its mate at the top.
-      setupMate(platform.endingPoint);
-    }
     private function setupPlatformAndPlayerAfter():void
     {
       setupCamera();
@@ -112,25 +75,12 @@ package
     // Hooked routines.
     private function setupPlayer(start:FlxPoint):void
     {
-      // Find start position for player.
-
-      player = new Player(start.x, start.y);
-
       // Bounding box tweaks.
       player.tailOffset.x = 35;
       player.headOffset.x = 10;
 
       // Process settings.
       player.init();
-    }
-    private function setupMate(start:FlxPoint):void
-    {
-      mate = new FlxSprite(start.x, start.y);
-      mate.height = 46;
-      mate.offset.y = mate.frameHeight - mate.height;
-      mate.y -= mate.frameHeight - mate.height - 6; // TODO - Magic pixel hack.
-      mate.x -= 20;
-
     }
     private function setupCamera():void
     {
