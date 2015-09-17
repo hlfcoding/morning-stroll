@@ -48,15 +48,6 @@ define [
     onPreload: ->
       @_initDebugDisplayMixin @game if @debugging
 
-      if @developing
-        @gui = new dat.GUI()
-        @gui.add @, 'debugging'
-          .onFinishChange => @debug.reset() unless @debugging
-        @gui.add @, 'detachedCamera'
-          .onFinishChange => @_toggleCameraAttachment()
-
-      @physics = @game.physics
-
       loader = @game.load
       loader.image 'balcony', 'assets/tiles-auto-balcony.png'
       for zIndex in [16..1]
@@ -66,14 +57,17 @@ define [
       loader.spritesheet 'player', 'assets/player.png', MorningStroll.playerW, MorningStroll.playerH
 
     onCreate: ->
+      @physics = @game.physics
       @physics.startSystem Phaser.Physics.ARCADE
-
       @physics.arcade.gravity.y = 500
-      if @developing
-        gui = @gui?.addFolder 'gravity'
-        gui.add @physics.arcade.gravity, 'y', 0, 2 * @physics.arcade.gravity.y
 
       @cursors = @game.input.keyboard.createCursorKeys()
+
+      if @developing
+        @gui = new dat.GUI()
+        @gui.add(@, 'debugging').onFinishChange => @debug.reset() unless @debugging
+        @gui.add(@, 'detachedCamera').onFinishChange => @_toggleCameraAttachment()
+        @gui.addFolder('gravity').addRange @physics.arcade.gravity, 'y'
 
       @_addBackground()
       @_addMate()
