@@ -188,7 +188,6 @@ define [
         expect(vars.rowTiles).not.toEqual []
 
     describe '#_generateTiles', ->
-
       it 'calls #_addRow for each row', ->
         spyOn(platforms, '_addRow').and.callThrough()
         platforms._generateTiles()
