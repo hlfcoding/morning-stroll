@@ -69,10 +69,12 @@ define [
         @gui.add(@, 'detachedCamera').onFinishChange => @_toggleCameraAttachment()
         @gui.addFolder('gravity').addRange @physics.arcade.gravity, 'y'
 
+      # First:
       @_addBackground()
-      @_addMate()
       @_addPlatforms()
+      # Then:
       @_addPlayer()
+      @_addMate()
 
       @_toggleCameraAttachment on
 
@@ -97,7 +99,10 @@ define [
       @background.layout()
 
     _addMate: ->
-      @mate = @game.add.sprite 0, 0, 'mate', 1
+      {x, y} = @_createEndingPoint()
+      x -= 20
+      y -= 46
+      @mate = @game.add.sprite x, y, 'mate', 1
       manager = @mate.animations
       manager.add 'end', [1..14], 12
       manager.play 'end' # @test
@@ -109,10 +114,15 @@ define [
       , @game, @gui?.addFolder 'platforms'
 
     _addPlayer: ->
-      y = @game.world.height - MorningStroll.playerH
-      origin = new Phaser.Point 0, y
+      origin = @_createStartingPoint()
       @player = new Player { origin }, @game, @cursors, @gui?.addFolder 'player'
       @player.debugging = @debugging
+
+    _createEndingPoint: ->
+      _.last(@platforms.ledges).createMidpoint @platforms
+
+    _createStartingPoint: ->
+      new Phaser.Point MorningStroll.playerW, @game.world.height - MorningStroll.playerH
 
     _renderDebugDisplay: ->
       @resetDebugDisplayLayout()

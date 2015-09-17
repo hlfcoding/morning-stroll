@@ -224,6 +224,13 @@ define [
       @end = -1
       @facing = 'left'
 
+    createMidpoint: (platforms) ->
+      point = new Phaser.Point()
+      point.x = (@size / 2) * platforms.tileWidth
+      point.x = platforms.tilemap.widthInPixels - point.x if @facing is 'right'
+      point.y = ((platforms.tiles.length - 1) - @rowIndex) * platforms.tileHeight
+      point
+
   _.extend Platforms::, Helpers.DebugMixin
 
   _.extend Platforms, { Ledge, Tile }

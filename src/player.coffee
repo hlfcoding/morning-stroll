@@ -31,7 +31,8 @@ define [
       @_initialize game, gui
 
     _initialize: (game, gui) ->
-      @sprite = game.add.sprite @config.origin.x, @config.origin.y, 'player', 17
+      {x, y} = @config.origin
+      @sprite = game.add.sprite x, y, 'player', 17
       @sprite.anchor = new Phaser.Point 0.5, 0.5
 
       @animations = @sprite.animations
