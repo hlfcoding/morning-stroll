@@ -94,6 +94,11 @@ define [
   # Developing
   # ----------
 
+  addOpenFolder = ->
+    folder = @addFolder.apply @, arguments
+    folder.open()
+    folder
+
   addRange = (obj, prop, chain = yes) ->
     value = obj[prop]
     [min, max] = [value / 2, 2 * value]
@@ -104,7 +109,7 @@ define [
 
     if chain then @ else gui
 
-  _.extend dat.GUI::, { addRange }
+  _.extend dat.GUI::, { addOpenFolder, addRange }
 
   moveDetachedCamera = (camera, cursors) ->
     step = 4

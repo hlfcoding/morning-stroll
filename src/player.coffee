@@ -95,10 +95,9 @@ define [
       completedInit = @_initDebugMixin gui
       return unless completedInit
 
-      @gui.addFolder 'drag'
-          .addRange @physics.drag, 'x'
+      @gui.addOpenFolder('drag').addRange @physics.drag, 'x'
 
-      @gui.addFolder 'maxVelocity'
+      @gui.addOpenFolder 'maxVelocity'
           .addRange @maxVelocity, 'x'
           .addRange @maxVelocity, 'y'
 

@@ -67,7 +67,7 @@ define [
         @gui = new dat.GUI()
         @gui.add(@, 'debugging').listen().onFinishChange => @debug.reset() unless @debugging
         @gui.add(@, 'detachedCamera').onFinishChange => @_toggleCameraAttachment()
-        @gui.addFolder('gravity').addRange @physics.arcade.gravity, 'y'
+        @gui.addOpenFolder('gravity').addRange @physics.arcade.gravity, 'y'
 
       # First:
       @_addBackground()
@@ -111,11 +111,11 @@ define [
       @platforms = new Platforms 
         mapH: MorningStroll.mapH
         tileImageKey: 'balcony'
-      , @game, @gui?.addFolder 'platforms'
+      , @game, @gui?.addOpenFolder 'platforms'
 
     _addPlayer: ->
       origin = @_createStartingPoint()
-      @player = new Player { origin }, @game, @cursors, @gui?.addFolder 'player'
+      @player = new Player { origin }, @game, @cursors, @gui?.addOpenFolder 'player'
       @player.debugging = @debugging
 
     _createEndingPoint: ->
