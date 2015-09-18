@@ -66,7 +66,7 @@ module.exports = (grunt) ->
         options:
           specs: [
             'tests/js/*.js'
-            'tests/js/fakes.js'
+            '!tests/js/fakes.js'
           ]
           host: 'http://127.0.0.1:8000/'
           template: require 'grunt-template-jasmine-requirejs'
