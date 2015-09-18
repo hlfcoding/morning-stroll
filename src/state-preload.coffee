@@ -1,14 +1,23 @@
 define [
   'phaser'
+  'underscore'
   'app/defines'
-], (Phaser, defines) ->
+], (Phaser, _, defines) ->
 
   'use strict'
 
   class PreloadState extends Phaser.State
 
+    init: ->
+      window.WebFontConfig =
+        active: => @time.events.add Phaser.Timer.SECOND, @menu, @
+        google: { families: [ 'Enriqueta:400:latin' ] }
+
     preload: ->
+      @load.script 'webfont', '//ajax.googleapis.com/ajax/libs/webfont/1/webfont.js'
+
       @load.spritesheet 'button', 'assets/button.png', defines.buttonW, defines.buttonH
+      @load.image 'bg-start', 'assets/bg-start.jpg'
 
       @load.image 'balcony', 'assets/tiles-auto-balcony.png'
       for zIndex in [16..1]
@@ -19,7 +28,9 @@ define [
 
     create: ->
 
-    update: ->
+    update: -> @menu()
+
+    menu: _.after 1, ->
       @state.start 'menu'
 
   PreloadState
