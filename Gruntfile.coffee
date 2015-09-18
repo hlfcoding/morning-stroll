@@ -71,7 +71,7 @@ module.exports = (grunt) ->
           host: 'http://127.0.0.1:8000/'
           template: require 'grunt-template-jasmine-requirejs'
           templateOptions:
-            requireConfigFile: 'release/app.js'
+            requireConfigFile: 'release/game.js'
             requireConfig:
               paths: { test: '../tests/js' }
 
