@@ -65,7 +65,7 @@ define [
 
       if @developing
         @gui = new dat.GUI()
-        @gui.add(@, 'debugging').onFinishChange => @debug.reset() unless @debugging
+        @gui.add(@, 'debugging').listen().onFinishChange => @debug.reset() unless @debugging
         @gui.add(@, 'detachedCamera').onFinishChange => @_toggleCameraAttachment()
         @gui.addFolder('gravity').addRange @physics.arcade.gravity, 'y'
 
