@@ -30,7 +30,7 @@ define [
 
     update: -> @menu()
 
-    menu: _.after 1, ->
+    menu: _.after 2, ->
       @state.start 'menu'
 
   PreloadState
