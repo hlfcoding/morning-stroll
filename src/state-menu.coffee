@@ -18,7 +18,7 @@ define [
       @_addText 'Morning Stroll', { fontSize: 32 }
       @_addText 'Climb and see!', { fontSize: 16 }
 
-      @layoutY += @baseline
+      @layoutY += 2 * @baseline
       buttonX = @world.centerX - (defines.buttonW / 2)
       buttonY = @layoutY - (defines.buttonH / 2)
       @add.button buttonX, buttonY, 'button', @play, @, 1, 0, 2
