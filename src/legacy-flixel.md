@@ -58,11 +58,6 @@ package
       gameStatePollInterval.destroy();
     }
 
-    // Hooks.
-    private function setupPlatformAndPlayerAfter():void
-    {
-      setupCamera();
-    }
     // Hooked routines.
     private function setupPlayer(start:FlxPoint):void
     {
@@ -72,21 +67,6 @@ package
 
       // Process settings.
       player.init();
-    }
-    private function setupCamera():void
-    {
-      // Follow the player's custom focus.
-      FlxG.camera.follow(player.cameraFocus);
-      // Constrain the camera to the platform.
-      platform.follow();
-      // Don't show the floor.
-      FlxG.camera.setBounds(bg.bounds.x, bg.bounds.y, bg.bounds.width, bg.bounds.height);
-    }
-
-    // Update Routines
-    // ---------------
-    private function updatePlatform():void
-    {
     }
     // Hooks.
     private function updatePlatformAfter():void
