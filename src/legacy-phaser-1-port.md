@@ -49,11 +49,7 @@
     @ENDING_FPS: 12
 
     # Music.
-    _targetMusicVolume: 0
     _shouldPlayMusic: undefined
-    @MUSIC_VOLUME_FACTOR: 1.3
-    @MUSIC_VOLUME_MIN: 0.2
-    @MUSIC_VOLUME_MAX: 0.8
 
     # Phaser Methods
     # --------------
@@ -63,7 +59,6 @@
 
       # - Set globals.
       @_shouldCheckFalling = off
-      @_shouldPlayMusic = not window.DEBUG
 
       # - Internals.
       #   Don't do expensive operations too often, if possible.

@@ -19,8 +19,6 @@ package
   public class PlayState extends FlxState
     implements IPlayerAnimationDelegate
   {
-    [Embed(source="data/morning-stroll.mp3")]private static var SndMain:Class;
-
     // Some game switches.
     private var fallChecking:Boolean;
 
@@ -30,10 +28,6 @@ package
     private var endAnimDuration:Number;
 
     // The music.
-    private var targetMusicVolume:Number = 0;
-    private static const MUSIC_VOLUME_FACTOR:Number = 1.3;
-    private static const MIN_MUSIC_VOLUME:Number = 0.2;
-    private static const MAX_MUSIC_VOLUME:Number = 0.8;
     private var playMusic:Boolean;
 
     // Flixel Methods
@@ -68,7 +62,6 @@ package
     private function setupPlatformAndPlayerAfter():void
     {
       setupCamera();
-      setupAudio();
     }
     // Hooked routines.
     private function setupPlayer(start:FlxPoint):void
@@ -89,12 +82,6 @@ package
       // Don't show the floor.
       FlxG.camera.setBounds(bg.bounds.x, bg.bounds.y, bg.bounds.width, bg.bounds.height);
     }
-    private function setupAudio():void
-    {
-      if (!playMusic) return;
-      updateAudio(true);
-      FlxG.watch(FlxG.music, 'volume', 'Volume');
-    }
 
     // Update Routines
     // ---------------
@@ -110,7 +97,6 @@ package
     private function updatePlatformAndPlayerAfter():void
     {
       updateCamera(player.justFell());
-      updateAudio();
       updateGameState();
     }
     // Hooked routines.
