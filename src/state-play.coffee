@@ -27,6 +27,9 @@ define [
 
       @_initDebugDisplayMixin @game if @debugging
 
+      @game.onBlur.add @onBlur, @
+      @game.onFocus.add @onFocus, @
+
     create: ->
       @physics.startSystem Phaser.Physics.ARCADE
       @physics.arcade.gravity.y = 500
@@ -50,17 +53,27 @@ define [
 
       @debugging = off # Off by default for performance. Doing this after setup.
 
+      @_addMusic()
+
     update: ->
       @physics.arcade.collide @player.sprite, @platforms.layer
 
       @background.update()
       @player.update()
 
+      @_updateMusic()
+
       Helpers.moveDetachedCamera @camera, @cursors if @detachedCamera
 
     render: ->
       @_renderDebugDisplay() if @debugging
       @_renderDebugOverlays() if @debugging
+
+    onBlur: ->
+      @music?.pause()
+
+    onFocus: ->
+      @music?.resume()
 
     _addBackground: ->
       parallaxTolerance = defines.mapH - defines.artH
@@ -76,6 +89,11 @@ define [
       manager = @mate.animations
       manager.add 'end', [1..14], 12
       manager.play 'end' # @test
+
+    _addMusic: ->
+      return if @debugging
+      @music = @add.audio 'bgm', 0, yes
+      @music.play()
 
     _addPlatforms: ->
       @platforms = new Platforms 
@@ -114,6 +132,15 @@ define [
       else
         @camera.unfollow()
         @player.cursors = null
+
+    _updateMusic: _.throttle ->
+      # The music gets louder the higher the player gets. Uses easing so the
+      # volume smoothly updates on each landing.
+      targetVolume = ((@platforms.tilemap.heightInPixels - @player.sprite.y) /
+                       @platforms.tilemap.heightInPixels) ** 1.3
+      volume = @music.volume + ((targetVolume - @music.volume) / 24) # Ease into target, with fps
+      @music.volume = @math.clamp volume, 0.2, 0.8
+    , 42, { leading: on } # ms/f at 24fps
 
   _.extend PlayState::, Helpers.DebugDisplayMixin
 

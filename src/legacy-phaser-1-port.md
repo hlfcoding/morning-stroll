@@ -1,20 +1,3 @@
-
-```coffee
-  Tilemap = Phaser.Tilemap
-
-  class MorningStroll extends Phaser.Game
-
-    # Own Methods
-    # -----------
-
-    onPreload: ->
-      @load.tilemap 'balcony', @assetURL('tiles-auto-balcony.png'), null, '', Tilemap.CSV
-      @load.audio 'bgm', ['morning-stroll.mp3'], yes
-
-  # Alias class.
-  C = MorningStroll
-```
-
 ```coffee
   Collision = Phaser.Collision
   Point = Phaser.Point

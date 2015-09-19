@@ -44,8 +44,6 @@ package
 
       // Globals.
       fallChecking = false;
-      FlxG.debug = false;
-      playMusic = !FlxG.debug;
 
       // Internals.
       // Don't do expensive operations too often, if possible.
@@ -94,9 +92,7 @@ package
     private function setupAudio():void
     {
       if (!playMusic) return;
-      FlxG.music = FlxG.loadSound(SndMain, targetMusicVolume, true, false, false);
       updateAudio(true);
-      FlxG.music.play();
       FlxG.watch(FlxG.music, 'volume', 'Volume');
     }
 
@@ -156,17 +152,7 @@ package
     }
     private function updateAudio(force:Boolean=false):void
     {
-      if (!playMusic) return;
       if (didTheEnd) return;
-      // The music gets louder the higher the player gets.
-      // The volume smoothly updates on each landing.
-      if (force || player.currently == Player.FALLING)
-      {
-        targetMusicVolume = (platform.startingPoint.y - player.cameraFocus.y) / platform.distanceToTravel.y;
-        targetMusicVolume = Math.pow(targetMusicVolume, MUSIC_VOLUME_FACTOR);
-      }
-      FlxG.music.volume += (targetMusicVolume - FlxG.music.volume) / player.cameraSpeed;
-      FlxG.music.volume = FlxU.bound(FlxG.music.volume, MIN_MUSIC_VOLUME, MAX_MUSIC_VOLUME);
     }
     private function updateGameState(doChecks:Boolean=false):void
     {

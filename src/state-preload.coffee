@@ -9,8 +9,10 @@ define [
   class PreloadState extends Phaser.State
 
     init: ->
+      _.bindAll @, 'menu', 'update'
+
       window.WebFontConfig =
-        active: => @time.events.add Phaser.Timer.SECOND, @menu, @
+        active: => @time.events.add Phaser.Timer.SECOND, @menu
         google: { families: [ 'Enriqueta:400:latin' ] }
 
     preload: ->
@@ -21,6 +23,7 @@ define [
       @load.setPreloadSprite @progressThumb
 
       @load.script 'webfont', '//ajax.googleapis.com/ajax/libs/webfont/1/webfont.js'
+      @load.audio 'bgm', ['assets/morning-stroll.mp3'], yes
 
       @load.spritesheet 'button', 'assets/button.png', defines.buttonW, defines.buttonH
       @load.image 'bg-start', 'assets/bg-start.jpg'
@@ -35,7 +38,11 @@ define [
     create: ->
       @progressThumb.cropEnabled = off
 
-    update: -> @menu()
+    update: ->
+      @_onceMenu ?= _.once @menu
+
+      if @cache.isSoundDecoded('bgm') then @_onceMenu()
+      else @time.events.add Phaser.Timer.HALF, @update
 
     menu: _.after 2, ->
       @state.start 'menu'
