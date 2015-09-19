@@ -14,6 +14,12 @@ define [
         google: { families: [ 'Enriqueta:400:latin' ] }
 
     preload: ->
+      x = @world.centerX - (defines.progressW / 2)
+      y = @world.centerY - (defines.progressH / 2)
+      @progressTrack = @add.sprite x, y, 'progress-bar-bg'
+      @progressThumb = @add.sprite x, y, 'progress-bar-fg'
+      @load.setPreloadSprite @progressThumb
+
       @load.script 'webfont', '//ajax.googleapis.com/ajax/libs/webfont/1/webfont.js'
 
       @load.spritesheet 'button', 'assets/button.png', defines.buttonW, defines.buttonH
@@ -27,6 +33,7 @@ define [
       @load.spritesheet 'player', 'assets/player.png', defines.playerW, defines.playerH
 
     create: ->
+      @progressThumb.cropEnabled = off
 
     update: -> @menu()
 

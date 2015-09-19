@@ -7,6 +7,9 @@ define [], () ->
 
   defines = 
 
+    progressW: 360
+    progressH: 8
+
     buttonW: 80
     buttonH: 30
 
