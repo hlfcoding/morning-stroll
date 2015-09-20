@@ -49,6 +49,10 @@ define [
     # Public
     # ------
 
+    distanceFallen: ->
+      return 0 unless @_fallingPoint?
+      @sprite.y - @_fallingPoint.y
+
     update: ->
       # First.
       @nextAction = 'none'
@@ -146,6 +150,8 @@ define [
       @nextDirection = null
       @nextState = null
 
+      @_fallingPoint = null
+
     # Change
     # ------
 
@@ -167,6 +173,11 @@ define [
 
       @debug 'state', @nextState
       @debug 'jump:start', @physics.position if @nextState is 'rising'
+
+      if @nextState is 'falling'
+        @_fallingPoint ?= @sprite.position.clone()
+      else if @nextState is 'still' and @_fallingPoint?
+        @_fallingPoint = null
 
       @state = @nextState
 
