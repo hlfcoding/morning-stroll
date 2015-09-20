@@ -63,6 +63,12 @@ define [
 
       @_updateMusic()
 
+      @camera.updateShake()
+      if @_shakeOnPlayerFall()
+        @camera.unfollow()
+      else unless (@camera.target? or @camera.isShaking())
+        @camera.follow @player.sprite
+
       @camera.updatePositionWithCursors @cursors if @detachedCamera
 
     render: ->
@@ -124,6 +130,11 @@ define [
 
     _renderDebugOverlays: ->
       @debug.body @player.sprite if @player.debugging
+
+    _shakeOnPlayerFall: ->
+      if @player.nextState is 'landing' and @player.distanceFallen() > defines.shakeFallH
+        @camera.shake()
+      else no
 
     _toggleCameraAttachment: (attached) ->
       attached ?= not @detachedCamera

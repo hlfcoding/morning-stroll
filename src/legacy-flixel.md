@@ -76,7 +76,6 @@ package
     }
     private function updatePlatformAndPlayerAfter():void
     {
-      updateCamera(player.justFell());
       updateGameState();
     }
     // Hooked routines.
@@ -104,17 +103,6 @@ package
     private function updateMate():void
     {
       FlxG.collide(mate, platform);
-    }
-    private function updateCamera(playerJustFell:Boolean):void
-    {
-      if (fallChecking && playerJustFell)
-      {
-        FlxG.camera.shake(
-          0.01,
-          0.1, null, true,
-          FlxCamera.SHAKE_VERTICAL_ONLY
-        );
-      }
     }
     private function updateAudio(force:Boolean=false):void
     {
@@ -211,8 +199,6 @@ package
 
     public var animDelegate:IPlayerAnimationDelegate;
 
-    public var pVelocity:FlxPoint;
-
     public var tailOffset:FlxPoint;
     public var headOffset:FlxPoint;
 
@@ -229,8 +215,6 @@ package
 
       this.controlled = true;
 
-      this.pVelocity = this.velocity;
-
       this.tailOffset = new FlxPoint();
       this.headOffset = new FlxPoint();
 
@@ -243,8 +227,6 @@ package
     override public function destroy():void
     {
       super.destroy();
-
-      this.pVelocity = null;
 
       this.tailOffset = null;
       this.headOffset = null;

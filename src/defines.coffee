@@ -18,3 +18,5 @@ define [], () ->
 
     artH: 2912
     mapH: 3152 # +240
+
+    shakeFallH: 300
