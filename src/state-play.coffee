@@ -43,6 +43,7 @@ define [
         @gui.addOpenFolder('gravity').addRange @physics.arcade.gravity, 'y'
 
       # First:
+      @_addMusic()
       @_addBackground()
       @_addPlatforms()
       # Then:
@@ -52,8 +53,6 @@ define [
       @_toggleCameraAttachment on
 
       @debugging = off # Off by default for performance. Doing this after setup.
-
-      @_addMusic()
 
     update: ->
       @physics.arcade.collide @player.sprite, @platforms.layer
@@ -91,9 +90,10 @@ define [
       manager.play 'end' # @test
 
     _addMusic: ->
-      return if @debugging
       @music = @add.audio 'bgm', 0, yes
+      @music.mute = @developing or @debugging
       @music.play()
+      @gui.add @music, 'mute'
 
     _addPlatforms: ->
       @platforms = new Platforms 
