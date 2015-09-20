@@ -26,6 +26,7 @@ define [
       @background = @mate = @platforms = @player = null
 
       @_initDebugDisplayMixin @game if @debugging
+      _.extend @camera, Helpers.CameraMixin
 
       @game.onBlur.add @onBlur, @
       @game.onFocus.add @onFocus, @
@@ -62,7 +63,7 @@ define [
 
       @_updateMusic()
 
-      Helpers.moveDetachedCamera @camera, @cursors if @detachedCamera
+      @camera.updatePositionWithCursors @cursors if @detachedCamera
 
     render: ->
       @_renderDebugDisplay() if @debugging

@@ -12,6 +12,17 @@ define [
     PrettyHashRemove: /[{}"]/g
     PrettyHashPad: /[:,]/g
 
+  # Camera
+  # ------
+
+  CameraMixin =
+
+    updatePositionWithCursors: (cursors, velocity = 4) ->
+      if cursors.up.isDown then @y -= velocity
+      else if cursors.down.isDown then @y += velocity
+      else if cursors.left.isDown then @x -= velocity
+      else if cursors.right.isDown then @x += velocity
+
   # Debugging
   # ---------
 
@@ -111,13 +122,6 @@ define [
 
   _.extend dat.GUI::, { addOpenFolder, addRange }
 
-  moveDetachedCamera = (camera, cursors) ->
-    step = 4
-    if cursors.up.isDown then camera.y -= step
-    else if cursors.down.isDown then camera.y += step
-    else if cursors.left.isDown then camera.x -= step
-    else if cursors.right.isDown then camera.x += step
-
   # Flixel shims
   # ------------
 
@@ -165,4 +169,4 @@ define [
 
   # Export.
 
-  { DebugMixin, DebugDisplayMixin, RegExps, autoSetTiles, moveDetachedCamera }
+  { CameraMixin, DebugMixin, DebugDisplayMixin, RegExps, autoSetTiles }
