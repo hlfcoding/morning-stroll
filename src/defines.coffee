@@ -19,4 +19,5 @@ define [], () ->
     artH: 2912
     mapH: 3152 # +240
 
+    deadzoneH: 100
     shakeFallH: 300

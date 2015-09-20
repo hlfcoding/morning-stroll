@@ -141,6 +141,11 @@ define [
       if attached
         @camera.follow @player.sprite
         @player.cursors ?= @cursors
+
+        @camera.deadzone ?= new Phaser.Rectangle(
+          0, (@game.height - defines.deadzoneH) / 2,
+          @game.width, defines.deadzoneH
+        )
       else
         @camera.unfollow()
         @player.cursors = null
