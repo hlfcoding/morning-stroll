@@ -175,7 +175,7 @@ define [
       @debug 'jump:start', @physics.position if @nextState is 'rising'
 
       if @nextState is 'falling'
-        @_fallingPoint ?= @sprite.position.clone()
+        @_fallingPoint ?= @physics.position?.clone()
       else if @nextState is 'still' and @_fallingPoint?
         @_fallingPoint = null
 
