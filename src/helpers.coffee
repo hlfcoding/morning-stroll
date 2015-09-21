@@ -68,7 +68,11 @@ define [
       return no unless gui?
 
       @gui = gui
-      @gui.add(@, 'debugging').onFinishChange => @debugTextItems = {}
+
+      toggle = @gui.add(@, 'debugging')
+      toggle.listen()
+      toggle.onFinishChange => @debugTextItems = {}
+
       @gui.add @, 'tracing'
 
       yes

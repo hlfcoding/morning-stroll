@@ -17,15 +17,15 @@ define [
   class PlayState extends Phaser.State
 
     init: ->
-      @debugging = on # Turn off here to disable entirely (@release).
-      @developing = on
+      @debugging = defines.debugging
+      @developing = defines.developing
       @detachedCamera = off
 
       @debug = @gui = null
       @cursors = null
       @background = @mate = @platforms = @player = null
 
-      @_initDebugDisplayMixin @game if @debugging
+      @_initDebugDisplayMixin @game if @debugging or @developing
       _.extend @camera, Helpers.CameraMixin
 
       @game.onBlur.add @onBlur, @
@@ -39,7 +39,9 @@ define [
 
       if @developing
         @gui = new dat.GUI()
-        @gui.add(@, 'debugging').listen().onFinishChange => @debug.reset() unless @debugging
+        @gui.add(@, 'debugging').listen().onFinishChange =>
+          @background.debugging = @platforms.debugging = @player.debugging = @debugging
+          @debug.reset() unless @debugging
         @gui.add(@, 'detachedCamera').onFinishChange => @_toggleCameraAttachment()
         @gui.addOpenFolder('gravity').addRange @physics.arcade.gravity, 'y'
 
@@ -52,8 +54,6 @@ define [
       @_addMate()
 
       @_toggleCameraAttachment on
-
-      @debugging = off # Off by default for performance. Doing this after setup.
 
     update: ->
       @physics.arcade.collide @player.sprite, @platforms.layer
@@ -111,7 +111,6 @@ define [
     _addPlayer: ->
       origin = @_createStartingPoint()
       @player = new Player { origin }, @game, @cursors, @gui?.addOpenFolder 'player'
-      @player.debugging = @debugging
 
     _createEndingPoint: ->
       _.last(@platforms.ledges).createMidpoint @platforms

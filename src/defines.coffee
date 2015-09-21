@@ -7,6 +7,12 @@ define [], () ->
 
   defines = 
 
+    # Turn off here to disable entirely (@release).
+    # Off by default for performance.
+    debugging: off
+    # Turn off here to disable entirely (@release).
+    developing: on
+
     progressW: 360
     progressH: 8
 

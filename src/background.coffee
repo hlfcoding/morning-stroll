@@ -7,8 +7,9 @@
 define [
   'phaser'
   'underscore'
+  'app/defines'
   'app/helpers'
-], (Phaser, _, Helpers) ->
+], (Phaser, _, defines, Helpers) ->
 
   'use strict'
 
@@ -42,6 +43,7 @@ define [
       @debugNamespace = 'background'
 
       @_initDebugMixin()
+      @debugging = defines.debugging
 
     # Public
     # ------

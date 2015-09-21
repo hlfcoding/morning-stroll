@@ -27,7 +27,7 @@ define [
 
       it 'sets up gui (folder) if provided one', ->
         gui = { add: -> }
-        spyOn(gui, 'add').and.returnValue jasmine.createSpyObj('control', ['onFinishChange'])
+        spyOn(gui, 'add').and.returnValue jasmine.createSpyObj('control', ['listen', 'onFinishChange'])
 
         completedInit = obj._initDebugMixin gui
         expect(obj.gui).toBe gui

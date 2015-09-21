@@ -6,8 +6,9 @@
 define [
   'phaser'
   'underscore'
+  'app/defines'
   'app/helpers'
-], (Phaser, _, Helpers) ->
+], (Phaser, _, defines, Helpers) ->
 
   'use strict'
 
@@ -41,6 +42,7 @@ define [
       @debugNamespace = 'platforms'
 
       completedInit = @_initDebugMixin gui
+      @debugging = defines.debugging
       return unless completedInit
 
     makeMap: (game) ->
