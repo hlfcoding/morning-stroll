@@ -59,6 +59,8 @@ define [
         { isFinished: no, isPlaying: yes, loop: name is 'run', name: name }
       frame: 17 # Initial.
 
+    cameraFocus: {}
+
     cursors:
       _.mapObject { left: {}, right: {}, up: {}, down: {} }, (key) ->
         key.isUp = key.isDown = no; key

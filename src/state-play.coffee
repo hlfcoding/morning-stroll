@@ -67,7 +67,7 @@ define [
       if @_shakeOnPlayerFall()
         @camera.unfollow()
       else unless (@camera.target? or @camera.isShaking())
-        @camera.follow @player.sprite
+        @camera.follow @player.cameraFocus
 
       @camera.updatePositionWithCursors @cursors if @detachedCamera
 
@@ -139,7 +139,7 @@ define [
     _toggleCameraAttachment: (attached) ->
       attached ?= not @detachedCamera
       if attached
-        @camera.follow @player.sprite
+        @camera.follow @player.cameraFocus
         @player.cursors ?= @cursors
 
         @camera.deadzone ?= new Phaser.Rectangle(

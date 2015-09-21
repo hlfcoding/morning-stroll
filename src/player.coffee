@@ -35,6 +35,8 @@ define [
       @sprite = game.add.sprite x, y, 'player', 17
       @sprite.anchor = new Phaser.Point 0.5, 0.5
 
+      @cameraFocus = game.add.sprite x, y
+
       @animations = @sprite.animations
       @_initAnimations()
 
@@ -81,6 +83,7 @@ define [
       # Last, if needed.
       @_changeAnimation()
       @_changeState()
+      @_updateCameraFocus()
 
     # Initialization
     # --------------
@@ -134,6 +137,7 @@ define [
 
       @airFrictionRatio = 1 / 20
       @runAcceleration = 300
+      @cameraFocusFollowResistance = 30
 
       @maxVelocity = new Phaser.Point 200, 800 # Run and terminal velocities.
 
@@ -151,6 +155,7 @@ define [
       @nextState = null
 
       @_fallingPoint = null
+      @_keepCameraFocusUpdated = on
 
     # Change
     # ------
@@ -185,10 +190,11 @@ define [
     # --------
 
     _isAnimationInterruptible: -> @animation?.isFinished or not @animation? or @animation?.loop
+    _isFullyFalling: -> @state is 'falling' and @velocity.y is @maxVelocity.y
     _isFullyRunning: -> @state is 'running' and @animation?.name is 'run'
+    _isFullyStill: -> @state is 'still' and (@animations.frame is 17 and not @animation?)
     _isInMidAir: -> @state in ['rising', 'falling']
     _isLanded: -> @animation?.name is 'land' and @animation.isFinished
-    _isFullyStill: -> @state is 'still' and (@animations.frame is 17 and not @animation?)
 
     _xDirectionInput: ->
       if @cursors?.left.isDown then Direction.Left
@@ -293,6 +299,21 @@ define [
       @nextAction = 'start'
       @_isTurning = no
       @debug 'turn:end', @velocity.x
+
+    # Update
+    # ------
+
+    _updateCameraFocus: ->
+      @_keepCameraFocusUpdated = off if @nextAction is 'jump'
+      unless @_keepCameraFocusUpdated
+        @_keepCameraFocusUpdated = on if @nextState is 'falling'
+        return no
+
+      # Follow with easing.
+      kEasing = @cameraFocusFollowResistance
+      kEasing /= 3 if @_isFullyFalling()
+      @cameraFocus.x += (@sprite.x - @cameraFocus.x) // kEasing
+      @cameraFocus.y += (@sprite.y - @cameraFocus.y) // kEasing
 
     # Helpers
     # -------

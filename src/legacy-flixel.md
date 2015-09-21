@@ -17,7 +17,6 @@ package
   // camera are set up around it.
 
   public class PlayState extends FlxState
-    implements IPlayerAnimationDelegate
   {
     // Some game switches.
     private var fallChecking:Boolean;
@@ -171,14 +170,6 @@ package
         );
       }
     }
-
-    // Player Delegate Methods
-    // -----------------------
-    // Interruptive, once.
-    public function playerWillJump():void
-    {
-      player.updateFocus = false;
-    }
   }
 }
 
@@ -250,13 +241,6 @@ package
       {
         // Start falling.
         this.pVelocity = null;
-      }
-
-      // - Handle focus.
-      if (this.updateFocus)
-      {
-        this.cameraFocus.x += FlxU.round((this.x - this.cameraFocus.x) / this.cameraSpeed);
-        this.cameraFocus.y += FlxU.round((this.y - this.cameraFocus.y) / this.cameraSpeed);
       }
     }
 
