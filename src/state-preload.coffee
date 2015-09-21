@@ -45,6 +45,7 @@ define [
       else @time.events.add Phaser.Timer.HALF, @update
 
     menu: _.after 2, ->
-      @state.start 'menu'
+      state = if defines.developing then 'play' else 'menu'
+      @state.start state
 
   PreloadState
