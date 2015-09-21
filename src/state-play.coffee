@@ -100,7 +100,7 @@ define [
       @music = @add.audio 'bgm', 0, yes
       @music.mute = @developing or @debugging
       @music.play()
-      @gui.add @music, 'mute'
+      @gui?.add @music, 'mute'
 
     _addPlatforms: ->
       @platforms = new Platforms 
