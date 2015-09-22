@@ -4,15 +4,13 @@ define [
   'app/helpers'
 ], (Phaser, _, Helpers) ->
 
-  DebugMixin = Helpers.DebugMixin
+  {DebugMixin} = Helpers
+
+  obj = null
+  beforeEach -> obj = {}
 
   describe 'Helpers.DebugMixin', ->
-    obj = null
-
-    beforeEach ->
-      class SomeObject
-      _.extend SomeObject::, DebugMixin
-      obj = new SomeObject()
+    beforeEach -> _.extend obj, DebugMixin
 
     describe '#_initDebugMixin', ->
       it 'initializes debug-related flags', ->
