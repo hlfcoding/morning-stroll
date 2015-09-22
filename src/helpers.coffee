@@ -12,6 +12,29 @@ define [
     PrettyHashRemove: /[{}"]/g
     PrettyHashPad: /[:,]/g
 
+  # Animation
+  # ---------
+  # Requires DebugMixin.
+
+  AnimationMixin =
+
+    playAnimation: (nameOrFrame, interrupt = yes) ->
+      return no if interrupt is no and @animation?.isPlaying
+
+      if _.isNumber(nameOrFrame)
+        frame = nameOrFrame
+        @animations.frame = frame
+        delete @animation
+
+      else
+        name = nameOrFrame
+        return no if @animation?.name is name
+        @animation = @animations.play name
+
+      @debug? 'animation', nameOrFrame
+
+      @animation
+
   # Camera
   # ------
   # Heavily inspired by dmaslov/phaser-screen-shake
@@ -206,4 +229,4 @@ define [
 
   # Export.
 
-  { CameraMixin, DebugMixin, DebugDisplayMixin, RegExps, autoSetTiles }
+  { AnimationMixin, CameraMixin, DebugMixin, DebugDisplayMixin, RegExps, autoSetTiles }

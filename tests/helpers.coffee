@@ -4,10 +4,34 @@ define [
   'app/helpers'
 ], (Phaser, _, Helpers) ->
 
-  {CameraMixin, DebugMixin} = Helpers
+  {AnimationMixin, CameraMixin, DebugMixin} = Helpers
 
   obj = null
   beforeEach -> obj = {}
+
+  describe 'Helpers.AnimationMixin', ->
+    beforeEach -> _.extend obj, AnimationMixin
+
+    describe '#playAnimation', ->
+      beforeEach ->
+        obj.animations = { play: (name) -> { name } } # Fake.
+        obj.animation = { isPlaying: no } # Fake.
+
+      it 'plays if allowed to interrupt or current animation isn\'t playing', ->
+        expect(obj.playAnimation('foo')).not.toBe no
+
+        obj.animation = { isPlaying: yes }
+        expect(obj.playAnimation('foo', no)).toBe no
+
+      it 'sets frame if given a number', ->
+        obj.playAnimation 1
+        expect(obj.animation).toBeUndefined()
+        expect(obj.animations.frame).toBe 1
+
+      it 'plays animation if given a string, but only if it\'s different', ->
+        expect(obj.playAnimation('foo')).toBeDefined()
+        expect(obj.animation).toBeDefined()
+        expect(obj.playAnimation('foo')).toBe no
 
   describe 'Helpers.CameraMixin', ->
     beforeEach -> _.extend obj, CameraMixin

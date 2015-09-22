@@ -16,7 +16,7 @@ define [
         '_beginJump', '_buildJump', '_endJump'
         '_beginRun', '_buildRun', '_endRun'
         '_beginTurn', '_endTurn'
-        '_playAnimation'
+        'playAnimation'
       ]
       _.extend player, fakes.createPlayerProps(player)
 
@@ -82,12 +82,12 @@ define [
 
     testStartAnimation = ->
       expect(player.nextAction).toBe 'start'
-      expect(player._playAnimation).toHaveBeenCalledWith 'start', undefined
+      expect(player.playAnimation).toHaveBeenCalledWith 'start', undefined
       expect(player._isAnimationInterruptible()).toBe no
 
     testStopAnimation = ->
       expect(player.nextAction).toBe 'stop'
-      expect(player._playAnimation).toHaveBeenCalledWith 'stop', yes
+      expect(player.playAnimation).toHaveBeenCalledWith 'stop', yes
       expect(player._isAnimationInterruptible()).toBe no
 
     describe 'when initialized', ->
@@ -126,7 +126,7 @@ define [
           expect(player._buildRun).toHaveBeenCalled()
 
         it 'will play interruptible run animation in loop', ->
-          expect(player._playAnimation).toHaveBeenCalledWith 'run', no
+          expect(player.playAnimation).toHaveBeenCalledWith 'run', no
           expect(player.animation.loop).toBe on
           expect(player._isAnimationInterruptible()).toBe yes
 
@@ -198,7 +198,7 @@ define [
 
         it 'will play jump animation', ->
           expect(player.nextAction).toBe 'jump'
-          expect(player._playAnimation).toHaveBeenCalledWith 'jump', undefined
+          expect(player.playAnimation).toHaveBeenCalledWith 'jump', undefined
           expect(player._isAnimationInterruptible()).toBe no
 
         it 'will not run on jump', ->
@@ -232,7 +232,7 @@ define [
           expect(player._isInMidAir()).toBe yes
 
         it 'will play fall animation', ->
-          expect(player._playAnimation).toHaveBeenCalledWith 31, no
+          expect(player.playAnimation).toHaveBeenCalledWith 31, no
           expect(player._isAnimationInterruptible()).toBe no
 
       describe 'when on floor', ->
@@ -243,7 +243,7 @@ define [
           expect(player._isInMidAir()).toBe no
 
         it 'will play land animation', ->
-          expect(player._playAnimation).toHaveBeenCalledWith 'land'
+          expect(player.playAnimation).toHaveBeenCalledWith 'land'
           expect(player._isAnimationInterruptible()).toBe no
 
         it 'will be landed when animation finishes', ->

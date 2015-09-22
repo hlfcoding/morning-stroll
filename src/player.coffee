@@ -164,14 +164,14 @@ define [
 
     _changeAnimation: ->
       unless @_isInMidAir() or @nextAction is 'none'
-        @_playAnimation @nextAction, @animation?.loop
+        @playAnimation @nextAction, @animation?.loop
         return
 
       switch @nextState
-        when 'running' then @_playAnimation 'run', no
-        when 'still' then @_playAnimation 17, @animation?.loop
-        when 'falling' then @_playAnimation 31, no
-        when 'landing' then @_playAnimation 'land'
+        when 'running' then @playAnimation 'run', no
+        when 'still' then @playAnimation 17, @animation?.loop
+        when 'falling' then @playAnimation 31, no
+        when 'landing' then @playAnimation 'land'
 
     _changeState: ->
       return if @nextState is @state
@@ -317,24 +317,6 @@ define [
       @cameraFocus.x += (@sprite.x - @cameraFocus.x) // kEasing
       @cameraFocus.y += (@sprite.y - @cameraFocus.y) // kEasing
 
-    # Helpers
-    # -------
-
-    _playAnimation: (nameOrFrame, interrupt = yes) ->
-      return if interrupt is no and @animation?.isPlaying
-
-      if _.isNumber(nameOrFrame)
-        frame = nameOrFrame
-        @animations.frame = frame
-        @animation = null
-
-      else
-        name = nameOrFrame
-        return if @animation?.name is name
-        @animation = @animations.play name
-
-      @debug 'animation', nameOrFrame
-
-  _.extend Player::, Helpers.DebugMixin
+  _.extend Player::, Helpers.AnimationMixin, Helpers.DebugMixin
 
   Player
