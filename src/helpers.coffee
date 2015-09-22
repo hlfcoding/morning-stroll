@@ -26,20 +26,21 @@ define [
 
     # Shake Flixel shim:
 
-    _shake:
-      _counter: -1
-      count: 4
-      sensitivity: 4
-      shakeX: on
-      shakeY: on
-
     isShaking: -> @_shake._counter > 0
 
-    shake: (config) ->
-      _.extend @_shake, config
+    shake: (config = {}) ->
+      @_shake = _.defaults config,
+        _counter: -1
+        count: 4
+        sensitivity: 4
+        shakeX: on
+        shakeY: on
+
       @_shake._counter = @_shake.count
 
     updateShake: ->
+      return no unless @_shake?
+
       {_counter, sensitivity, shakeX, shakeY} = @_shake
 
       return no if _counter is 0
