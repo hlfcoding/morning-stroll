@@ -14,6 +14,8 @@ define [
 
   'use strict'
 
+  MateLastFrame = 14
+
   class PlayState extends Phaser.State
 
     init: ->
@@ -88,13 +90,12 @@ define [
       @background.layout()
 
     _addMate: ->
-      {x, y} = @_createEndingPoint()
-      x -= 20
-      y -= 46
+      {x, y} = @endingPoint
+      x += 20
+      y -= 10
       @mate = @add.sprite x, y, 'mate', 1
-      manager = @mate.animations
-      manager.add 'end', [1..14], 12
-      manager.play 'end' # @test
+      @mate.anchor = new Phaser.Point 0.5, 0.5
+      @mate.animations.add 'end', [1..MateLastFrame], 12
 
     _addMusic: ->
       @music = @add.audio 'bgm', 0, yes
@@ -108,15 +109,15 @@ define [
         tileImageKey: 'balcony'
       , @game, @gui?.addOpenFolder 'platforms'
 
+      @endingPoint = @platforms.ledges[-1...][0].createMidpoint @platforms
+      @startingPoint = new Phaser.Point defines.playerW, @world.height - defines.playerH
+      # Use for debugging endpoints.
+      @startingPoint = @platforms.ledges[-2...-1][0].createMidpoint @platforms
+
     _addPlayer: ->
-      origin = @_createStartingPoint()
+      origin = @startingPoint
       @player = new Player { origin }, @game, @cursors, @gui?.addOpenFolder 'player'
 
-    _createEndingPoint: ->
-      _.last(@platforms.ledges).createMidpoint @platforms
-
-    _createStartingPoint: ->
-      new Phaser.Point defines.playerW, @world.height - defines.playerH
 
     _renderDebugDisplay: ->
       @resetDebugDisplayLayout()
