@@ -294,13 +294,15 @@ define [
       @debug 'turn:start', @velocity.x
 
     _endTurn: ->
-      # Visualize the turn here, for now.
-      @sprite.scale.x = @nextDirection
-      @physics.offset = new Phaser.Point @_xOffset(@nextDirection), @_yOffset
+      @_visualizeTurn()
 
       @nextAction = 'start'
       @_isTurning = no
       @debug 'turn:end', @velocity.x
+
+    _visualizeTurn: (direction = @nextDirection) ->
+      @sprite.scale.x = direction
+      @physics.offset = new Phaser.Point @_xOffset(direction), @_yOffset
 
     # Update
     # ------
