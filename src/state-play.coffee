@@ -73,6 +73,8 @@ define [
 
       @camera.updatePositionWithCursors @cursors if @detachedCamera
 
+      @end() if @_isPlayerReadyToEnd()
+
     render: ->
       @_renderDebugDisplay() if @debugging
       @_renderDebugOverlays() if @debugging
@@ -82,6 +84,21 @@ define [
 
     onFocus: ->
       @music?.resume()
+
+    end: ->
+      # First animate player.
+      animation = @player.startEnding @mate
+      animation.onComplete.addOnce =>
+        # Then animate mate.
+        animation = @mate.play 'end'
+        animation.onComplete.addOnce =>
+          # Then lock them onto their final frames.
+          @player.animations.frame = Player.LastFrame
+          @mate.animations.frame = MateLastFrame
+      # Then render ending display.
+      _.delay =>
+        @_renderEndingDisplay()
+      , 5000
 
     _addBackground: ->
       parallaxTolerance = defines.mapH - defines.artH
@@ -118,6 +135,9 @@ define [
       origin = @startingPoint
       @player = new Player { origin }, @game, @cursors, @gui?.addOpenFolder 'player'
 
+    _isPlayerReadyToEnd: ->
+      @player.state is 'still' and @player.control is on and
+      @player.sprite.y <= @endingPoint.y
 
     _renderDebugDisplay: ->
       @resetDebugDisplayLayout()
@@ -130,6 +150,9 @@ define [
 
     _renderDebugOverlays: ->
       @debug.body @player.sprite if @player.debugging
+
+    _renderEndingDisplay: ->
+      # TODO.
 
     _shakeOnPlayerFall: ->
       if @player.nextState is 'landing' and @player.distanceFallen() > defines.shakeFallH

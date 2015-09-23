@@ -24,6 +24,7 @@ define [
     # -------
 
     @Direction: Direction
+    @LastFrame: 52
 
     # Dependencies + Properties
     # -------------------------
@@ -56,7 +57,19 @@ define [
       return 0 unless @_fallingPoint?
       @sprite.y - @_fallingPoint.y
 
+    startEnding: (mate) ->
+      @control = off
+      @sprite.position.setTo mate.x - 43, mate.y
+      @velocity.setTo 0
+      @acceleration.setTo 0
+      @physics.offset.setTo 0
+      @physics.moves = no
+      @_visualizeTurn Direction.Right
+      animation = @playAnimation 'end'
+
     update: ->
+      return unless @control is on
+
       # First.
       @nextAction = 'none'
       @nextDirection = @_xDirectionInput()
@@ -155,6 +168,8 @@ define [
       @nextAction = 'none' # none, start, stop, jump
       @nextDirection = null
       @nextState = null
+
+      @control = on
 
       @_fallingPoint = null
       @_keepCameraFocusUpdated = on
