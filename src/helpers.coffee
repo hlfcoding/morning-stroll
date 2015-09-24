@@ -220,6 +220,18 @@ define [
 
     result
 
+  # Text
+  # ----
+
+  TextMixin =
+
+    addCenteredText: (text, layout, style) ->
+      _.defaults style, { boundsAlignH: 'center', boundsAlignV: 'middle' }
+      text = @add.text @world.centerX, layout.y, text, style
+      text.anchor.setTo 0.5
+      layout.y += text.height + layout.baseline
+      text
+
   # Underscore mixins
   # -----------------
 
@@ -229,4 +241,5 @@ define [
 
   # Export.
 
-  { AnimationMixin, CameraMixin, DebugMixin, DebugDisplayMixin, RegExps, autoSetTiles }
+  { AnimationMixin, CameraMixin, DebugMixin, DebugDisplayMixin, RegExps, TextMixin
+    autoSetTiles }
