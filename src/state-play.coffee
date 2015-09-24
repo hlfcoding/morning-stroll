@@ -14,6 +14,8 @@ define [
 
   'use strict'
 
+  {Timer} = Phaser
+
   MateLastFrame = 14
 
   class PlayState extends Phaser.State
@@ -26,6 +28,7 @@ define [
       @debug = @gui = null
       @cursors = null
       @background = @mate = @platforms = @player = null
+      @textLayout = null
 
       @_initDebugDisplayMixin @game if @debugging or @developing
       _.extend @camera, Helpers.CameraMixin
@@ -135,6 +138,11 @@ define [
       origin = @startingPoint
       @player = new Player { origin }, @game, @cursors, @gui?.addOpenFolder 'player'
 
+    _addText: (text, style) ->
+      _.defaults style, { fill: '#fff', font: 'Enriqueta' }
+      text = @addCenteredText text, @textLayout, style
+      tween = @fadeIn text, Timer.SECOND
+
     _isPlayerReadyToEnd: ->
       @player.state is 'still' and @player.control is on and
       @player.sprite.y <= @endingPoint.y
@@ -152,7 +160,11 @@ define [
       @debug.body @player.sprite if @player.debugging
 
     _renderEndingDisplay: ->
-      # TODO.
+      @textLayout = { y: 120, baseline: 40 }
+
+      @_addText 'The End', { fontSize: 32 }
+        .onComplete.addOnce =>
+          @_addText 'Click to play again', { fontSize: 16 }
 
     _shakeOnPlayerFall: ->
       if @player.nextState is 'landing' and @player.distanceFallen() > defines.shakeFallH
@@ -182,6 +194,6 @@ define [
       @music.volume = @math.clamp volume, 0.2, 0.8
     , 42, { leading: on } # ms/f at 24fps
 
-  _.extend PlayState::, Helpers.DebugDisplayMixin
+  _.extend PlayState::, Helpers.AnimationMixin, Helpers.DebugDisplayMixin, Helpers.TextMixin
 
   PlayState

@@ -35,6 +35,10 @@ define [
 
       @animation
 
+    fadeIn: (gameObject, duration) ->
+      gameObject.alpha = 0
+      tween = @add.tween(gameObject).to { alpha: 1 }, duration, 'Cubic', yes
+
   # Camera
   # ------
   # Heavily inspired by dmaslov/phaser-screen-shake
