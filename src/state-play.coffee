@@ -115,7 +115,7 @@ define [
       y -= 10
       @mate = @add.sprite x, y, 'mate', 1
       @mate.anchor = new Phaser.Point 0.5, 0.5
-      @mate.animations.add 'end', [1..MateLastFrame], 12
+      @mate.animations.add 'end', [4..MateLastFrame], 12
 
     _addMusic: ->
       @music = @add.audio 'bgm', 0, yes
