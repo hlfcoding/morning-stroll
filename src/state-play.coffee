@@ -101,7 +101,7 @@ define [
       # Then render ending display.
       _.delay =>
         @_renderEndingDisplay()
-      , 5000
+      , 5 * Timer.SECOND
 
     _addBackground: ->
       parallaxTolerance = defines.mapH - defines.artH
