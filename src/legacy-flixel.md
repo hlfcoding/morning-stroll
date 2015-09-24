@@ -1,12 +1,8 @@
 ```js
 package
 {
-  import org.flixel.FlxCamera;
   import org.flixel.FlxG;
-  import org.flixel.FlxObject;
   import org.flixel.FlxPoint;
-  import org.flixel.FlxSound;
-  import org.flixel.FlxSprite;
   import org.flixel.FlxState;
   import org.flixel.FlxTimer;
   import org.flixel.FlxU;
@@ -22,9 +18,7 @@ package
     private var fallChecking:Boolean;
 
     // Game state.
-    private var gameStatePollInterval:FlxTimer;
     private var didTheEnd:Boolean;
-    private var endAnimDuration:Number;
 
     // The music.
     private var playMusic:Boolean;
@@ -39,22 +33,8 @@ package
       fallChecking = false;
 
       // Internals.
-      // Don't do expensive operations too often, if possible.
-      gameStatePollInterval = new FlxTimer();
-      gameStatePollInterval.start(2, Number.POSITIVE_INFINITY,
-        function(onTimer:FlxTimer):void {
-          updateGameState(true);
-        }
-      );
       didTheEnd = false;
 
-    }
-
-    override public function destroy():void
-    {
-      super.destroy();
-
-      gameStatePollInterval.destroy();
     }
 
     // Hooked routines.
@@ -71,7 +51,6 @@ package
     private function updatePlatformAfter():void
     {
       updatePlayer();
-      updateMate();
     }
     private function updatePlatformAndPlayerAfter():void
     {
@@ -80,12 +59,6 @@ package
     // Hooked routines.
     private function updatePlayer():void
     {
-      // Tilemaps can be collided just like any other FlxObject, and flixel
-      // automatically collides each individual tile with the object.
-      if (player.controlled)
-      {
-        FlxG.collide(player, platform);
-      }
       // Wrap to stage.
       if (!player.inMidAir() && player.nextAction != Player.STOP)
       {
@@ -99,65 +72,12 @@ package
         pos = pPos = null;
       }
     }
-    private function updateMate():void
-    {
-      FlxG.collide(mate, platform);
-    }
     private function updateAudio(force:Boolean=false):void
     {
       if (didTheEnd) return;
     }
     private function updateGameState(doChecks:Boolean=false):void
     {
-      if (doChecks)
-      {
-        // Check if player is on top of last platform, periodically.
-        // Play the end screen for a while, on click, switch to start screen.
-        if (player.currently == Player.STILL && platform.isAtEndingPoint(FlxObject(player)))
-        {
-          if (player.controlled)
-          {
-            player.controlled = false;
-            // TODO - Follow path, then animate.
-            player.addAnimationCallback(
-              function(name:String, frameNumber:uint, frameIndex:uint):void {
-                if (name == 'end' && frameNumber == 6)
-                {
-                  mate.play('end');
-                }
-                if (name == 'still')
-                {
-                  player.frame = player.frames-1;
-                  mate.frame = mate.frames-1;
-                }
-              }
-            );
-            player.x = mate.x;
-            player.y = mate.y;
-            player.height = mate.height;
-            player.offset.y = mate.offset.y;
-            player.offset.x = 43;
-            player.facing = FlxObject.RIGHT;
-            player.play('end');
-            gameStatePollInterval.stop();
-            gameStatePollInterval.start(5, 1, 
-              function(onTimer:FlxTimer):void {
-                var title:Text, instructions:Text;
-                title = new Text(0, Text.BASELINE * 2, FlxG.width,
-                  "The End", Text.H1);
-                instructions = new Text(0, Text.BASELINE * 4, FlxG.width,
-                  "Click to play again");
-                instructions.size = 16;
-                // Stay on the screen.
-                instructions.scrollFactor = title.scrollFactor = new FlxPoint();
-                add(title);
-                add(instructions);
-                didTheEnd = true;
-              }
-            );
-          }
-        }
-      }
       if ((didTheEnd && FlxG.mouse.justPressed()) || FlxG.keys.justPressed('Q'))
       {
         var fadeDuration:Number = 3;
@@ -183,20 +103,10 @@ package
   public class Player extends FlxSprite
   {
 
-    public var currently:uint;
     public static const LANDING:uint = 2;
-
-    public var controlled:Boolean;
-
-    public var animDelegate:IPlayerAnimationDelegate;
 
     public var tailOffset:FlxPoint;
     public var headOffset:FlxPoint;
-
-    public var cameraFocus:FlxObject;
-    public var updateFocus:Boolean;
-    // Basically, 1/n traveled per tween.
-    public var cameraSpeed:Number = 30;
 
     public function Player(X:Number=0, Y:Number=0, SimpleGraphic:Class=null)
     {
@@ -204,13 +114,8 @@ package
 
       this.finished = true;
 
-      this.controlled = true;
-
       this.tailOffset = new FlxPoint();
       this.headOffset = new FlxPoint();
-
-      this.cameraFocus = new FlxObject(this.x, this.y, this.width, this.height);
-      this.updateFocus = true;
     }
 
     // Flixel Methods
@@ -228,14 +133,6 @@ package
 
     override public function update():void
     {
-      if (!this.controlled)
-      {
-        // TODO - Move to setter.
-        this.velocity = new FlxPoint();
-        this.acceleration = new FlxPoint();
-        return;
-      }
-
       // Vertical
       else if (this.isTouching(FlxObject.UP) && this.currently == RISING)
       {
@@ -256,21 +153,10 @@ package
 package
 {
   import org.flixel.FlxObject;
-  import org.flixel.FlxPoint;
   import org.flixel.FlxTilemap;
 
   public class Platform extends FlxTilemap
   {
-    public var startingPoint:FlxPoint;
-    public var endingPoint:FlxPoint;
-    
-    public function Platform()
-    {
-      super();
-      this.startingPoint = new FlxPoint();
-      this.endingPoint = new FlxPoint();
-    }
-    
     // Flixel Methods
     // --------------
     override public function destroy():void
@@ -290,22 +176,6 @@ package
       
       this.bounds = null;
       this.delegate = null;
-    }
-
-    public function isAtEndingPoint(obj:FlxObject):Boolean
-    {
-      var test:Boolean;
-      // Bottom-to-top.
-      if (this.endingPoint.y < this.startingPoint.y)
-      {
-        test = obj.y <= this.endingPoint.y;
-      }
-      // Top-to-bottom.
-      else
-      {
-        test = obj.y >= this.endingPoint.y;
-      }
-      return test;
     }
   }
 }
