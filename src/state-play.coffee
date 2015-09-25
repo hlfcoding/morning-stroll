@@ -87,6 +87,11 @@ define [
       @_renderDebugOverlays() if @debugging
 
     shutdown: ->
+      # Null references to disposable objects we don't own.
+      @background.destroy()
+      @platforms.destroy()
+      @player.destroy()
+
       @game.onBlur.remove @onBlur, @
       @game.onFocus.remove @onFocus, @
       @onHit.remove @quit, @

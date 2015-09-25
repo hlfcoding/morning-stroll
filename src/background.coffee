@@ -45,6 +45,9 @@ define [
       @_initDebugMixin()
       @debugging = defines.debugging
 
+    destroy: ->
+      # Null references to disposable objects we don't own.
+
     # Public
     # ------
 

@@ -50,6 +50,13 @@ define [
 
       @_initDebugging gui
 
+    destroy: ->
+      # Null references to disposable objects we don't own.
+      @animations = null
+      @physics = null
+      @velocity = null
+      @acceleration = null
+
     # Public
     # ------
 

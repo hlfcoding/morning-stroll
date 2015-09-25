@@ -45,6 +45,12 @@ define [
       @debugging = defines.debugging
       return unless completedInit
 
+    destroy: ->
+      # Null references to disposable objects we don't own.
+
+    # Public
+    # ------
+
     makeMap: (game) ->
       @_generateTiles() unless @tiles.length
 
@@ -57,6 +63,9 @@ define [
 
       @layer = @tilemap.createLayer 0
       @layer.resizeWorld()
+
+    # Internal
+    # --------
 
     _createTileGeneratorState: ->
       mapSize = @game.world.getBounds()
