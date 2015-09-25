@@ -13,12 +13,12 @@ define [
     create: ->
       @add.image 0, 0, 'bg-start'
 
-      @layout = { y: (@world.centerY / 2), baseline: 40 }
+      @layout = { y: (@game.height / 4), baseline: 40 }
       @_addText 'Morning Stroll', { fontSize: 32 }
       @_addText 'Climb and see!', { fontSize: 16 }
 
       @layout.y += 2 * @layout.baseline
-      buttonX = @world.centerX - (defines.buttonW / 2)
+      buttonX = (@game.width - defines.buttonW) / 2
       buttonY = @layout.y - (defines.buttonH / 2)
       @add.button buttonX, buttonY, 'button', @play, @, 1, 0, 2
       @_addText 'start', { fontSize: 16 }
