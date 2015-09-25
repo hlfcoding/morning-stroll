@@ -85,6 +85,14 @@ define [
       @_renderDebugDisplay() if @debugging
       @_renderDebugOverlays() if @debugging
 
+    shutdown: ->
+      @game.onBlur.remove @onBlur, @
+      @game.onFocus.remove @onFocus, @
+      @onHit.remove @quit, @
+
+      @gui?.destroy()
+      @music.destroy()
+
     onBlur: ->
       @music?.pause()
 
