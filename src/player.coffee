@@ -150,7 +150,7 @@ define [
 
       h = @sprite.height
       w = @sprite.width
-      @_yOffset = h / 4
+      @_yOffset = defines.playerYOffset
       @physics.setSize (w / 2), (h / 2), @_xOffset(), @_yOffset
 
       @jumpAcceleration = -4250 # A burst of energy on launch.

@@ -21,6 +21,7 @@ define [], () ->
 
     playerH: 72
     playerW: 72
+    playerYOffset: 16
 
     artH: 2912
     mapH: 3152 # +240
