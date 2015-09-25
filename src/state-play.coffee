@@ -24,6 +24,7 @@ define [
       @debugging = defines.debugging
       @developing = defines.developing
       @detachedCamera = off
+      @ended = no
 
       @debug = @gui = null
       @cursors = null
@@ -41,6 +42,8 @@ define [
       @physics.arcade.gravity.y = 500
 
       @cursors = @input.keyboard.createCursorKeys()
+      @onHit = @input[if @game.device.touch then 'onTap' else 'onUp']
+      @onHit.add @quit, @
 
       if @developing
         @gui = new dat.GUI()
@@ -102,6 +105,14 @@ define [
       _.delay =>
         @_renderEndingDisplay()
       , 5 * Timer.SECOND
+
+    quit: ->
+      return no unless @ended
+      # Fade the music.
+      @music.fadeOut 3 * Timer.SECOND
+      @music.onFadeComplete.addOnce =>
+        # Then go back to menu while clearing world.
+        @state.start 'menu', yes
 
     _addBackground: ->
       parallaxTolerance = defines.mapH - defines.artH
@@ -165,6 +176,7 @@ define [
       @_addText 'The End', { fontSize: 32 }
         .onComplete.addOnce =>
           @_addText 'Click to play again', { fontSize: 16 }
+          @ended = yes
 
     _shakeOnPlayerFall: ->
       if @player.nextState is 'landing' and @player.distanceFallen() > defines.shakeFallH
