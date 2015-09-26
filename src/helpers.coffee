@@ -229,9 +229,9 @@ define [
 
   TextMixin =
 
-    addCenteredText: (text, layout, style) ->
+    addCenteredText: (text, layout, style, group) ->
       _.defaults style, { boundsAlignH: 'center', boundsAlignV: 'middle' }
-      text = @add.text @world.centerX, layout.y, text, style
+      text = @add.text @world.centerX, layout.y, text, style, group
       text.anchor.setTo 0.5
       layout.y += text.height + layout.baseline
       text

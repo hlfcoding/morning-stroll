@@ -8,9 +8,10 @@ define [
   'app/background'
   'app/defines'
   'app/helpers'
+  'app/in-state-menu'
   'app/platforms'
   'app/player'
-], (dat, Phaser, _, Background, defines, Helpers, Platforms, Player) ->
+], (dat, Phaser, _, Background, defines, Helpers, InStateMenu, Platforms, Player) ->
 
   'use strict'
 
@@ -61,6 +62,8 @@ define [
       # Then:
       @_addPlayer()
       @_addMate()
+      # Last:
+      @_addInStateMenu()
 
       @_toggleCameraAttachment on
 
@@ -133,6 +136,14 @@ define [
       @background = new Background { parallaxTolerance }, @game
       @background.addImages _.template('bg<%= zIndex %>'), 16
       @background.layout()
+
+    _addInStateMenu: ->
+      @inStateMenu = new InStateMenu [
+        ['Paused', { fontSize: 32 }]
+        ['Arrow keys to move', { fontSize: 16 }]
+        ['Press Q to quit', { fontSize: 16 }]
+        ['Press 0, -, + for volume', { fontSize: 16 }]
+      ], @game
 
     _addMate: ->
       {x, y} = @endingPoint
