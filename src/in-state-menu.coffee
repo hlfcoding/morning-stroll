@@ -10,35 +10,40 @@ define [
 
   class InStateMenu
 
-    constructor: (@textItems, @game, @options) ->
+    constructor: (@textItems, game, options = {}) ->
+      {@pauseHandler, @layout, @toggleKeyCode} = _.defaults options,
+        layout: { y: 120, baseline: 40 }
+        pauseHandler: (paused) -> game.paused = paused
+        toggleKeyCode: Keyboard.P
+
+      {@add, @height, @input, @width, @world} = game
+
       @_initialize()
 
     _initialize: ->
-      @group = @game.add.group()
+      @group = @add.group()
 
-      @overlay = @game.add.graphics 0, 0, @group
+      @overlay = @add.graphics 0, 0, @group
       @overlay.beginFill 0x000000, 0.2
-      @overlay.drawRect 0, 0, @game.width, @game.height
+      @overlay.drawRect 0, 0, @width, @height
       @overlay.endFill()
 
-      @add = @game.add # For TextMixin.
-      @world = @game.world # For TextMixin.
-      @layout = @options?.layout or { y: 120, baseline: 40 }
       for [text, style] in @textItems
         _.defaults style, { fill: '#fff', font: 'Enriqueta' }
         @addCenteredText text, @layout, style, @group 
 
-      @toggleKey = @game.input.keyboard.addKey @options?.hotkey or Keyboard.P
-      @toggleKey.onDown.add @toggle, @
+      @toggleKey = @input.keyboard.addKey @toggleKeyCode
+      @toggleKey.onDown.add => @toggle()
 
       @toggle off
 
     destroy: ->
       @toggleKey.onDown.removeAll()
 
-    toggle: (visible) ->
-      visible ?= not @group.visible
-      @group.visible = visible
+    toggle: (toggled) ->
+      toggled ?= not @group.visible
+      @group.visible = toggled
+      @pauseHandler toggled
 
   _.extend InStateMenu::, Helpers.TextMixin
 
