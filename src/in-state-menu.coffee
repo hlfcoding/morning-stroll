@@ -21,7 +21,7 @@ define [
       @_initialize()
 
     _initialize: ->
-      @group = @add.group()
+      @group = @add.group null, 'in-state-menu', yes
 
       @overlay = @add.graphics 0, 0, @group
       @overlay.beginFill 0x000000, 0.2
