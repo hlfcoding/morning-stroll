@@ -96,10 +96,7 @@ define [
 
     shutdown: ->
       # Null references to disposable objects we don't own.
-      @background.destroy()
-      @platforms.destroy()
-      @player.destroy()
-      @inStateMenu.destroy()
+      gameObject.destroy() for gameObject in [@background, @inStateMenu, @music, @platforms, @player]
 
       @game.onBlur.remove @onBlur, @
       @game.onFocus.remove @onFocus, @
