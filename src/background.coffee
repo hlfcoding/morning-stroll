@@ -58,6 +58,7 @@ define [
       for zIndex in [bottomZIndex..topZIndex]
         name = nameTemplate { zIndex }
         image = @add.image 0, 0, name, @group
+        image.autoCull = on
         @layers.push { image, zIndex }
 
     layout: ->
