@@ -28,6 +28,7 @@ $ grunt
       "path": "morning-stroll",
       "file_exclude_patterns":
       [
+        "*.mp3",
         "docs/*",
         "lib/*",
         "release/*",
@@ -41,7 +42,6 @@ $ grunt
     }
   ]
 }
-
 ```
 
 ## License
