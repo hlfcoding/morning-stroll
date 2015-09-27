@@ -25,7 +25,7 @@ define [
       @group = @add.group null, 'in-state-menu', yes
 
       @overlay = @add.graphics 0, 0, @group
-      @overlay.beginFill 0x000000, 0.2
+      @overlay.beginFill 0x000000, 0.8
       @overlay.drawRect 0, 0, @width, @height
       @overlay.endFill()
 
