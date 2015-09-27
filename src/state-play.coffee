@@ -123,13 +123,16 @@ define [
         @_renderEndingDisplay()
       , 5 * Timer.SECOND
 
-    quit: ->
-      return no unless @ended
-      # Fade the music.
-      @music.fadeOut 3 * Timer.SECOND
-      @music.onFadeComplete.addOnce =>
+    quit: (trigger) ->
+      return no unless @ended or trigger instanceof Key
+      _quit = => @state.start 'menu', yes
+      if @music.volume is 0
+        _quit()
+      else
+        # Fade the music.
+        @music.fadeOut 3 * Timer.SECOND
         # Then go back to menu while clearing world.
-        @state.start 'menu', yes
+        @music.onFadeComplete.addOnce _quit
 
     _addBackground: ->
       parallaxTolerance = defines.mapH - defines.artH
