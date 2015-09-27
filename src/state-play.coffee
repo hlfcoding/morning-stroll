@@ -17,7 +17,7 @@ define [
 
   {Key, Keyboard, Physics, Point, Rectangle, State, Timer} = Phaser
 
-  {artH, mapH, playerH, playerW, shakeFallH, deadzoneH} = defines
+  {artH, mapH, fontLarge, fontSmall, playerH, playerW, shakeFallH, deadzoneH} = defines
 
   {AnimationMixin, CameraMixin, DebugDisplayMixin, TextMixin} = Helpers
 
@@ -147,10 +147,10 @@ define [
 
     _addInStateMenu: ->
       @inStateMenu = new InStateMenu [
-        ['Paused', { fontSize: 32 }]
-        ['Arrow keys to move', { fontSize: 16 }]
-        ['Press 0, -, + for volume', { fontSize: 16 }]
-        ['Press Q to quit', { fontSize: 16 }]
+        ['Paused', { fontSize: fontLarge }]
+        ['Arrow keys to move', { fontSize: fontSmall }]
+        ['Press 0, -, + for volume', { fontSize: fontSmall }]
+        ['Press Q to quit', { fontSize: fontSmall }]
       ], @game,
         pauseHandler: (paused) => @player.control = not paused
 
@@ -187,8 +187,8 @@ define [
 
       @endingPoint = @platforms.ledges[-1...][0].createMidpoint @platforms
       @startingPoint = new Point playerW, @world.height - playerH
-      # Use for debugging endpoints.
-      @startingPoint = @platforms.ledges[-2...-1][0].createMidpoint @platforms
+      # Use for debugging ending.
+      # @startingPoint = @platforms.ledges[-2...-1][0].createMidpoint @platforms
 
     _addPlayer: ->
       origin = @startingPoint
@@ -218,9 +218,9 @@ define [
     _renderEndingDisplay: ->
       @textLayout = { y: 120, baseline: 40 }
 
-      @_addText 'The End', { fontSize: 32 }
+      @_addText 'The End', { fontSize: fontLarge }
         .onComplete.addOnce =>
-          @_addText 'Click to play again', { fontSize: 16 }
+          @_addText 'Click to play again', { fontSize: fontSmall }
           @ended = yes
 
     _shakeOnPlayerFall: ->

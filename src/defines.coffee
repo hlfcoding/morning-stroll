@@ -25,6 +25,9 @@ define [], () ->
     deadzoneH: 100
     shakeFallH: 300
 
+    fontLarge: 32
+    fontSmall: 16
+
     playerH: 72
     playerW: 72
     playerYOffset: 16

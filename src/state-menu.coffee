@@ -8,6 +8,8 @@ define [
 
   {State} = Phaser
 
+  {fontLarge, fontSmall} = defines
+
   {TextMixin} = Helpers
 
   class MenuState extends State
@@ -18,14 +20,14 @@ define [
       @add.image 0, 0, 'bg-start'
 
       @layout = { y: (@game.height / 4), baseline: 40 }
-      @_addText 'Morning Stroll', { fontSize: 32 }
-      @_addText 'Climb and see!', { fontSize: 16 }
+      @_addText 'Morning Stroll', { fontSize: fontLarge }
+      @_addText 'Climb and see!', { fontSize: fontSmall }
 
       @layout.y += 2 * @layout.baseline
       buttonX = (@game.width - defines.buttonW) / 2
       buttonY = @layout.y - (defines.buttonH / 2)
       @add.button buttonX, buttonY, 'button', @play, @, 1, 0, 2
-      @_addText 'start', { fontSize: 16 }
+      @_addText 'start', { fontSize: fontSmall }
 
     update: ->
 

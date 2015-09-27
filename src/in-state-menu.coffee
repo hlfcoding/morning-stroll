@@ -1,12 +1,15 @@
 define [
   'phaser'
   'underscore'
+  'app/defines'
   'app/helpers'
-], (Phaser, _, Helpers) ->
+], (Phaser, _, defines, Helpers) ->
 
   'use strict'
 
   {Keyboard} = Phaser
+
+  {fontSmall} = defines
 
   {DebugMixin, TextMixin} = Helpers
 
@@ -32,7 +35,7 @@ define [
       @overlay.endFill()
 
       @_addText text, style for [text, style] in @textItems
-      @_addText 'Press P again to continue', { fontSize: 16 }
+      @_addText 'Press P again to continue', { fontSize: fontSmall }
 
       @toggleKey = @input.keyboard.addKey @toggleKeyCode
       @toggleKey.onDown.add => @toggle()
