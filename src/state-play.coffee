@@ -141,8 +141,8 @@ define [
       @inStateMenu = new InStateMenu [
         ['Paused', { fontSize: 32 }]
         ['Arrow keys to move', { fontSize: 16 }]
-        ['Press Q to quit', { fontSize: 16 }]
         ['Press 0, -, + for volume', { fontSize: 16 }]
+        ['Press Q to quit', { fontSize: 16 }]
       ], @game
 
     _addMate: ->
