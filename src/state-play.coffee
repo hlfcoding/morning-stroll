@@ -44,9 +44,7 @@ define [
 
       @cursors = @input.keyboard.createCursorKeys()
       # Quit on Q
-      @quitKey = @input.keyboard.addKey Keyboard.Q
-      @quitKey.onDown.add @quit, @
-      @input.keyboard.removeKeyCapture Keyboard.Q
+      @quitKey = @_addKey Keyboard.Q, @quit
       # Quit on click at end.
       @onHit = @input[if @game.device.touch then 'onTap' else 'onUp']
       @onHit.add @quit, @
@@ -100,11 +98,11 @@ define [
 
       @game.onBlur.remove @onBlur, @
       @game.onFocus.remove @onFocus, @
-      @quitKey.onDown.remove @quit, @
       @onHit.remove @quit, @
 
+      key.onDown.removeAll @ for key in [@loudKey, @muteKey, @quietKey, @quitKey]
+
       @gui?.destroy()
-      @music.destroy()
 
     onBlur: ->
       @music?.pause()
@@ -153,6 +151,12 @@ define [
       ], @game,
         pauseHandler: (paused) => @player.control = not paused
 
+    _addKey: (keyCode, callback) ->
+      key = @input.keyboard.addKey keyCode
+      key.onDown.add callback, @
+      @input.keyboard.removeKeyCapture keyCode
+      key
+
     _addMate: ->
       {x, y} = @endingPoint
       x += 20
@@ -162,10 +166,15 @@ define [
       @mate.animations.add 'end', [4..MateLastFrame], 12
 
     _addMusic: ->
+      @userVolume = 1
       @music = @add.audio 'bgm', 0, yes
       @music.mute = @developing or @debugging
       @music.play()
-      @gui?.add @music, 'mute'
+      @gui?.add(@music, 'mute').listen()
+      increment = 0.1
+      @loudKey = @_addKey Keyboard.EQUALS, => @userVolume += increment
+      @muteKey = @_addKey Keyboard.ZERO, => @music.mute = not @music.mute
+      @quietKey = @_addKey Keyboard.UNDERSCORE, => @userVolume -= increment
 
     _addPlatforms: ->
       @platforms = new Platforms 
@@ -236,6 +245,8 @@ define [
       targetVolume = ((@platforms.tilemap.heightInPixels - @player.sprite.y) /
                        @platforms.tilemap.heightInPixels) ** 1.3
       volume = @music.volume + ((targetVolume - @music.volume) / 24) # Ease into target, with fps
+      @userVolume = @math.clamp @userVolume, 0, 2
+      volume *= @userVolume # Factor in user controls.
       @music.volume = @math.clamp volume, 0.2, 0.8
     , 42, { leading: on } # ms/f at 24fps
 
