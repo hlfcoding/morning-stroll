@@ -30,6 +30,7 @@ define [
       @overlay.endFill()
 
       @_addText text, style for [text, style] in @textItems
+      @_addText 'Press P again to continue', { fontSize: 16 }
 
       @toggleKey = @input.keyboard.addKey @toggleKeyCode
       @toggleKey.onDown.add => @toggle()
