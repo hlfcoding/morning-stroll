@@ -6,7 +6,11 @@ define [
 
   'use strict'
 
-  class MenuState extends Phaser.State
+  {State} = Phaser
+
+  {TextMixin} = Helpers
+
+  class MenuState extends State
 
     init: ->
 
@@ -32,6 +36,6 @@ define [
       _.defaults style, { fill: '#fff', font: 'Enriqueta' }
       text = @addCenteredText text, @layout, style
 
-  _.extend MenuState::, Helpers.TextMixin
+  _.extend MenuState::, TextMixin
 
   MenuState

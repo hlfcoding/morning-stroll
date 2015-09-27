@@ -5,13 +5,14 @@
 # be better.
 
 define [
-  'phaser'
   'underscore'
   'app/defines'
   'app/helpers'
-], (Phaser, _, defines, Helpers) ->
+], (_, defines, Helpers) ->
 
   'use strict'
+
+  {DebugMixin} = Helpers
 
   class Background
 
@@ -26,7 +27,7 @@ define [
         # - clip - Images are only partial, and clip the transparent leftovers.
         layoutMode: 'full' # TODO: Support 'clip'.
 
-      _.extend @, config
+      {@layoutMode, @parallaxBuffer, @parallaxFactor, @parallaxTolerance} = config
 
       @_topZIndex = 1
 
@@ -43,7 +44,7 @@ define [
       @debugNamespace = 'background'
 
       @_initDebugMixin()
-      @debugging = defines.debugging
+      {@debugging} = defines
 
     destroy: ->
       # Null references to disposable objects we don't own.
@@ -83,6 +84,6 @@ define [
           unless zIndex is @_topZIndex # Or nearest.
             image.y -= @parallaxTolerance * scrollFactor ** (1 / 3)
 
-  _.extend Background::, Helpers.DebugMixin
+  _.extend Background::, DebugMixin
 
   Background

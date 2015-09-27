@@ -17,28 +17,21 @@ requirejs.config
 
 requirejs [
   'phaser'
+  'app/defines'
   'app/state-boot'
   'app/state-menu'
   'app/state-preload'
   'app/state-play'
-], (Phaser, BootState, MenuState, PreloadState, PlayState) ->
+], (Phaser, defines, BootState, MenuState, PreloadState, PlayState) ->
 
   'use strict'
 
-  # Global flags
-  # ------------
-
-  window.debugging = on
+  {debugging, gameH, gameW} = defines
 
   # Main
   # ----
 
-  width = 416
-  height = 600
-  renderer = Phaser.AUTO
-  parentElementId = 'morning-stroll'
-
-  game = new Phaser.Game width, height, renderer, parentElementId
+  game = new Phaser.Game gameW, gameH, Phaser.AUTO, 'morning-stroll' # Renderer, parent element id.
 
   game.state.add 'boot', BootState
   game.state.add 'preload', PreloadState
@@ -51,4 +44,4 @@ requirejs [
   # -----
   # Block of additions for debugging the app. Exposes classes and instances as
   # globals.
-  window.game = game if window.debugging is on
+  window.game = game if debugging is on

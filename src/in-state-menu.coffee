@@ -8,6 +8,8 @@ define [
 
   {Keyboard} = Phaser
 
+  {DebugMixin, TextMixin} = Helpers
+
   class InStateMenu
 
     constructor: (@textItems, game, options = {}) ->
@@ -58,6 +60,6 @@ define [
       _.defaults style, @baseTextStyle
       @addCenteredText text, @layout, style, @group
 
-  _.extend InStateMenu::, Helpers.DebugMixin, Helpers.TextMixin
+  _.extend InStateMenu::, DebugMixin, TextMixin
 
   InStateMenu

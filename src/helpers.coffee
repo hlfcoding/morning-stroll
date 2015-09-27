@@ -8,6 +8,10 @@ define [
   'underscore'
 ], (dat, Phaser, _) ->
 
+  'use strict'
+
+  {Point} = Phaser
+
   RegExps =
     PrettyHashRemove: /[{}"]/g
     PrettyHashPad: /[:,]/g
@@ -109,9 +113,9 @@ define [
       return unless @debugging
 
       value = parseFloat value.toFixed(2) if _.isNumber(value)
-      value = @_prettyHash @_prettyPoint(value) if value instanceof Phaser.Point
+      value = @_prettyHash @_prettyPoint(value) if value instanceof Point
 
-      if details?.position and details.position instanceof Phaser.Point
+      if details?.position and details.position instanceof Point
         details.position = @_prettyPoint details.position
 
       if @tracing

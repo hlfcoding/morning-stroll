@@ -13,6 +13,9 @@ define [], () ->
     # Turn off here to disable entirely (@release).
     developing: on
 
+    gameW: 416
+    gameH: 600
+
     artH: 2912
     mapH: 3152 # +240
 

@@ -15,15 +15,18 @@ define [
 
   'use strict'
 
-  {Key, Keyboard, Timer} = Phaser
+  {Key, Keyboard, Physics, Point, Rectangle, State, Timer} = Phaser
+
+  {artH, mapH, playerH, playerW, shakeFallH, deadzoneH} = defines
+
+  {AnimationMixin, CameraMixin, DebugDisplayMixin, TextMixin} = Helpers
 
   MateLastFrame = 14
 
-  class PlayState extends Phaser.State
+  class PlayState extends State
 
     init: ->
-      @debugging = defines.debugging
-      @developing = defines.developing
+      {@debugging, @developing} = defines
       @detachedCamera = off
       @ended = no
 
@@ -33,13 +36,13 @@ define [
       @textLayout = null
 
       @_initDebugDisplayMixin @game if @debugging or @developing
-      _.extend @camera, Helpers.CameraMixin
+      _.extend @camera, CameraMixin
 
       @game.onBlur.add @onBlur, @
       @game.onFocus.add @onFocus, @
 
     create: ->
-      @physics.startSystem Phaser.Physics.ARCADE
+      @physics.startSystem Physics.ARCADE
       @physics.arcade.gravity.y = 500
 
       @cursors = @input.keyboard.createCursorKeys()
@@ -137,7 +140,7 @@ define [
         @music.onFadeComplete.addOnce _quit
 
     _addBackground: ->
-      parallaxTolerance = defines.mapH - defines.artH
+      parallaxTolerance = mapH - artH
       @background = new Background { parallaxTolerance }, @game
       @background.addImages _.template('bg<%= zIndex %>'), 16
       @background.layout()
@@ -162,7 +165,7 @@ define [
       x += 20
       y -= 10
       @mate = @add.sprite x, y, 'mate', 1
-      @mate.anchor = new Phaser.Point 0.5, 0.5
+      @mate.anchor = new Point 0.5, 0.5
       @mate.animations.add 'end', [4..MateLastFrame], 12
 
     _addMusic: ->
@@ -178,12 +181,12 @@ define [
 
     _addPlatforms: ->
       @platforms = new Platforms 
-        mapH: defines.mapH
+        mapH: mapH
         tileImageKey: 'balcony'
       , @game, @gui?.addOpenFolder 'platforms'
 
       @endingPoint = @platforms.ledges[-1...][0].createMidpoint @platforms
-      @startingPoint = new Phaser.Point defines.playerW, @world.height - defines.playerH
+      @startingPoint = new Point playerW, @world.height - playerH
       # Use for debugging endpoints.
       @startingPoint = @platforms.ledges[-2...-1][0].createMidpoint @platforms
 
@@ -221,7 +224,7 @@ define [
           @ended = yes
 
     _shakeOnPlayerFall: ->
-      if @player.nextState is 'landing' and @player.distanceFallen() > defines.shakeFallH
+      if @player.nextState is 'landing' and @player.distanceFallen() > shakeFallH
         @camera.shake()
       else no
 
@@ -231,9 +234,9 @@ define [
         @camera.follow @player.cameraFocus
         @player.cursors ?= @cursors
 
-        @camera.deadzone ?= new Phaser.Rectangle(
-          0, (@game.height - defines.deadzoneH) / 2,
-          @game.width, defines.deadzoneH
+        @camera.deadzone ?= new Rectangle(
+          0, (@game.height - deadzoneH) / 2,
+          @game.width, deadzoneH
         )
       else
         @camera.unfollow()
@@ -250,6 +253,6 @@ define [
       @music.volume = @math.clamp volume, 0.2, 0.8
     , 42, { leading: on } # ms/f at 24fps
 
-  _.extend PlayState::, Helpers.AnimationMixin, Helpers.DebugDisplayMixin, Helpers.TextMixin
+  _.extend PlayState::, AnimationMixin, DebugDisplayMixin, TextMixin
 
   PlayState

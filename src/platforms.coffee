@@ -12,6 +12,10 @@ define [
 
   'use strict'
 
+  {Point} = Phaser
+
+  {autoSetTiles, DebugMixin} = Helpers
+
   Tile =
     Empty: 0
     Solid: 1
@@ -22,8 +26,8 @@ define [
     constructor: (@config, game, gui) ->
       @minLedgeSize = 3
       @maxLedgeSize = 5
-      @minLedgeSpacing = new Phaser.Point 4, 2
-      @maxLedgeSpacing = new Phaser.Point 8, 4
+      @minLedgeSpacing = new Point 4, 2
+      @maxLedgeSpacing = new Point 8, 4
       @ledgeThickness = 2
       @tileWidth = @tileHeight = 32
       @ledges = []
@@ -42,7 +46,7 @@ define [
       @debugNamespace = 'platforms'
 
       completedInit = @_initDebugMixin gui
-      @debugging = defines.debugging
+      {@debugging} = defines
       return unless completedInit
 
     destroy: ->
@@ -144,7 +148,7 @@ define [
 
       @tiles.reverse()
 
-      @tiles = Helpers.autoSetTiles @tiles
+      @tiles = autoSetTiles @tiles
 
       @debug 'tiles', @tiles
 
@@ -236,12 +240,12 @@ define [
       @facing = 'left'
 
     createMidpoint: (platforms) ->
-      point = new Phaser.Point()
+      point = new Point()
       point.x = (@size / 2) * platforms.tileWidth
       point.x = platforms.tilemap.widthInPixels - point.x if @facing is 'right'
       point.y = ((platforms.tiles.length - 1) - @rowIndex) * platforms.tileHeight
       point
 
-  _.extend Platforms::, Helpers.DebugMixin
+  _.extend Platforms::, DebugMixin
 
   _.extend Platforms, { Ledge, Tile }

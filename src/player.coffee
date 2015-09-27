@@ -14,6 +14,12 @@ define [
 
   'use strict'
 
+  {Point} = Phaser
+
+  {playerYOffset} = defines
+
+  {AnimationMixin, DebugMixin} = Helpers
+
   Direction =
     Left: -1
     Right: 1
@@ -35,7 +41,7 @@ define [
     _initialize: (game, gui) ->
       {x, y} = @config.origin
       @sprite = game.add.sprite x, y, 'player', 17
-      @sprite.anchor = new Phaser.Point 0.5, 0.5
+      @sprite.anchor = new Point 0.5, 0.5
 
       @cameraFocus = game.add.sprite x, y
 
@@ -108,6 +114,7 @@ define [
 
     # Initialization
     # --------------
+    # So unusually big it gets its own section.
 
     _initAnimations: ->
       @animations.add 'run', [0..11], 30, on
@@ -121,7 +128,7 @@ define [
       @debugNamespace = 'player'
 
       completedInit = @_initDebugMixin gui
-      @debugging = defines.debugging
+      {@debugging} = defines
       return unless completedInit
 
       @gui.addOpenFolder('drag').addRange @physics.drag, 'x'
@@ -140,18 +147,16 @@ define [
 
     _initPhysics: ->
       @physics = @sprite.body
-      @velocity = @physics.velocity
-      @acceleration = @physics.acceleration
+      {@velocity, @acceleration} = @physics
 
       @physics.collideWorldBounds = on
-      @physics.tilePadding = new Phaser.Point 0, @sprite.height
+      @physics.tilePadding = new Point 0, @sprite.height
 
       @physics.drag.x = 1500
 
-      h = @sprite.height
-      w = @sprite.width
-      @_yOffset = defines.playerYOffset
-      @physics.setSize (w / 2), (h / 2), @_xOffset(), @_yOffset
+      {height, width} = @sprite
+      @_yOffset = playerYOffset
+      @physics.setSize (width / 2), (height / 2), @_xOffset(), @_yOffset
 
       @jumpAcceleration = -4250 # A burst of energy on launch.
       @jumpMaxDuration = 500
@@ -161,7 +166,7 @@ define [
       @runAcceleration = 300
       @cameraFocusFollowResistance = 30
 
-      @maxVelocity = new Phaser.Point 200, 800 # Run and terminal velocities.
+      @maxVelocity = new Point 200, 800 # Run and terminal velocities.
 
       @_jumpTimer = @sprite.game.time.create() # This also acts like a flag.
       @_isTurning = no # Because velocity won't be 0 when turning while running.
@@ -324,7 +329,7 @@ define [
 
     _visualizeTurn: (direction = @nextDirection) ->
       @sprite.scale.x = direction
-      @physics.offset = new Phaser.Point @_xOffset(direction), @_yOffset
+      @physics.offset = new Point @_xOffset(direction), @_yOffset
 
     # Update
     # ------
@@ -341,6 +346,6 @@ define [
       @cameraFocus.x += (@sprite.x - @cameraFocus.x) // kEasing
       @cameraFocus.y += (@sprite.y - @cameraFocus.y) // kEasing
 
-  _.extend Player::, Helpers.AnimationMixin, Helpers.DebugMixin
+  _.extend Player::, AnimationMixin, DebugMixin
 
   Player
