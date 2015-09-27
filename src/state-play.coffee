@@ -15,7 +15,7 @@ define [
 
   'use strict'
 
-  {Timer} = Phaser
+  {Key, Keyboard, Timer} = Phaser
 
   MateLastFrame = 14
 
@@ -43,6 +43,11 @@ define [
       @physics.arcade.gravity.y = 500
 
       @cursors = @input.keyboard.createCursorKeys()
+      # Quit on Q
+      @quitKey = @input.keyboard.addKey Keyboard.Q
+      @quitKey.onDown.add @quit, @
+      @input.keyboard.removeKeyCapture Keyboard.Q
+      # Quit on click at end.
       @onHit = @input[if @game.device.touch then 'onTap' else 'onUp']
       @onHit.add @quit, @
 
@@ -98,6 +103,7 @@ define [
 
       @game.onBlur.remove @onBlur, @
       @game.onFocus.remove @onFocus, @
+      @quitKey.onDown.remove @quit, @
       @onHit.remove @quit, @
 
       @gui?.destroy()
@@ -147,7 +153,8 @@ define [
         ['Arrow keys to move', { fontSize: 16 }]
         ['Press 0, -, + for volume', { fontSize: 16 }]
         ['Press Q to quit', { fontSize: 16 }]
-      ], @game
+      ], @game,
+        pauseHandler: (paused) => @player.control = not paused
 
     _addMate: ->
       {x, y} = @endingPoint
