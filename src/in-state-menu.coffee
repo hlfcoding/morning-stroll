@@ -37,6 +37,13 @@ define [
 
       @toggle off
 
+      @_initDebugging()
+
+    _initDebugging: ->
+      @debugNamespace = 'in-state-menu'
+      completedInit = @_initDebugMixin()
+      @tracing = on
+
     destroy: ->
       @toggleKey.onDown.removeAll()
 
@@ -45,6 +52,6 @@ define [
       @group.visible = toggled
       @pauseHandler toggled
 
-  _.extend InStateMenu::, Helpers.TextMixin
+  _.extend InStateMenu::, Helpers.DebugMixin, Helpers.TextMixin
 
   InStateMenu
