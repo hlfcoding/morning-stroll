@@ -11,7 +11,8 @@ define [
   class InStateMenu
 
     constructor: (@textItems, game, options = {}) ->
-      {@pauseHandler, @layout, @toggleKeyCode} = _.defaults options,
+      {@baseTextStyle, @pauseHandler, @layout, @toggleKeyCode} = _.defaults options,
+        baseTextStyle: { fill: '#fff', font: 'Enriqueta' }
         layout: { y: 120, baseline: 40 }
         pauseHandler: (paused) -> game.paused = paused
         toggleKeyCode: Keyboard.P
@@ -28,9 +29,7 @@ define [
       @overlay.drawRect 0, 0, @width, @height
       @overlay.endFill()
 
-      for [text, style] in @textItems
-        _.defaults style, { fill: '#fff', font: 'Enriqueta' }
-        @addCenteredText text, @layout, style, @group 
+      @_addText text, style for [text, style] in @textItems
 
       @toggleKey = @input.keyboard.addKey @toggleKeyCode
       @toggleKey.onDown.add => @toggle()
@@ -52,6 +51,10 @@ define [
       toggled ?= not @group.visible
       @group.visible = toggled
       @pauseHandler toggled
+
+    _addText: (text, style) ->
+      _.defaults style, @baseTextStyle
+      @addCenteredText text, @layout, style, @group
 
   _.extend InStateMenu::, Helpers.DebugMixin, Helpers.TextMixin
 
