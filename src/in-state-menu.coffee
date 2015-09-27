@@ -34,6 +34,7 @@ define [
 
       @toggleKey = @input.keyboard.addKey @toggleKeyCode
       @toggleKey.onDown.add => @toggle()
+      @input.keyboard.removeKeyCapture @toggleKeyCode
 
       @toggle off
 
