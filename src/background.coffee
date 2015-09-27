@@ -34,9 +34,10 @@ define [
       @_initialize game
 
     _initialize: (game) ->
-      @group = game.add.group()
+      {@add, @camera} = game
 
-      @camera = game.camera
+      @group = @add.group()
+      @group.visible = no
 
       @_initDebugging()
 
@@ -56,7 +57,7 @@ define [
       @_topZIndex = topZIndex
       for zIndex in [bottomZIndex..topZIndex]
         name = nameTemplate { zIndex }
-        image = @group.game.add.image 0, 0, name, @group
+        image = @add.image 0, 0, name, @group
         @layers.push { image, zIndex }
 
     layout: ->
