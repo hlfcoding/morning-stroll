@@ -13,18 +13,18 @@ define [], () ->
     # Turn off here to disable entirely (@release).
     developing: on
 
-    progressW: 360
-    progressH: 8
+    artH: 2912
+    mapH: 3152 # +240
 
     buttonW: 80
     buttonH: 30
+
+    deadzoneH: 100
+    shakeFallH: 300
 
     playerH: 72
     playerW: 72
     playerYOffset: 16
 
-    artH: 2912
-    mapH: 3152 # +240
-
-    deadzoneH: 100
-    shakeFallH: 300
+    progressW: 360
+    progressH: 8
