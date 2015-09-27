@@ -94,6 +94,7 @@ define [
       @background.destroy()
       @platforms.destroy()
       @player.destroy()
+      @inStateMenu.destroy()
 
       @game.onBlur.remove @onBlur, @
       @game.onFocus.remove @onFocus, @

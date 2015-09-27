@@ -46,6 +46,7 @@ define [
       @tracing = on
 
     destroy: ->
+      @group.destroy() # Because we added it to the stage.
       @toggleKey.onDown.removeAll()
 
     toggle: (toggled) ->
