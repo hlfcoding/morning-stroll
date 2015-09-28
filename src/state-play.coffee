@@ -86,7 +86,7 @@ define [
       @camera.updateShake()
       if @_shakeOnPlayerFall()
         @camera.unfollow()
-      else unless (@camera.target? or @camera.isShaking())
+      else unless @camera.target? or @camera.isShaking()
         @camera.follow @player.cameraFocus
 
       @camera.updatePositionWithCursors @cursors if @detachedCamera
@@ -202,8 +202,8 @@ define [
       tween = @fadeIn text, Timer.SECOND
 
     _isPlayerReadyToEnd: ->
-      @player.state is 'still' and @player.control is on and
-      @player.sprite.y <= @endingPoint.y
+      (@player.state is 'still' and @player.control is on and
+       @player.sprite.y <= @endingPoint.y)
 
     _renderDebugDisplay: ->
       @resetDebugDisplayLayout()
@@ -226,9 +226,8 @@ define [
           @ended = yes
 
     _shakeOnPlayerFall: ->
-      if @player.nextState is 'landing' and @player.distanceFallen() > shakeFallH
-        @camera.shake()
-      else no
+      return no unless @player.nextState is 'landing' and @player.distanceFallen() > shakeFallH
+      @camera.shake()
 
     _toggleCameraAttachment: (attached) ->
       attached ?= not @detachedCamera
