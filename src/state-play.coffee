@@ -81,7 +81,7 @@ define [
       @background.update()
       @player.update()
 
-      @_updateMusic() unless @ended
+      @_updateVolumeOnPlayerLand()
 
       @camera.updateShake()
       if @_shakeOnPlayerFall()
@@ -172,7 +172,7 @@ define [
 
     _addMusic: ->
       @userVolume = 1
-      @music = @add.audio 'bgm', 0, yes
+      @music = @add.audio 'bgm', 0.2, yes
       @music.mute = @developing or @debugging
       @music.play()
       @gui?.add(@music, 'mute').listen()
@@ -243,16 +243,14 @@ define [
         @camera.unfollow()
         @player.cursors = null
 
-    _updateMusic: _.throttle ->
-      # The music gets louder the higher the player gets. Uses easing so the
-      # volume smoothly updates on each landing.
-      targetVolume = ((@platforms.tilemap.heightInPixels - @player.sprite.y) /
-                       @platforms.tilemap.heightInPixels) ** 1.3
-      volume = @music.volume + ((targetVolume - @music.volume) / 24) # Ease into target, with fps
-      @userVolume = @math.clamp @userVolume, 0, 2
-      volume *= @userVolume # Factor in user controls.
-      @music.volume = @math.clamp volume, 0.2, 0.8
-    , 42, { leading: on } # ms/f at 24fps
+    _updateVolumeOnPlayerLand: ->
+      return no unless @player.nextState is 'landing'
+      # The music gets louder the higher the player gets.
+      volume = ((@platforms.tilemap.heightInPixels - @player.sprite.y) /
+                 @platforms.tilemap.heightInPixels) ** 1.3
+      volume *= @math.clamp @userVolume, 0, 2 # Factor in user controls.
+      volume = @math.clamp volume, 0.2, 0.8
+      @music.fadeTo Timer.SECOND, volume
 
   _.extend PlayState::, AnimationMixin, DebugMixin, DebugDisplayMixin, TextMixin
 
