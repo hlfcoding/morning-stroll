@@ -47,8 +47,8 @@ define [
 
     _initDebugging: ->
       @debugNamespace = 'in-state-menu'
-      completedInit = @_initDebugMixin()
       @tracing = on
+      completedInit = @_initDebugMixin()
 
     destroy: ->
       @group.destroy() # Because we added it to the stage.

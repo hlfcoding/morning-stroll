@@ -44,8 +44,8 @@ define [
     _initDebugging: () ->
       @debugNamespace = 'background'
 
-      @_initDebugMixin()
       {@debugging} = defines
+      @_initDebugMixin()
 
     destroy: ->
       # Null references to disposable objects we don't own.

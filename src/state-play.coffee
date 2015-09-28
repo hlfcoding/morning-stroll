@@ -19,7 +19,7 @@ define [
 
   {artH, mapH, fontLarge, fontSmall, playerH, playerW, shakeFallH, deadzoneH} = defines
 
-  {AnimationMixin, CameraMixin, DebugDisplayMixin, TextMixin} = Helpers
+  {AnimationMixin, CameraMixin, DebugMixin, DebugDisplayMixin, TextMixin} = Helpers
 
   MateLastFrame = 14
 
@@ -30,7 +30,7 @@ define [
       @detachedCamera = off
       @ended = no
 
-      @debug = @gui = null
+      @debugDisplay = @gui = null
       @cursors = null
       @background = @mate = @platforms = @player = null
       @textLayout = null
@@ -40,6 +40,8 @@ define [
 
       @game.onBlur.add @onBlur, @
       @game.onFocus.add @onFocus, @
+
+      @_initDebugMixin
 
     create: ->
       @physics.startSystem Physics.ARCADE
@@ -56,7 +58,7 @@ define [
         @gui = new dat.GUI()
         @gui.add(@, 'debugging').listen().onFinishChange =>
           @background.debugging = @platforms.debugging = @player.debugging = @debugging
-          @debug.reset() unless @debugging
+          @debugDisplay.reset() unless @debugging
         @gui.add(@, 'detachedCamera').onFinishChange => @_toggleCameraAttachment()
         @gui.add(@, 'ended')
         @gui.addOpenFolder('gravity').addRange @physics.arcade.gravity, 'y'
@@ -79,7 +81,7 @@ define [
       @background.update()
       @player.update()
 
-      @_updateMusic()
+      @_updateMusic() unless @ended
 
       @camera.updateShake()
       if @_shakeOnPlayerFall()
@@ -208,12 +210,12 @@ define [
 
       if @player.debugging
         @renderDebugDisplayItems (layoutX, layoutY) =>
-          @debug.bodyInfo @player.sprite, layoutX, layoutY
+          @debugDisplay.bodyInfo @player.sprite, layoutX, layoutY
         , 6
         @renderDebugDisplayItems @player.debugTextItems
 
     _renderDebugOverlays: ->
-      @debug.body @player.sprite if @player.debugging
+      @debugDisplay.body @player.sprite if @player.debugging
 
     _renderEndingDisplay: ->
       @textLayout = { y: 120, baseline: 40 }
@@ -253,6 +255,6 @@ define [
       @music.volume = @math.clamp volume, 0.2, 0.8
     , 42, { leading: on } # ms/f at 24fps
 
-  _.extend PlayState::, AnimationMixin, DebugDisplayMixin, TextMixin
+  _.extend PlayState::, AnimationMixin, DebugMixin, DebugDisplayMixin, TextMixin
 
   PlayState

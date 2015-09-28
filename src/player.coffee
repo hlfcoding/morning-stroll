@@ -127,8 +127,8 @@ define [
     _initDebugging: (gui) ->
       @debugNamespace = 'player'
 
-      completedInit = @_initDebugMixin gui
       {@debugging} = defines
+      completedInit = @_initDebugMixin gui
       return unless completedInit
 
       @gui.addOpenFolder('drag').addRange @physics.drag, 'x'

@@ -93,8 +93,8 @@ define [
   DebugMixin =
 
     _initDebugMixin: (gui) ->
-      @debugging = on
-      @tracing = off
+      @debugging ?= on
+      @tracing ?= off
       @debugTextItems = {}
 
       return no unless gui?

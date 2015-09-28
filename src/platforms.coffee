@@ -45,8 +45,8 @@ define [
     _initDebugging: (gui) ->
       @debugNamespace = 'platforms'
 
-      completedInit = @_initDebugMixin gui
       {@debugging} = defines
+      completedInit = @_initDebugMixin gui
       return unless completedInit
 
     destroy: ->
