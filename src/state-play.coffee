@@ -86,7 +86,7 @@ define [
       @camera.updateShake()
       if @_shakeOnPlayerFall()
         @camera.unfollow()
-      else unless @camera.target? or @camera.isShaking()
+      else unless @detachedCamera or @camera.target? or @camera.isShaking()
         @camera.follow @player.cameraFocus
 
       @camera.updatePositionWithCursors @cursors if @detachedCamera
