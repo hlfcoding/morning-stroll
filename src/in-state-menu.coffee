@@ -38,7 +38,7 @@ define [
       @_addText 'Press P again to continue', { fontSize: fontSmall }
 
       @toggleKey = @input.keyboard.addKey @toggleKeyCode
-      @toggleKey.onDown.add => @toggle()
+      @toggleKey.onDown.add @toggle, @
       @input.keyboard.removeKeyCapture @toggleKeyCode
 
       @toggle off
@@ -52,7 +52,7 @@ define [
 
     destroy: ->
       @group.destroy() # Because we added it to the stage.
-      @toggleKey.onDown.removeAll()
+      @toggleKey.onDown.removeAll @
 
     toggle: (toggled) ->
       toggled ?= not @group.visible
