@@ -18,20 +18,25 @@ requirejs.config
 requirejs [
   'phaser'
   'app/defines'
+  'app/helpers'
   'app/state-boot'
   'app/state-menu'
   'app/state-preload'
   'app/state-play'
-], (Phaser, defines, BootState, MenuState, PreloadState, PlayState) ->
+], (Phaser, defines, Helpers, BootState, MenuState, PreloadState, PlayState) ->
 
   'use strict'
 
   {debugging, gameH, gameW} = defines
 
+  {StateManagerMixin} = Helpers
+
   # Main
   # ----
 
   game = new Phaser.Game gameW, gameH, Phaser.AUTO, 'morning-stroll' # Renderer, parent element id.
+
+  _.extend game.state, StateManagerMixin
 
   game.state.add 'boot', BootState
   game.state.add 'preload', PreloadState

@@ -10,7 +10,7 @@ define [
 
   'use strict'
 
-  {Point} = Phaser
+  {Easing, Point, RenderTexture, Sprite, Timer} = Phaser
 
   RegExps =
     PrettyHashRemove: /[{}"]/g
@@ -228,6 +228,53 @@ define [
 
     result
 
+  # Transition
+  # ----------
+  # Heavily inspired by aaccurso/phaser-state-transition-plugin
+
+  StateManagerMixin =
+    startWithTransition: (transitionOptions = {}, startArgs...) ->
+      {duration, easing, properties} = _.defaults transitionOptions,
+        duration: 2 * Timer.SECOND
+        easing: Easing.Exponential.InOut
+        properties: { alpha: 0 }
+
+      [stateName] = startArgs
+      state = @states[stateName]
+      {init, create} = state
+
+      @game.camera.unfollow() # Prevent flickering.
+      @game.paused = yes
+      texture = new RenderTexture @game, @game.width, @game.height, "transition-to-#{stateName}"
+      texture.renderXY @game.world, -@game.camera.x, -@game.camera.y
+      @game.paused = no
+
+      interstitial = new Sprite @game, 0, 0, texture
+      interstitial.fixedToCamera = on
+
+      destroy = ->
+        return unless texture? and interstitial?
+        texture.destroy()
+        interstitial.destroy()
+        texture = interstitial = null
+        state.init = init
+        state.create = create
+
+      state.init = =>
+        init?.apply state, arguments
+        @game.add.existing interstitial
+
+      state.create = =>
+        create?.apply state, arguments
+        interstitial.bringToTop()
+        @game.add.tween interstitial
+          .to properties, duration, easing, yes
+          .onComplete.addOnce destroy
+
+      _.delay destroy, 2 * duration # In case of failure.
+
+      @start.apply @, startArgs
+
   # Text
   # ----
 
@@ -249,5 +296,5 @@ define [
 
   # Export.
 
-  { AnimationMixin, CameraMixin, DebugMixin, DebugDisplayMixin, RegExps, TextMixin
-    autoSetTiles }
+  { AnimationMixin, CameraMixin, DebugMixin, DebugDisplayMixin, RegExps
+    StateManagerMixin, TextMixin, autoSetTiles }

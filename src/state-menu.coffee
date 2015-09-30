@@ -32,7 +32,7 @@ define [
     update: ->
 
     play: ->
-      @state.start 'play'
+      @state.startWithTransition null, 'play'
 
     _addText: (text, style) ->
       _.defaults style, { fill: '#fff', font: 'Enriqueta' }

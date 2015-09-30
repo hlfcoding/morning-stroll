@@ -132,7 +132,7 @@ define [
 
     quit: (trigger) ->
       return no unless @ended or trigger instanceof Key
-      _quit = => @state.start 'menu', yes
+      _quit = => @state.startWithTransition null, 'menu', yes
       if @music.volume is 0
         _quit()
       else
