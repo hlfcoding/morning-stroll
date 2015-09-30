@@ -55,7 +55,7 @@ define [
       @toggleKey.onDown.removeAll @
 
     toggle: (toggled) ->
-      toggled ?= not @group.visible
+      toggled = not @group.visible unless _.isBoolean(toggled)
       @group.visible = toggled
       @pauseHandler toggled
 
