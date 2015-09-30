@@ -17,7 +17,7 @@ define [], () ->
     gameH: 600
 
     artH: 2912
-    mapH: 3152 # +240
+    mapH: 3136 # +224
 
     buttonW: 80
     buttonH: 30
