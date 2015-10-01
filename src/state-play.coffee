@@ -17,7 +17,7 @@ define [
 
   {Key, Keyboard, Physics, Point, Rectangle, State, Timer} = Phaser
 
-  {artH, mapH, fontLarge, fontSmall, playerH, playerW, shakeFallH, deadzoneH} = defines
+  {artH, mapH, fontLarge, fontSmall, playerH, playerW, playerYOffset, shakeFallH, deadzoneH} = defines
 
   {AnimationMixin, CameraMixin, DebugMixin, DebugDisplayMixin, TextMixin} = Helpers
 
@@ -188,7 +188,7 @@ define [
       , @game, @gui?.addOpenFolder 'platforms'
 
       @endingPoint = @platforms.ledges[-1...][0].createMidpoint @platforms
-      @startingPoint = new Point playerW, @world.height - playerH
+      @startingPoint = new Point playerW, (@world.height - playerH + playerYOffset)
       # Use for debugging ending.
       # @startingPoint = @platforms.ledges[-2...-1][0].createMidpoint @platforms
 
