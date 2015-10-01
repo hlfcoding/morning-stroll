@@ -130,6 +130,14 @@ define [
           expect(player.animation.loop).toBe on
           expect(player._isAnimationInterruptible()).toBe yes
 
+        it 'will not run but fall over thin air', ->
+          player.velocity.y = 1
+          expect(player._canFall()).toBe yes
+          player.update()
+
+          expect(player._canKeepRunning()).toBe no
+          expect(player.playAnimation).toHaveBeenCalledWith 31, yes
+
     describe 'when x cursor key was down but is up in same direction', ->
 
       it 'will stop running and cancel turns', ->

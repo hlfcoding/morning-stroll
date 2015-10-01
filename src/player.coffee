@@ -197,7 +197,7 @@ define [
       switch @nextState
         when 'running' then @playAnimation 'run', no
         when 'still' then @playAnimation 17, @animation?.loop
-        when 'falling' then @playAnimation 31, no
+        when 'falling' then @playAnimation 31, @animation?.loop
         when 'landing' then @playAnimation 'land'
 
     _changeState: ->
@@ -243,7 +243,8 @@ define [
       (@cursors?.up.isUp or @_jumpTimer.ms >= @jumpMaxDuration) # Release to cancel early.
 
     _canFall: ->
-      not @_jumpTimer.running and @state is 'rising' and @velocity.y > 0
+      @velocity.y > 0 and (@state isnt 'rising' or
+      (not @_jumpTimer.running and @state is 'rising'))
     _canLand: ->
       @state is 'falling' and @physics.onFloor()
 
