@@ -60,7 +60,6 @@ define [
           @background.debugging = @platforms.debugging = @player.debugging = @debugging
           @debugDisplay.reset() unless @debugging
         @gui.add(@, 'detachedCamera').onFinishChange => @_toggleCameraAttachment()
-        @gui.add(@, 'ended')
         @gui.addOpenFolder('gravity').addRange @physics.arcade.gravity, 'y'
 
       # First:
