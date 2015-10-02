@@ -39,9 +39,9 @@ define [
 
       @animation
 
-    fadeIn: (gameObject, duration) ->
-      gameObject.alpha = 0
-      tween = @add.tween(gameObject).to { alpha: 1 }, duration, 'Cubic', yes
+    fadeTo: (gameObject, duration, alpha, init = yes) ->
+      if init then gameObject.alpha = (if alpha is 0 then 1 else 0)
+      tween = @add.tween(gameObject).to { alpha }, duration, 'Cubic', yes
 
   # Camera
   # ------

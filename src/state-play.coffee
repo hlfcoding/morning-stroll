@@ -198,7 +198,7 @@ define [
     _addText: (text, style) ->
       _.defaults style, { fill: '#fff', font: 'Enriqueta' }
       text = @addCenteredText text, @textLayout, style
-      tween = @fadeIn text, Timer.SECOND
+      tween = @fadeTo text, Timer.SECOND, 1
 
     _isPlayerReadyToEnd: ->
       (@player.state is 'still' and @player.control is on and
