@@ -148,6 +148,7 @@ define [
 
   DebugDisplayMixin =
 
+    # Only do the minimal setup here, so it can always run.
     _initDebugDisplayMixin: (game) ->
       @debugFontSize ?= 9
       # Compute sizes.

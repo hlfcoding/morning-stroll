@@ -35,13 +35,13 @@ define [
       @background = @mate = @platforms = @player = null
       @textLayout = null
 
-      @_initDebugDisplayMixin @game if @debugging or @developing
       _.extend @camera, CameraMixin
 
       @game.onBlur.add @onBlur, @
       @game.onFocus.add @onFocus, @
 
       @_initDebugMixin
+      @_initDebugDisplayMixin @game
 
     create: ->
       @physics.startSystem Physics.ARCADE
