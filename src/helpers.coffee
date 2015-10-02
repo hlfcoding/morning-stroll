@@ -154,8 +154,8 @@ define [
       @_debugGutter = 2 * @debugFontSize
       @_debugLine = kPhaserLineRatio * @debugFontSize
 
-      @debug = game.debug
-      @debug.font = "#{@debugFontSize}px Menlo"
+      @debugDisplay = game.debug
+      @debugDisplay.font = "#{@debugFontSize}px Menlo"
 
     resetDebugDisplayLayout: ->
       @_layoutX = @_debugGutter + kPhaserLayoutX
@@ -167,7 +167,7 @@ define [
         @_layoutY += lines * @_debugLine
 
       else for own label, text of items
-        @debug.text text, @_layoutX, @_layoutY, null, @debug.font
+        @debugDisplay.text text, @_layoutX, @_layoutY, null, @debugDisplay.font
         @_layoutY += @_debugLine
 
   # Developing
