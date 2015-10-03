@@ -3,6 +3,8 @@ define [
   'underscore'
 ], (Phaser, _) ->
 
+  {Point} = Phaser
+
   # Phaser is written with interwoven dependencies, but does not provide test
   # helpers or fake classes. This custom faking isn't ideal, but a last resort.
 
@@ -26,8 +28,8 @@ define [
   configurePlatformsWithDefaults: (platforms) ->
     platforms.minLedgeSize = 3
     platforms.maxLedgeSize = 5
-    platforms.minLedgeSpacing = new Phaser.Point 4, 2
-    platforms.maxLedgeSpacing = new Phaser.Point 8, 4
+    platforms.minLedgeSpacing = new Point 4, 2
+    platforms.maxLedgeSpacing = new Point 8, 4
     platforms.ledgeThickness = 2
     platforms.tileWidth = platforms.tileHeight = 32
 
@@ -47,12 +49,12 @@ define [
   createPlayerProps: (player) ->
     sprite:
       body: 
-        drag: new Phaser.Point(), setSize: jasmine.createSpy 'setSize'
-        velocity: new Phaser.Point(), acceleration: new Phaser.Point()
         onFloor: -> no
+        drag: new Point(), setSize: jasmine.createSpy 'setSize'
+        velocity: new Point(), acceleration: new Point()
       game:
         time: { create: -> new FakeTimer() }
-      scale: new Phaser.Point()
+      scale: new Point()
 
     animations:
       play: jasmine.createSpy('play').and.callFake (name) ->
@@ -65,4 +67,4 @@ define [
       _.mapObject { left: {}, right: {}, up: {}, down: {} }, (key) ->
         key.isUp = key.isDown = no; key
 
-    gravity: new Phaser.Point()
+    gravity: new Point()
