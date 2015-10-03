@@ -52,7 +52,10 @@ define [
       @quitKey = @_addKey Keyboard.Q, @quit
       # Quit on click at end.
       @onHit = @input[if @game.device.touch then 'onTap' else 'onUp']
-      @onHit.add @quit, @
+      @onHit.add (trigger) => 
+        unless @quit trigger
+          @inStateMenu.toggle()
+      , @
 
       if @developing
         @gui = new dat.GUI()
