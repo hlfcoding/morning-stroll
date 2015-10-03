@@ -152,7 +152,7 @@ define [
     _addInStateMenu: ->
       @inStateMenu = new InStateMenu [
         ['Paused', { fontSize: fontLarge }]
-        ['Arrow keys to move', { fontSize: fontSmall }]
+        ['Hold arrow keys to accelerate', { fontSize: fontSmall }]
         ['Press 0, -, + for volume', { fontSize: fontSmall }]
         ['Press Q to quit', { fontSize: fontSmall }]
       ], @game,
