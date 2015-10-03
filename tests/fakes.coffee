@@ -1,9 +1,14 @@
 define [
   'phaser'
   'underscore'
-], (Phaser, _) ->
+  'app/helpers'
+], (Phaser, _, Helpers) ->
 
   {Point} = Phaser
+
+  {PointMixin} = Helpers
+
+  _.extend Point::, PointMixin
 
   # Phaser is written with interwoven dependencies, but does not provide test
   # helpers or fake classes. This custom faking isn't ideal, but a last resort.
@@ -49,9 +54,9 @@ define [
   createPlayerProps: (player) ->
     sprite:
       body: 
-        onFloor: -> no
         drag: new Point(), setSize: jasmine.createSpy 'setSize'
         velocity: new Point(), acceleration: new Point()
+        position: new Point(), offset: new Point(), onFloor: -> no
       game:
         time: { create: -> new FakeTimer() }
       scale: new Point()
@@ -61,7 +66,8 @@ define [
         { isFinished: no, isPlaying: yes, loop: name is 'run', name: name }
       frame: 17 # Initial.
 
-    cameraFocus: {}
+    cameraFocus:
+      position: new Point()
 
     cursors:
       _.mapObject { left: {}, right: {}, up: {}, down: {} }, (key) ->
