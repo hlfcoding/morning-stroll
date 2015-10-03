@@ -344,8 +344,10 @@ define [
       # Follow with easing.
       kEasing = @cameraFocusFollowResistance
       kEasing /= 3 if @_isFullyFalling()
-      @cameraFocus.x += (@sprite.x - @cameraFocus.x) // kEasing
-      @cameraFocus.y += (@sprite.y - @cameraFocus.y) // kEasing
+      step = @physics.position.clone()
+        .subtractPoint @cameraFocus.position
+        .divide kEasing, kEasing        
+      @cameraFocus.position.addPoint step
 
   _.extend Player::, AnimationMixin, DebugMixin
 
