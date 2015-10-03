@@ -330,7 +330,7 @@ define [
 
     _visualizeTurn: (direction = @nextDirection) ->
       @sprite.scale.x = direction
-      @physics.offset = new Point @_xOffset(direction), @_yOffset
+      @physics.offset.set @_xOffset(direction), @_yOffset
 
     # Update
     # ------
