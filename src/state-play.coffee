@@ -214,7 +214,10 @@ define [
         @renderDebugDisplayItems @player.debugTextItems
 
     _renderDebugOverlays: ->
-      @debugDisplay.body @player.sprite if @player.debugging
+      if @player.debugging
+        @debugDisplay.body @player.sprite
+        @debugDisplay.spriteBounds @player.sprite
+        @debugDisplay.spriteBounds @player.cameraFocus
 
     _renderEndingDisplay: ->
       @textLayout = { y: 120, baseline: 40 }
