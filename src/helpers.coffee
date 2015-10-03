@@ -229,6 +229,15 @@ define [
 
     result
 
+  # PointMixin
+  # ----------
+
+  PointMixin = 
+    addPoint: (point) -> @add point.x, point.y
+    dividePoint: (point) -> @divide point.x, point.y
+    multiplyPoint: (point) -> @multiply point.x, point.y
+    subtractPoint: (point) -> @subtract point.x, point.y
+
   # Transition
   # ----------
   # Heavily inspired by aaccurso/phaser-state-transition-plugin
@@ -297,5 +306,5 @@ define [
 
   # Export.
 
-  { AnimationMixin, CameraMixin, DebugMixin, DebugDisplayMixin, RegExps
-    StateManagerMixin, TextMixin, autoSetTiles }
+  { AnimationMixin, CameraMixin, DebugMixin, DebugDisplayMixin, PointMixin,
+    RegExps, StateManagerMixin, TextMixin, autoSetTiles }

@@ -27,9 +27,16 @@ requirejs [
 
   'use strict'
 
+  {Point} = Phaser
+
   {debugging, gameH, gameW} = defines
 
-  {StateManagerMixin} = Helpers
+  {PointMixin, StateManagerMixin} = Helpers
+
+  # Framework Extensions
+  # --------------------
+
+  _.extend Point::, PointMixin
 
   # Main
   # ----
