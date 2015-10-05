@@ -88,10 +88,10 @@ module.exports = (grunt) ->
         files: { 'release/site/styles.css': 'src/site/styles.scss' }
 
     watch:
-      js:
+      src:
         files: src.coffee
         tasks: ['clean:js', 'coffee:src']
-      css:
+      site:
         files: ['src/site/*.scss']
         tasks: ['sass:site']
       docs:
@@ -100,9 +100,9 @@ module.exports = (grunt) ->
 
   grunt.loadNpmTasks plugin for plugin in matchdep.filterDev 'grunt-*'
 
-  grunt.registerTask 'docs', ['clean:docs', 'groc:docs', 'watch']
+  grunt.registerTask 'docs', ['clean:docs', 'groc:docs', 'watch:docs']
   grunt.registerTask 'lib', ['clean:lib', 'bower:lib']
-  grunt.registerTask 'site', ['sass:site', 'autoprefixer:site']
+  grunt.registerTask 'site', ['sass:site', 'autoprefixer:site', 'watch:site']
   grunt.registerTask 'test', ['clean:tests', 'coffee:tests', 'connect:tests', 'jasmine:tests']
 
-  grunt.registerTask 'default', ['clean:js', 'coffee:src', 'site', 'watch']
+  grunt.registerTask 'default', ['clean:js', 'coffee:src', 'watch:src']
