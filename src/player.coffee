@@ -320,6 +320,7 @@ define [
       @_isTurning = yes
       @direction = @nextDirection
       @debug 'turn:start', @velocity.x
+      @debug 'facing', @nextDirection
 
     _endTurn: ->
       @_visualizeTurn()
