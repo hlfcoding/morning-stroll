@@ -123,6 +123,7 @@ define [
       @animations.add 'jump', [18..31], 24
       @animations.add 'land', [32,33,18,17], 24
       @animations.add 'end', [34...53], 12
+      @_nextActionOnComplete = null
 
     _initDebugging: (gui) ->
       @debugNamespace = 'player'
@@ -191,7 +192,10 @@ define [
 
     _changeAnimation: ->
       unless @_isInMidAir() or @nextAction is 'none'
-        @playAnimation @nextAction, @animation?.loop
+        animation = @playAnimation @nextAction, @animation?.loop
+        if animation and @_nextActionOnComplete?
+          animation.onComplete.addOnce @_nextActionOnComplete, @
+          @_nextActionOnComplete = null
         return
 
       switch @nextState
