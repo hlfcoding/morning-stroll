@@ -25,7 +25,7 @@ define [
 
       it 'sets frame if given a number', ->
         obj.playAnimation 1
-        expect(obj.animation).toBeUndefined()
+        expect(obj.animation).toBeNull()
         expect(obj.animations.frame).toBe 1
 
       it 'plays animation if given a string, but only if it\'s different', ->

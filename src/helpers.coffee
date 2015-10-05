@@ -28,7 +28,7 @@ define [
       if _.isNumber(nameOrFrame)
         frame = nameOrFrame
         @animations.frame = frame
-        delete @animation
+        @animation = null
 
       else
         name = nameOrFrame
