@@ -170,7 +170,6 @@ define [
       @maxVelocity = new Point 200, 800 # Run and terminal velocities.
 
       @_jumpTimer = @sprite.game.time.create() # This also acts like a flag.
-      @_isTurning = no # Because velocity won't be 0 when turning while running.
 
     _initState: ->
       # Readonly.
@@ -186,6 +185,7 @@ define [
 
       @_fallingPoint = null
       @_keepCameraFocusUpdated = on
+      @_turnDirection = null
 
     # Change
     # ------
@@ -306,34 +306,33 @@ define [
         @nextAction = 'stop'
         return
       @nextState = 'still'
-      @_isTurning = no # In case of being blocked.
+      @_turnDirection = null # In case of being blocked.
 
     # Turn
     # ----
 
     _canBeginTurn: ->
-      @nextDirection? and @nextAction isnt 'start' and
-      not (@_isTurning or @nextDirection is @direction)
+      @nextDirection? and @nextDirection isnt @direction and
+      @nextAction isnt 'start' and not @_turnDirection?
     _canEndTurn: ->
-      @nextDirection? and @nextAction isnt 'stop' and 
-      @_isTurning and @nextDirection is @direction and
+      @nextAction isnt 'stop' and @_turnDirection? and
       @_isAnimationInterruptible()
 
     _beginTurn: ->
-      @nextAction = 'stop'
-      @_isTurning = yes
-      @direction = @nextDirection
+      @nextAction = 'stop' unless @_isFullyStill()
+      @_turnDirection = @nextDirection
       @debug 'turn:start', @velocity.x
       @debug 'facing', @nextDirection
 
     _endTurn: ->
+      # Turn after stopping.
       @_visualizeTurn()
-
       @nextAction = 'start'
-      @_isTurning = no
+      @direction = @_turnDirection
+      @_turnDirection = null
       @debug 'turn:end', @velocity.x
 
-    _visualizeTurn: (direction = @nextDirection) ->
+    _visualizeTurn: (direction = @_turnDirection) ->
       @sprite.scale.x = direction
       @physics.offset.set @_xOffset(direction), @_yOffset
 

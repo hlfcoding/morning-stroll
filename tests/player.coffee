@@ -159,7 +159,7 @@ define [
         runRunUpdatesUntil 'still'
 
         expect(player.state).toBe 'still'
-        expect(player._isTurning).toBe no
+        expect(player._turnDirection).toBeNull()
         expect(player._endRun).toHaveBeenCalled()
 
     describe 'when x cursor key is down in opposite direction', ->
@@ -173,7 +173,8 @@ define [
         beforeEach -> runRunUpdatesUntil 'start', backwards: yes
 
         it 'will immediately (end) turn and begin to run', ->
-          expect(player._isTurning).toBe yes
+          expect(player._beginTurn).toHaveBeenCalled()
+          expect(player._endTurn).toHaveBeenCalled()
           expect(player.direction).toBe Direction.Left
           expect(player._beginRun).toHaveBeenCalled()
 
@@ -183,8 +184,7 @@ define [
         beforeEach -> runRunUpdatesUntil 'turn', backwards: yes
 
         it 'will begin turn', ->
-          expect(player._isTurning).toBe yes
-          expect(player.direction).toBe Player.Direction.Left
+          expect(player._turnDirection).toBe Direction.Left
           expect(player._beginTurn).toHaveBeenCalled()
 
         it 'will play interrupting stop animation', testStopAnimation
@@ -193,7 +193,7 @@ define [
         beforeEach -> runRunUpdatesUntil 'restart', backwards: yes
 
         it 'will end turn', ->
-          expect(player._isTurning).toBe no
+          expect(player._turnDirection).toBeNull()
           expect(player._endTurn).toHaveBeenCalled()
 
         it 'will play start animation', testStartAnimation
@@ -263,3 +263,10 @@ define [
           endAnimation()
 
           expect(player._isLanded()).toBe yes
+
+    # Supplemental Manual Tests 
+    # -------------------------
+    # 
+    # - Mash left and right cursor keys in alternating fashion for a bit.
+    #   Stop, then attempt to turn in other direction. Player should visualize
+    #   turn properly, and should not appear to run backwards.
