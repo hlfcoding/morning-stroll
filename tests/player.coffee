@@ -5,7 +5,10 @@ define [
   'test/fakes'
 ], (Phaser, _, Player, fakes) ->
 
+  {Direction} = Player
+
   describe 'Player', ->
+    cursors = null
     game = null
     player = null
 
@@ -23,13 +26,15 @@ define [
       player._initPhysics()
       player._initState()
 
+      {cursors} = player
+
     endAnimation = ->
       player.animation.isPlaying = no
       player.animation.isFinished = yes
 
     initialYAcceleration = null
     runJumpUpdatesUntil = (stopAt) ->
-      player.cursors.up.isDown = yes
+      cursors.up.isDown = yes
       initialYAcceleration = player.acceleration.y
       player.update()
       return if stopAt is 'rising'
@@ -37,8 +42,8 @@ define [
       player.update()
       return if stopAt is 'building'
 
-      player.cursors.up.isDown = no
-      player.cursors.up.isUp = yes
+      cursors.up.isDown = no
+      cursors.up.isUp = yes
       player.velocity.y = 1
       player.update() # End jump.
       player.update() # Fall.
@@ -50,8 +55,8 @@ define [
 
     runRunUpdatesUntil = (stopAt, options) ->
       if options?.backwards and not (stopAt in ['turn', 'restart'])
-        player.cursors.left.isDown = yes
-      else player.cursors.right.isDown = yes
+        cursors.left.isDown = yes
+      else cursors.right.isDown = yes
 
       player.update()
       return if stopAt is 'start'
@@ -62,8 +67,8 @@ define [
 
       unless options?.backwards
         player.velocity.x = 1
-        player.cursors.right.isDown = no
-        player.cursors.right.isUp = yes
+        cursors.right.isDown = no
+        cursors.right.isUp = yes
         player.update()
         return if stopAt is 'stop'
 
@@ -71,8 +76,8 @@ define [
         player.update()
         return if stopAt is 'still'
 
-      player.cursors.right.isDown = no
-      player.cursors.left.isDown = yes
+      cursors.right.isDown = no
+      cursors.left.isDown = yes
       player.update()
       return if stopAt is 'turn'
 
@@ -94,7 +99,7 @@ define [
       it 'is set to still and facing right', ->
         expect(player.state).toBe 'still'
         expect(player._isFullyStill()).toBe yes
-        expect(player.direction).toBe Player.Direction.Right
+        expect(player.direction).toBe Direction.Right
         expect(player.animation).toBeNull()
 
       it 'has no next state info', ->
@@ -106,8 +111,8 @@ define [
       it 'can get and set the right direction from #_xDirectionInput', ->
         runRunUpdatesUntil 'start'
 
-        expect(player._xDirectionInput()).toBe Player.Direction.Right
-        expect(player.nextDirection).toBe Player.Direction.Right
+        expect(player._xDirectionInput()).toBe Direction.Right
+        expect(player.nextDirection).toBe Direction.Right
 
       describe 'when still', ->
         beforeEach -> runRunUpdatesUntil 'start'
@@ -161,15 +166,15 @@ define [
       it 'can get and set the right direction from #_xDirectionInput', ->
         runRunUpdatesUntil 'start', backwards: yes
 
-        expect(player._xDirectionInput()).toBe Player.Direction.Left
-        expect(player.nextDirection).toBe Player.Direction.Left
+        expect(player._xDirectionInput()).toBe Direction.Left
+        expect(player.nextDirection).toBe Direction.Left
 
       describe 'when still', ->
         beforeEach -> runRunUpdatesUntil 'start', backwards: yes
 
         it 'will immediately (end) turn and begin to run', ->
           expect(player._isTurning).toBe yes
-          expect(player.direction).toBe Player.Direction.Left
+          expect(player.direction).toBe Direction.Left
           expect(player._beginRun).toHaveBeenCalled()
 
         it 'will play start animation', testStartAnimation
