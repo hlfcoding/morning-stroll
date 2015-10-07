@@ -1,17 +1,22 @@
+$fill: #222;
+
 body {
-  background: #222 url(assets/paw-tile.png) center;
+  background: $fill url(assets/paw-tile.png) center;
   box-shadow: inset 0 0 200px rgba(#000, 0.4);
 
   margin: 0;
   position: absolute; left: 0; right: 0; top: 0; bottom: 0;
 }
 
-.game {
+.frame {
+  background: $fill;
   border: 1px solid rgba(#fff, 0.1);
   box-shadow: (
     0 0 0 1px rgba(#000, 0.2),
     0 0 2px 2px rgba(#000, 0.2)
   );
+
+  width: 416px; height: 600px;
 
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
 }
