@@ -19,4 +19,33 @@ body {
   width: 416px; height: 600px;
 
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+
+  aside {
+    position: absolute;
+    top: 500px; right: -100px;
+  }
 }
+
+button {
+  background: transparent;
+  border: 1px solid rgba(#000, 0.4);
+  border-radius: 5px;
+  box-shadow: (
+    inset 0 0 0 1px rgba(#fff, 0.1),
+    0 0 0 1px rgba(#fff, 0.1)
+  );
+  color: rgba(#fff, 0.5);
+  font: { family: Enriqueta, serif; size: 12px; }
+  outline: none;
+  padding: 0.4em 1em 0.5em;
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    background: $fill;
+    color: rgba(#fff, 0.8);
+  }
+  &:active {
+    background: lighten($fill, 10%);
+  }
+}
+
+.hide { display: none; }

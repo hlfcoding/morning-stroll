@@ -19,11 +19,12 @@ requirejs [
   'phaser'
   'app/defines'
   'app/helpers'
+  'app/site'
   'app/state-boot'
   'app/state-menu'
   'app/state-preload'
   'app/state-play'
-], (Phaser, defines, Helpers, BootState, MenuState, PreloadState, PlayState) ->
+], (Phaser, defines, Helpers, site, BootState, MenuState, PreloadState, PlayState) ->
 
   'use strict'
 
@@ -51,6 +52,8 @@ requirejs [
   game.state.add 'play', PlayState
 
   game.state.start 'boot'
+
+  site.setGame game
 
   # Debug
   # -----

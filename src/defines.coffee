@@ -11,7 +11,7 @@ define [], () ->
     # Off by default for performance.
     debugging: off
     # Turn off here to disable entirely (@release).
-    developing: on
+    developing: off
 
     gameW: 416
     gameH: 600
