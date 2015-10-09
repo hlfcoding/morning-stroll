@@ -22,7 +22,7 @@ body {
 
   aside {
     position: absolute;
-    top: 520px; right: -100px;
+    top: 520px; right: -100px; width: 60px;
 
     color: rgba(#fff, 0.3);
     font: { family: Enriqueta, serif; size: 12px; }
@@ -56,4 +56,4 @@ button {
   }
 }
 
-.hide { display: none; }
+.invisible { visibility: hidden; }
