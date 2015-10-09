@@ -22,7 +22,14 @@ body {
 
   aside {
     position: absolute;
-    top: 500px; right: -100px;
+    top: 520px; right: -100px;
+
+    color: rgba(#fff, 0.3);
+    font: { family: Enriqueta, serif; size: 12px; }
+
+    button {
+      margin-bottom: 2em;
+    }
   }
 }
 
@@ -34,8 +41,9 @@ button {
     inset 0 0 0 1px rgba(#fff, 0.1),
     0 0 0 1px rgba(#fff, 0.1)
   );
-  color: rgba(#fff, 0.5);
-  font: { family: Enriqueta, serif; size: 12px; }
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
   outline: none;
   padding: 0.4em 1em 0.5em;
   transition: all 0.2s ease-in-out;
