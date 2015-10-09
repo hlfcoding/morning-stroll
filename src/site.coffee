@@ -26,6 +26,24 @@ define [
         fiddle.classList.remove 'invisible'
         fiddle.removeAttribute 'disabled'
 
+  # About:
+
+  style = window.getComputedStyle document.querySelector('#framed') 
+  flipDuration = parseFloat(style['transition-duration']) + parseFloat(style['transition-delay'])
+  flipDuration *= 1000
+  frame = document.querySelector '#frame'
+  toggleAbout = document.querySelector '#toggle-about'
+
+  toggleAbout.addEventListener 'click', ->
+    frame.classList.toggle 'flipped'
+
+    frame.classList.add 'flipping'
+    toggleAbout.setAttribute 'disabled', ''
+    setTimeout ->
+      frame.classList.remove 'flipping'
+      toggleAbout.removeAttribute 'disabled'
+    , flipDuration
+
   # Dependencies:
 
   site =
