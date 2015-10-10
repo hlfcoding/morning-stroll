@@ -4,13 +4,14 @@ $frame-duration: 0.2s;
 %flipper-wrap {
   perspective: 1000px;
   &.flipped %flipper {
-    transform: rotateY(180deg);
+    transform: rotateY(-180deg);
   }
 }
 
 %flipper {
+  $easing: cubic-bezier(0.8, 0, 0.2, 1);
   position: relative;
-  transition: transform 0.5s ease-in-out $frame-duration;
+  transition: transform 1s $easing $frame-duration;
   transform-style: preserve-3d;
 }
 
@@ -34,7 +35,7 @@ body {
   transition: {
     property: border, box-shadow;
     duration: $frame-duration;
-    timing-function: ease-in-out;
+    timing-function: ease-in;
   }
   &:not(.flipping) {
     border: 1px solid rgba(#fff, 0.1);
