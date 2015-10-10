@@ -19,12 +19,11 @@ requirejs [
   'phaser'
   'app/defines'
   'app/helpers'
-  'app/site'
   'app/state-boot'
   'app/state-menu'
   'app/state-preload'
   'app/state-play'
-], (Phaser, defines, Helpers, site, BootState, MenuState, PreloadState, PlayState) ->
+], (Phaser, defines, Helpers, BootState, MenuState, PreloadState, PlayState) ->
 
   'use strict'
 
@@ -53,7 +52,14 @@ requirejs [
 
   game.state.start 'boot'
 
-  site.setGame game
+  # Site
+  # ----
+
+  initSite = ->
+    require ['app/site'], (site) -> site.setGame game
+
+  if document.readyState is 'complete' then initSite()
+  else document.addEventListener 'DOMContentLoaded', initSite
 
   # Debug
   # -----

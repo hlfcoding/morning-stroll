@@ -6,6 +6,8 @@ define [
 
   _game = null
 
+  document.body.className = 'ready'
+
   # Fiddle:
 
   if window.history

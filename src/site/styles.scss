@@ -130,7 +130,9 @@ button {
   font: inherit;
   outline: none;
   padding: 0.4em 1em 0.5em;
-  transition: all 0.2s ease-in-out;
+  body.ready & {
+    transition: all 0.2s ease-in-out;
+  }
   &:hover {
     background: $fill;
     color: rgba($stroke, 0.8);
