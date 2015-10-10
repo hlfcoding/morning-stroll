@@ -101,6 +101,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks plugin for plugin in matchdep.filterDev 'grunt-*'
 
   grunt.registerTask 'docs', ['clean:docs', 'groc:docs', 'watch:docs']
+  grunt.registerTask 'install', ['bower:lib', 'sass:site', 'autoprefixer:site', 'coffee:src']
   grunt.registerTask 'lib', ['clean:lib', 'bower:lib']
   grunt.registerTask 'site', ['sass:site', 'autoprefixer:site', 'watch:site']
   grunt.registerTask 'test', ['clean:tests', 'coffee:tests', 'connect:tests', 'jasmine:tests']
