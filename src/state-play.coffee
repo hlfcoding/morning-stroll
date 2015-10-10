@@ -17,7 +17,7 @@ define [
 
   {Key, Keyboard, Physics, Point, Rectangle, State, Timer} = Phaser
 
-  {artH, mapH, fontLarge, fontSmall, playerH, playerW, playerYOffset, shakeFallH, deadzoneH} = defines
+  {domStateEvents, artH, mapH, fontLarge, fontSmall, playerH, playerW, playerYOffset, shakeFallH, deadzoneH} = defines
 
   {AnimationMixin, CameraMixin, DebugMixin, DebugDisplayMixin, TextMixin} = Helpers
 
@@ -26,6 +26,11 @@ define [
   class PlayState extends State
 
     init: ->
+      if domStateEvents
+        e = document.createEvent 'CustomEvent'
+        e.initCustomEvent 'state:play'
+        @game.parent.dispatchEvent e
+
       {@debugging, @developing} = defines
       @detachedCamera = off
       @ended = no

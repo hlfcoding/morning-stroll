@@ -41,7 +41,9 @@ requirejs [
   # Main
   # ----
 
-  game = new Phaser.Game gameW, gameH, Phaser.AUTO, 'morning-stroll' # Renderer, parent element id.
+  game = new Phaser.Game(
+    gameW, gameH, Phaser.AUTO, document.getElementById('morning-stroll')
+  )
 
   _.extend game.state, StateManagerMixin
 

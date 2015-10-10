@@ -27,6 +27,14 @@ define [
         defines.developing = off
         fiddle.removeAttribute 'disabled'
 
+    gameParent = document.querySelector '#morning-stroll'
+    gameParent.addEventListener 'state:play', ->
+      fiddle.setAttribute 'disabled', ''
+
+    gameParent.addEventListener 'state:menu', ->
+      fiddle.removeAttribute 'disabled'
+      window.history.back() if window.history.state.fiddle is on
+
   # About:
 
   if classlist and csstransitions

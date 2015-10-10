@@ -13,6 +13,8 @@ define [], () ->
     # Turn off here to disable entirely (@release).
     developing: off
 
+    domStateEvents: on
+
     gameW: 416
     gameH: 600
 

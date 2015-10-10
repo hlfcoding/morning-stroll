@@ -8,13 +8,17 @@ define [
 
   {State} = Phaser
 
-  {fontLarge, fontSmall} = defines
+  {domStateEvents, fontLarge, fontSmall} = defines
 
   {TextMixin} = Helpers
 
   class MenuState extends State
 
     init: ->
+      if domStateEvents
+        e = document.createEvent 'CustomEvent'
+        e.initCustomEvent 'state:menu'
+        @game.parent.dispatchEvent e
 
     create: ->
       @add.image 0, 0, 'bg-start'
