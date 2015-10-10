@@ -12,7 +12,7 @@ define [
   # Fiddle:
 
   if history
-    window.history.pushState { fiddle: off }, document.title
+    window.history.replaceState { fiddle: off }, document.title
 
     fiddle = document.querySelector '#fiddle'
     fiddle.addEventListener 'click', ->
