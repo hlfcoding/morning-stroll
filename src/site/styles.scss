@@ -1,4 +1,5 @@
 $fill: #222;
+$stroke: #fff;
 $frame-duration: 0.2s;
 
 %flipper-wrap {
@@ -19,6 +20,40 @@ $frame-duration: 0.2s;
   backface-visibility: hidden;
   position: absolute; top: 0; left: 0;
   width: 100%; height: 100%;
+}
+
+%motif {
+  $size: 32px;
+  background: url(assets/paw-tile.png) center no-repeat;
+  content: '';
+  margin: 1rem auto;
+  width: $size; height: $size; display: block;
+}
+
+%prose {
+  font: { family: Enriqueta, serif; size: 14px; }
+  line-height: 1.8;
+
+  header {
+    &::after { @extend %motif; }
+    text-align: center;
+  }
+  h1 {
+    font: { size: 32px; weight: 500; }
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  a, & { color: rgba($stroke, 0.7); }
+  a {
+    transition: color 0.2s ease-in-out;
+    &:hover { color: $stroke; }
+  }
+
+  footer {
+    &::before { @extend %motif; }
+    text-align: center;
+  }
 }
 
 body {
@@ -53,7 +88,7 @@ body {
     position: absolute;
     top: 520px; right: -100px; width: 60px;
 
-    color: rgba(#fff, 0.3);
+    color: rgba($stroke, 0.3);
     font: { family: Enriqueta, serif; size: 12px; }
 
     button {
@@ -75,7 +110,10 @@ body {
     @extend %flipper-face;
     transform: rotateY(180deg);
 
+    @extend %prose;
     background: $fill;
+    padding: 3rem; box-sizing: border-box;
+    text-align: justify;
   }
 }
 
@@ -95,7 +133,7 @@ button {
   transition: all 0.2s ease-in-out;
   &:hover {
     background: $fill;
-    color: rgba(#fff, 0.8);
+    color: rgba($stroke, 0.8);
   }
   &:active {
     background: lighten($fill, 10%);
