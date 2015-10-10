@@ -17,7 +17,6 @@ define [
     fiddle.addEventListener 'click', ->
       defines.developing = on
       history.pushState { fiddle: on }, "#{document.title} (fiddling)", 'fiddle'
-      fiddle.classList.add 'invisible'
       fiddle.setAttribute 'disabled', ''
 
     window.addEventListener 'popstate', (e) ->
@@ -25,7 +24,6 @@ define [
         location.reload()
       else if e.state.fiddle is off
         defines.developing = off
-        fiddle.classList.remove 'invisible'
         fiddle.removeAttribute 'disabled'
 
   # About:

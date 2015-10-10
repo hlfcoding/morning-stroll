@@ -96,6 +96,10 @@ body {
     }
   }
 
+  button.fiddle:disabled {
+    visibility: hidden;
+  }
+
   @extend %flipper-wrap;
   .framed {
     @extend %flipper;
@@ -140,6 +144,7 @@ button {
   &:active {
     background: lighten($fill, 10%);
   }
+  &:disabled {
+    opacity: 0.5;
+  }
 }
-
-.invisible { visibility: hidden; }
