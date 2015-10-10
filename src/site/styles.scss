@@ -148,3 +148,8 @@ button {
     opacity: 0.5;
   }
 }
+
+html {
+  &.no-csstransitions button.toggle-about { display: none; }
+  &.no-history button.fiddle { display: none; }
+}
