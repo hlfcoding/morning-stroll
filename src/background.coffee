@@ -1,8 +1,11 @@
 # Background
 # ==========
-# A gradient of bg and scroll factors based on coefficients.
-# We're extending `FlxGroup` b/c there's nothing else. ArrayList would
-# be better.
+# A `group` of images and related scroll-factored `layers` based on
+# coefficients. Unlike the Flixel version, scroll-factors are manually applied
+# to image position during update. Also note that given their large size, images
+# are auto-culled for performance gains.
+
+# __See__: [tests](../tests/background.html).
 
 define [
   'underscore'

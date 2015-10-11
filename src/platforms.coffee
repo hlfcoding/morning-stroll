@@ -1,7 +1,11 @@
 # Platform
 # ========
-# Platform that can dynamically generate a map, and track the dynamically
-# generated ledges. Only supports the `SIDE_TO_SIDE` generation scheme for now.
+# Platform that can dynamically generate a `Phaser.Tilemap` (rendered on a
+# single layer), and track the dynamically generated ledges. Only supports the
+# `SIDE_TO_SIDE` generation scheme for now. The complexity in its code comes
+# from the numerous knobs, including a difficulty dynamic.
+
+# __See__: [tests](../tests/platforms.html).
 
 define [
   'phaser'

@@ -1,5 +1,11 @@
 # PlayState
 # =========
+# This is the main game class. It coordinates between the main game objects
+# (including camera and music) and handles their interactions. It also handles
+# ending the game, and any shortkeys. The exact list is long, but start tracing
+# from `create` and `update` like any other Phaser state, and you should get
+# far. Also note any logic that can be easily factored out is factored out of
+# this file.
 
 define [
   'dat.gui'
@@ -122,6 +128,9 @@ define [
     onFocus: ->
       @music?.resume()
 
+    # Main own methods
+    # ----------------
+
     end: ->
       # First animate player.
       animation = @player.startEnding @mate
@@ -147,6 +156,9 @@ define [
         @music.fadeOut 3 * Timer.SECOND
         # Then go back to menu while clearing world.
         @music.onFadeComplete.addOnce _quit
+
+    # Subroutines
+    # -----------
 
     _addBackground: ->
       parallaxTolerance = mapH - artH

@@ -3,7 +3,9 @@
 # Player configures and controls a sprite, tracks and updates state given user
 # interaction. This builds off the stock Flixel / Phaser player, but tries to
 # make the movement more natural, which requires more animations, logic, and
-# physics.
+# physics. Start reading from `update`.
+
+# __See__: [tests](../tests/player.html).
 
 define [
   'phaser'
