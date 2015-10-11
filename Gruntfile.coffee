@@ -40,7 +40,20 @@ module.exports = (grunt) ->
       docs: ['docs/*']
       js: { src: ['release/*'], filter: 'isFile' }
       lib: ['lib/*']
+      site: ['site/*']
       tests: ['tests/js/*']
+
+    copy:
+      site:
+        expand: yes
+        src: [
+          'assets/**/*'
+          'docs/**/*'
+          'lib/**/*'
+          'release/**/*'
+          'index.html'
+        ]
+        dest: 'site/'
 
     connect:
       tests:
@@ -62,6 +75,11 @@ module.exports = (grunt) ->
         dest: 'tests/js/'
         ext: '.js'
         flatten: yes
+
+    'gh-pages':
+      site:
+        options: { base: 'site' }
+        src: ['**']
 
     groc:
       options:
@@ -103,6 +121,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'docs', ['clean:docs', 'groc:docs', 'watch:docs']
   grunt.registerTask 'install', ['bower:lib', 'sass:site', 'autoprefixer:site', 'coffee:src']
   grunt.registerTask 'lib', ['clean:lib', 'bower:lib']
+  grunt.registerTask 'publish', ['clean:site', 'copy:site', 'gh-pages:site']
   grunt.registerTask 'site', ['sass:site', 'autoprefixer:site', 'watch:site']
   grunt.registerTask 'test', ['clean:tests', 'coffee:tests', 'connect:tests', 'jasmine:tests']
 
