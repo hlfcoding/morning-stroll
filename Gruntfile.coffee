@@ -36,6 +36,15 @@ module.exports = (grunt) ->
           targetDir: 'lib'
           verbose: yes
 
+    bump:
+      options:
+        files: [
+          'bower.json'
+          'package.json'
+        ]
+        commitFiles: ['.']
+        pushTo: 'origin'
+
     clean:
       docs: ['docs/*']
       js: { src: ['release/*'], filter: 'isFile' }
