@@ -1,6 +1,11 @@
 # Helpers
 # =======
-# Misc. utilities and bits of custom functionality not specific to the game.
+# Misc. utilities and bits of custom functionality not specific to the game. For
+# now it's all in this one file, but eventually may become a separate module.
+# Ideally this file should be short because we shouldn't need to patch or extend
+# vendor code.
+
+# __See__: [tests](../tests/helpers.html).
 
 define [
   'dat.gui'
@@ -12,13 +17,17 @@ define [
 
   {Easing, Point, RenderTexture, Sprite, Timer} = Phaser
 
+  # Cache regex patterns.
   RegExps =
     PrettyHashRemove: /[{}"]/g
     PrettyHashPad: /[:,]/g
 
-  # Animation
-  # ---------
-  # Requires DebugMixin.
+  # AnimationMixin
+  # --------------
+  # Requires DebugMixin. Some higher-level operations over Phaser animation API.
+  # Apply this to any object that has an `animations` (`AnimationManager`)
+  # property. It will set a current `animation` property. An `add`
+  # (`GameObjectFactory`) property is also required.
 
   AnimationMixin =
 
@@ -43,9 +52,11 @@ define [
       if init then gameObject.alpha = (if alpha is 0 then 1 else 0)
       tween = @add.tween(gameObject).to { alpha }, duration, 'Cubic', yes
 
-  # Camera
-  # ------
-  # Heavily inspired by dmaslov/phaser-screen-shake
+  # CameraMixin
+  # -----------
+  # This should get applied directly to a camera instance.
+  # `updatePositionWithCursors` is an abstraction over moving camera with
+  # cursors.
 
   CameraMixin =
 
@@ -55,7 +66,8 @@ define [
       else if cursors.left.isDown then @x -= velocity
       else if cursors.right.isDown then @x += velocity
 
-    # Shake Flixel shim:
+    # The rest is a shim of Flixel camera shake that's heavily inspired by
+    # dmaslov/phaser-screen-shake
 
     isShaking: -> @_shake._counter > 0
 
@@ -87,8 +99,12 @@ define [
 
       @_shake._counter-- if _counter > 0
 
-  # Debugging
-  # ---------
+  # Debugging Mixins
+  # ----------------
+  # Allows any object to debug to console or display with fancy and readable
+  # formatting. Sets `debugTextItems` on the object for `DebugDisplayMixin` to
+  # render. Also sets and works with `debugging`, `tracing`, `gui`. Requires
+  # `debugNamespace` to be set.
 
   DebugMixin =
 
@@ -143,9 +159,13 @@ define [
         .replace RegExps.PrettyHashRemove,''
         .replace RegExps.PrettyHashPad, '$& '
 
+  # Define Phaser-specific constants. Fragile.
   kPhaserLayoutX = -8
   kPhaserLineRatio = 1.8
 
+  # Renders to game's `Phaser.Utils.Debug` display, which isn't the easiest to
+  # extend correctly and requires manual layout bookkeeping. Sets and works with
+  # `debugFontSize`. Requires game object. Sets some internal layout properties.
   DebugDisplayMixin =
 
     # Only do the minimal setup here, so it can always run.
@@ -173,6 +193,7 @@ define [
 
   # Developing
   # ----------
+  # Basic dat.GUI extensions to require less code.
 
   addOpenFolder = ->
     folder = @addFolder.apply @, arguments
@@ -191,10 +212,11 @@ define [
 
   _.extend dat.GUI::, { addOpenFolder, addRange }
 
-  # Flixel shims
-  # ------------
+  # Flixel Tilemap AUTO Layout Shim
+  # -------------------------------
+  # Same behavior as Flixel, but a different, more straightforward
+  # implementation.
 
-  # Same behavior as Flixel, but a different, more straightforward implementation.
   autoSetTiles = (tiles) ->
     result = (_.clone row for row in tiles)
 
@@ -231,6 +253,7 @@ define [
 
   # PointMixin
   # ----------
+  # Basic Phaser class extension for less code.
 
   PointMixin = 
     addPoint: (point) -> @add point.x, point.y
@@ -238,9 +261,15 @@ define [
     multiplyPoint: (point) -> @multiply point.x, point.y
     subtractPoint: (point) -> @subtract point.x, point.y
 
-  # Transition
-  # ----------
-  # Heavily inspired by aaccurso/phaser-state-transition-plugin
+  # StateManagerMixin
+  # -----------------
+  # Adds transitioning that's heavily inspired by aaccurso/phaser-state-transition-plugin
+  # Given its complexity, coupling, and fragility, this one is manually tested. 
+
+  # As far as what it does, it wraps the state's methods with logic to
+  # screenshot the current viewport (with some weird offsetting logic). The
+  # screenshot becomes a sprite that covers the new state and fades out on
+  # create, giving the illusion of transitioning.
 
   StateManagerMixin =
     startWithTransition: (transitionOptions = {}, startArgs...) ->
@@ -285,8 +314,10 @@ define [
 
       @start.apply @, startArgs
 
-  # Text
-  # ----
+  # TextMixin
+  # ---------
+  # Allows any object that has `add` (`GameObjectFactory`) and game `world` to
+  # add text with some base layout.
 
   TextMixin =
 

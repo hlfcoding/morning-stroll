@@ -1,3 +1,9 @@
+# BootState
+# =========
+# This is the first state. It just preloads the assets required for the
+# following `PreloadState`. Some system settings are also done here. Potentially
+# more when the game becomes responsive.
+
 define [
   'phaser'
 ], (Phaser) ->

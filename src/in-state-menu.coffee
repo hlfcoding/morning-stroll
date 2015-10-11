@@ -1,3 +1,9 @@
+# InStateMenu
+# ===========
+# Simple interstitial screen not coupled to the game, except mainly in some
+# styling. Currently it's not actually a menu with selectable and just renders
+# labels and handles common game shortkeys. Requires a couple mixins.
+
 define [
   'phaser'
   'underscore'

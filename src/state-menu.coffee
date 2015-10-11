@@ -1,3 +1,8 @@
+# MenuState
+# =========
+# This state is mostly static presentation, so I'm going to be lazy with docs
+# and tests. It has a start button that goes to `PlayState`.
+
 define [
   'phaser'
   'app/defines'
@@ -31,6 +36,7 @@ define [
       buttonX = (@game.width - defines.buttonW) / 2
       buttonY = @layout.y - (defines.buttonH / 2)
       @add.button buttonX, buttonY, 'button', @play, @, 1, 0, 2
+      # Note the text isn't actually 'in' the button.
       @_addText 'start', { fontSize: fontSmall }
 
     update: ->

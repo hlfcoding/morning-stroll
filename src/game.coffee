@@ -1,6 +1,7 @@
 # Game
 # ====
-# Highest-level application script.
+# Highest-level application script. There (rightfully) isn't much here. See
+# `PlayState` for the main game logic.
 
 # Dependencies
 # ------------
