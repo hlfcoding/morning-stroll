@@ -29,7 +29,7 @@ $ grunt
       "file_exclude_patterns":
       [
         "assets/*",
-        "docs/src/*",
+        "docs/*/*",
         "lib/*",
         "release/*",
         "tests/js/*"
