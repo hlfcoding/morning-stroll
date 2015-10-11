@@ -1,0 +1,43 @@
+<!DOCTYPE html><html lang="en"><head><title>src/state-menu</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/state-menu"><meta name="groc-project-path" content="src/state-menu.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/src/state-menu.coffee">src/state-menu.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper">define [
+  <span class="hljs-string">'phaser'</span>
+  <span class="hljs-string">'app/defines'</span>
+  <span class="hljs-string">'app/helpers'</span>
+], <span class="hljs-function"><span class="hljs-params">(Phaser, defines, Helpers)</span> -&gt;</span>
+
+  <span class="hljs-string">'use strict'</span>
+
+  {State} = Phaser
+
+  {fontLarge, fontSmall} = defines
+
+  {TextMixin} = Helpers
+
+  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MenuState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span></span>
+
+    <span class="hljs-attribute">init</span>: <span class="hljs-function">-&gt;</span>
+
+    <span class="hljs-attribute">create</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@add</span>.image <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-string">'bg-start'</span>
+
+      <span class="hljs-property">@layout</span> = { <span class="hljs-attribute">y</span>: (<span class="hljs-property">@game</span>.height / <span class="hljs-number">4</span>), <span class="hljs-attribute">baseline</span>: <span class="hljs-number">40</span> }
+      <span class="hljs-property">@_addText</span> <span class="hljs-string">'Morning Stroll'</span>, { <span class="hljs-attribute">fontSize</span>: fontLarge }
+      <span class="hljs-property">@_addText</span> <span class="hljs-string">'Climb and see!'</span>, { <span class="hljs-attribute">fontSize</span>: fontSmall }
+
+      <span class="hljs-property">@layout</span>.y += <span class="hljs-number">2</span> * <span class="hljs-property">@layout</span>.baseline
+      buttonX = (<span class="hljs-property">@game</span>.width - defines.buttonW) / <span class="hljs-number">2</span>
+      buttonY = <span class="hljs-property">@layout</span>.y - (defines.buttonH / <span class="hljs-number">2</span>)
+      <span class="hljs-property">@add</span>.button buttonX, buttonY, <span class="hljs-string">'button'</span>, <span class="hljs-property">@play</span>, @, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">2</span>
+      <span class="hljs-property">@_addText</span> <span class="hljs-string">'start'</span>, { <span class="hljs-attribute">fontSize</span>: fontSmall }
+
+    <span class="hljs-attribute">update</span>: <span class="hljs-function">-&gt;</span>
+
+    <span class="hljs-attribute">play</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@state</span>.startWithTransition <span class="hljs-literal">null</span>, <span class="hljs-string">'play'</span>
+
+    <span class="hljs-attribute">_addText</span>: <span class="hljs-function"><span class="hljs-params">(text, style)</span> -&gt;</span>
+      _.defaults style, { <span class="hljs-attribute">fill</span>: <span class="hljs-string">'#fff'</span>, <span class="hljs-attribute">font</span>: <span class="hljs-string">'Enriqueta'</span> }
+      text = <span class="hljs-property">@addCenteredText</span> text, <span class="hljs-property">@layout</span>, style
+
+  _.extend <span class="hljs-attribute">MenuState</span>::, TextMixin
+
+  MenuState</div></div></div></div></body></html>

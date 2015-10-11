@@ -1,0 +1,20 @@
+<!DOCTYPE html><html lang="en"><head><title>src/state-boot</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/state-boot"><meta name="groc-project-path" content="src/state-boot.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/src/state-boot.coffee">src/state-boot.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper">define [
+  <span class="hljs-string">'phaser'</span>
+], <span class="hljs-function"><span class="hljs-params">(Phaser)</span> -&gt;</span>
+
+  <span class="hljs-string">'use strict'</span>
+
+  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BootState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Phaser</span>.<span class="hljs-title">State</span></span>
+
+    <span class="hljs-attribute">init</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@input</span>.maxPointers = <span class="hljs-number">1</span>
+      <span class="hljs-property">@stage</span>.disableVisibilityChange = <span class="hljs-literal">on</span>
+
+    <span class="hljs-attribute">preload</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@load</span>.image <span class="hljs-string">'progress-bar-bg'</span>, <span class="hljs-string">'assets/progress-bar-bg.png'</span>
+      <span class="hljs-property">@load</span>.image <span class="hljs-string">'progress-bar-fg'</span>, <span class="hljs-string">'assets/progress-bar-fg.png'</span>
+
+    <span class="hljs-attribute">create</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@state</span>.start <span class="hljs-string">'preload'</span>
+
+  BootState</div></div></div></div></body></html>

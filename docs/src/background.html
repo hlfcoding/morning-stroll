@@ -1,0 +1,66 @@
+<!DOCTYPE html><html lang="en"><head><title>src/background</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/background"><meta name="groc-project-path" content="src/background.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/src/background.coffee">src/background.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="background">Background</h1>
+<p>A gradient of bg and scroll factors based on coefficients.
+We&#39;re extending <code>FlxGroup</code> b/c there&#39;s nothing else. ArrayList would
+be better.</p></div></div><div class="code"><div class="wrapper">define [
+  <span class="hljs-string">'underscore'</span>
+  <span class="hljs-string">'app/defines'</span>
+  <span class="hljs-string">'app/helpers'</span>
+], <span class="hljs-function"><span class="hljs-params">(_, defines, Helpers)</span> -&gt;</span>
+
+  <span class="hljs-string">'use strict'</span>
+
+  {DebugMixin} = Helpers
+
+  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Background</span></span>
+
+    <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(config = {}, game)</span> -&gt;</span>
+      <span class="hljs-property">@layers</span> = []</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Main knobs.</p></div></div><div class="code"><div class="wrapper">      _.defaults config,
+        <span class="hljs-attribute">parallaxFactor</span>: <span class="hljs-number">0.95</span>
+        <span class="hljs-attribute">parallaxBuffer</span>: <span class="hljs-number">1.7</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
+<li>full - Each image is a layer of the full original.</li>
+<li>clip - Images are only partial, and clip the transparent leftovers.</li>
+</ul></div></div><div class="code"><div class="wrapper">        <span class="hljs-attribute">layoutMode</span>: <span class="hljs-string">'full'</span> <span class="hljs-comment"># <span class="hljs-doctag">TODO:</span> Support 'clip'.</span>
+
+      {<span class="hljs-property">@layoutMode</span>, <span class="hljs-property">@parallaxBuffer</span>, <span class="hljs-property">@parallaxFactor</span>, <span class="hljs-property">@parallaxTolerance</span>} = config
+
+      <span class="hljs-property">@_topZIndex</span> = <span class="hljs-number">1</span>
+
+      <span class="hljs-property">@_initialize</span> game
+
+    <span class="hljs-attribute">_initialize</span>: <span class="hljs-function"><span class="hljs-params">(game)</span> -&gt;</span>
+      {<span class="hljs-property">@add</span>, <span class="hljs-property">@camera</span>} = game
+
+      <span class="hljs-property">@group</span> = <span class="hljs-property">@add</span>.group()
+      <span class="hljs-property">@group</span>.visible = <span class="hljs-literal">no</span>
+
+      <span class="hljs-property">@_initDebugging</span>()
+
+    <span class="hljs-attribute">_initDebugging</span>: <span class="hljs-function"><span class="hljs-params">()</span> -&gt;</span>
+      <span class="hljs-property">@debugNamespace</span> = <span class="hljs-string">'background'</span>
+
+      {<span class="hljs-property">@debugging</span>} = defines
+      <span class="hljs-property">@_initDebugMixin</span>()
+
+    <span class="hljs-attribute">destroy</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Null references to disposable objects we don&#39;t own.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="public">Public</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">addImages</span>: <span class="hljs-function"><span class="hljs-params">(nameTemplate, topZIndex, bottomZIndex = <span class="hljs-number">1</span>)</span> -&gt;</span>
+      <span class="hljs-property">@_topZIndex</span> = topZIndex
+      <span class="hljs-keyword">for</span> zIndex <span class="hljs-keyword">in</span> [bottomZIndex..topZIndex]
+        name = nameTemplate { zIndex }
+        image = <span class="hljs-property">@add</span>.image <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, name, <span class="hljs-property">@group</span>
+        image.autoCull = <span class="hljs-literal">on</span>
+        <span class="hljs-property">@layers</span>.push { image, zIndex }
+
+    <span class="hljs-attribute">layout</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Set vertical scroll factor and offset.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-keyword">for</span> layer <span class="hljs-keyword">in</span> <span class="hljs-property">@layers</span>
+        {image, zIndex} = layer</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Factor in z-index exponentially and constrain.</p></div></div><div class="code"><div class="wrapper">        factor = (zIndex / <span class="hljs-property">@layers</span>.length) ** <span class="hljs-number">2</span> * <span class="hljs-property">@parallaxFactor</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Add buffer to further constrain.</p></div></div><div class="code"><div class="wrapper">        factor = (factor + <span class="hljs-property">@parallaxBuffer</span> / <span class="hljs-number">2</span>) / <span class="hljs-property">@parallaxBuffer</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Set scroll factor and inverse.</p></div></div><div class="code"><div class="wrapper">        layer.scrollFactor = Math.min <span class="hljs-number">1</span>, factor
+        layer.scrollResistance = Math.max <span class="hljs-number">0</span>, (<span class="hljs-number">1</span> - factor)
+
+      <span class="hljs-property">@debug</span> <span class="hljs-string">'layers'</span>, <span class="hljs-property">@layers</span>
+
+    <span class="hljs-attribute">update</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">for</span> {image, zIndex, scrollFactor, scrollResistance} <span class="hljs-keyword">in</span> <span class="hljs-property">@layers</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Closer images change more with camera.</p></div></div><div class="code"><div class="wrapper">        image.y = <span class="hljs-property">@camera</span>.y * scrollResistance</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Shift based on scroll factor for full visibility of current bg images.</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-keyword">unless</span> zIndex <span class="hljs-keyword">is</span> <span class="hljs-number">1</span> <span class="hljs-comment"># Not farthest.</span>
+          image.y += <span class="hljs-property">@parallaxTolerance</span>
+          <span class="hljs-keyword">unless</span> zIndex <span class="hljs-keyword">is</span> <span class="hljs-property">@_topZIndex</span> <span class="hljs-comment"># Or nearest.</span>
+            image.y -= <span class="hljs-property">@parallaxTolerance</span> * scrollFactor ** (<span class="hljs-number">1</span> / <span class="hljs-number">3</span>)
+
+  _.extend <span class="hljs-attribute">Background</span>::, DebugMixin
+
+  Background</div></div></div></div></body></html>

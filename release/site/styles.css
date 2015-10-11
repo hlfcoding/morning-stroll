@@ -1,0 +1,121 @@
+.frame {
+  perspective: 1000px; }
+  .flipped.frame .framed {
+    transform: rotateY(-180deg); }
+
+.frame .framed {
+  position: relative;
+  transition: transform 1s cubic-bezier(0.8, 0, 0.2, 1) 0.2s;
+  transform-style: preserve-3d; }
+
+.frame .game, .frame .about {
+  backface-visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; }
+
+.frame .about header::after, .frame .about footer::before {
+  background: url(assets/paw-tile.png) center no-repeat;
+  content: '';
+  margin: 1rem auto;
+  width: 32px;
+  height: 32px;
+  display: block; }
+
+.frame .about {
+  font-family: Enriqueta, serif;
+  font-size: 14px;
+  line-height: 1.8; }
+  .frame .about header {
+    text-align: center; }
+  .frame .about h1 {
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap; }
+  .frame .about a, .frame .about {
+    color: rgba(255, 255, 255, 0.7); }
+  .frame .about a {
+    transition: color 0.2s ease-in-out; }
+    .frame .about a:hover {
+      color: #fff; }
+  .frame .about footer {
+    text-align: center; }
+
+body {
+  background: #222 url(assets/paw-tile.png) center;
+  box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.4);
+  margin: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0; }
+
+.frame {
+  background: #222;
+  transition-property: border, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in;
+  width: 416px;
+  height: 600px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%); }
+  .frame:not(.flipping) {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 0 2px 2px rgba(0, 0, 0, 0.2); }
+  .frame aside {
+    position: absolute;
+    top: 520px;
+    right: -100px;
+    width: 60px;
+    color: rgba(255, 255, 255, 0.3);
+    font-family: Enriqueta, serif;
+    font-size: 12px; }
+    .frame aside button {
+      margin-bottom: 2em; }
+  .frame button.fiddle:disabled {
+    visibility: hidden; }
+  .frame .framed {
+    width: inherit;
+    height: inherit; }
+  .frame .game {
+    transform: rotateY(0deg);
+    z-index: 1; }
+  .frame .about {
+    transform: rotateY(180deg);
+    background: #222;
+    padding: 3rem;
+    box-sizing: border-box;
+    text-align: justify; }
+
+button {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  outline: none;
+  padding: 0.4em 1em 0.5em; }
+  body.ready button {
+    transition: all 0.2s ease-in-out; }
+  button:hover {
+    background: #222;
+    color: rgba(255, 255, 255, 0.8); }
+  button:active {
+    background: #3c3c3c; }
+  button:disabled {
+    opacity: 0.5; }
+
+html.no-csstransitions button.toggle-about {
+  display: none; }
+html.no-history button.fiddle {
+  display: none; }
+
+/*# sourceMappingURL=styles.css.map */

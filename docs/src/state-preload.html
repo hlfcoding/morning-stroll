@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="en"><head><title>src/state-preload</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/state-preload"><meta name="groc-project-path" content="src/state-preload.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/src/state-preload.coffee">src/state-preload.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper">define [
+  <span class="hljs-string">'phaser'</span>
+  <span class="hljs-string">'underscore'</span>
+  <span class="hljs-string">'app/defines'</span>
+], <span class="hljs-function"><span class="hljs-params">(Phaser, _, defines)</span> -&gt;</span>
+
+  <span class="hljs-string">'use strict'</span>
+
+  {State, Timer} = Phaser
+
+  {buttonH, buttonW, developing, playerH, playerW, progressH, progressW} = defines
+
+  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PreloadState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span></span>
+
+    <span class="hljs-attribute">init</span>: <span class="hljs-function">-&gt;</span>
+      _.bindAll @, <span class="hljs-string">'menu'</span>, <span class="hljs-string">'update'</span>
+
+      <span class="hljs-built_in">window</span>.WebFontConfig =
+        <span class="hljs-attribute">active</span>: <span class="hljs-function">=&gt;</span> <span class="hljs-property">@time</span>.events.add Timer.SECOND, <span class="hljs-property">@menu</span>
+        <span class="hljs-attribute">google</span>: { <span class="hljs-attribute">families</span>: [ <span class="hljs-string">'Enriqueta:400:latin'</span> ] }
+
+    <span class="hljs-attribute">preload</span>: <span class="hljs-function">-&gt;</span>
+      x = <span class="hljs-property">@world</span>.centerX - (progressW / <span class="hljs-number">2</span>)
+      y = <span class="hljs-property">@world</span>.centerY - (progressH / <span class="hljs-number">2</span>)
+      <span class="hljs-property">@progressTrack</span> = <span class="hljs-property">@add</span>.sprite x, y, <span class="hljs-string">'progress-bar-bg'</span>
+      <span class="hljs-property">@progressThumb</span> = <span class="hljs-property">@add</span>.sprite x, y, <span class="hljs-string">'progress-bar-fg'</span>
+      <span class="hljs-property">@load</span>.setPreloadSprite <span class="hljs-property">@progressThumb</span>
+
+      <span class="hljs-property">@load</span>.script <span class="hljs-string">'webfont'</span>, <span class="hljs-string">'//ajax.googleapis.com/ajax/libs/webfont/1/webfont.js'</span>
+      <span class="hljs-property">@load</span>.audio <span class="hljs-string">'bgm'</span>, [<span class="hljs-string">'assets/morning-stroll.mp3'</span>], <span class="hljs-literal">yes</span>
+
+      <span class="hljs-property">@load</span>.spritesheet <span class="hljs-string">'button'</span>, <span class="hljs-string">'assets/button.png'</span>, buttonW, buttonH
+      <span class="hljs-property">@load</span>.image <span class="hljs-string">'bg-start'</span>, <span class="hljs-string">'assets/bg-start.jpg'</span>
+
+      <span class="hljs-property">@load</span>.image <span class="hljs-string">'balcony'</span>, <span class="hljs-string">'assets/tiles-auto-balcony.png'</span>
+      <span class="hljs-keyword">for</span> zIndex <span class="hljs-keyword">in</span> [<span class="hljs-number">16.</span><span class="hljs-number">.1</span>]
+        id = (<span class="hljs-number">16</span> - zIndex + <span class="hljs-number">10000</span>).toString().substr(<span class="hljs-number">1</span>)
+        <span class="hljs-property">@load</span>.image <span class="hljs-string">"bg<span class="hljs-subst">#{zIndex}</span>"</span>, <span class="hljs-string">"assets/bg-_<span class="hljs-subst">#{id}</span>_<span class="hljs-subst">#{zIndex}</span>.png"</span>
+      <span class="hljs-property">@load</span>.spritesheet <span class="hljs-string">'mate'</span>, <span class="hljs-string">'assets/mate.png'</span>, playerW, playerH
+      <span class="hljs-property">@load</span>.spritesheet <span class="hljs-string">'player'</span>, <span class="hljs-string">'assets/player.png'</span>, playerW, playerH
+
+    <span class="hljs-attribute">create</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@progressThumb</span>.cropEnabled = <span class="hljs-literal">off</span>
+
+    <span class="hljs-attribute">update</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@_onceMenu</span> ?= _.once <span class="hljs-property">@menu</span>
+
+      <span class="hljs-keyword">if</span> <span class="hljs-property">@cache</span>.isSoundDecoded(<span class="hljs-string">'bgm'</span>) <span class="hljs-keyword">then</span> <span class="hljs-property">@_onceMenu</span>()
+      <span class="hljs-keyword">else</span> <span class="hljs-property">@time</span>.events.add Timer.HALF, <span class="hljs-property">@update</span>
+
+    <span class="hljs-attribute">menu</span>: _.after <span class="hljs-number">2</span>, <span class="hljs-function">-&gt;</span>
+      state = <span class="hljs-keyword">if</span> developing <span class="hljs-keyword">then</span> <span class="hljs-string">'play'</span> <span class="hljs-keyword">else</span> <span class="hljs-string">'menu'</span>
+      <span class="hljs-property">@state</span>.start state
+
+  PreloadState</div></div></div></div></body></html>

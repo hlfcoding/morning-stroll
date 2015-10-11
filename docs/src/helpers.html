@@ -1,0 +1,247 @@
+<!DOCTYPE html><html lang="en"><head><title>src/helpers</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/helpers"><meta name="groc-project-path" content="src/helpers.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/src/helpers.coffee">src/helpers.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="helpers">Helpers</h1>
+<p>Misc. utilities and bits of custom functionality not specific to the game.</p></div></div><div class="code"><div class="wrapper">define [
+  <span class="hljs-string">'dat.gui'</span>
+  <span class="hljs-string">'phaser'</span>
+  <span class="hljs-string">'underscore'</span>
+], <span class="hljs-function"><span class="hljs-params">(dat, Phaser, _)</span> -&gt;</span>
+
+  <span class="hljs-string">'use strict'</span>
+
+  {Easing, Point, RenderTexture, Sprite, Timer} = Phaser
+
+  RegExps =
+    <span class="hljs-attribute">PrettyHashRemove</span>: <span class="hljs-regexp">/[{}"]/g</span>
+    <span class="hljs-attribute">PrettyHashPad</span>: <span class="hljs-regexp">/[:,]/g</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="animation">Animation</h2>
+<p>Requires DebugMixin.</p></div></div><div class="code"><div class="wrapper">  AnimationMixin =
+
+    <span class="hljs-attribute">playAnimation</span>: <span class="hljs-function"><span class="hljs-params">(nameOrFrame, interrupt = <span class="hljs-literal">yes</span>)</span> -&gt;</span>
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">no</span> <span class="hljs-keyword">if</span> interrupt <span class="hljs-keyword">is</span> <span class="hljs-literal">no</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@animation</span>?.isPlaying
+
+      <span class="hljs-keyword">if</span> _.isNumber(nameOrFrame)
+        frame = nameOrFrame
+        <span class="hljs-property">@animations</span>.frame = frame
+        <span class="hljs-keyword">delete</span> <span class="hljs-property">@animation</span>
+
+      <span class="hljs-keyword">else</span>
+        name = nameOrFrame
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">no</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@animation</span>?.name <span class="hljs-keyword">is</span> name
+        <span class="hljs-property">@animation</span> = <span class="hljs-property">@animations</span>.play name
+
+      <span class="hljs-property">@debug</span>? <span class="hljs-string">'animation'</span>, nameOrFrame
+
+      <span class="hljs-property">@animation</span>
+
+    <span class="hljs-attribute">fadeTo</span>: <span class="hljs-function"><span class="hljs-params">(gameObject, duration, alpha, init = <span class="hljs-literal">yes</span>)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> init <span class="hljs-keyword">then</span> gameObject.alpha = (<span class="hljs-keyword">if</span> alpha <span class="hljs-keyword">is</span> <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>)
+      tween = <span class="hljs-property">@add</span>.tween(gameObject).to { alpha }, duration, <span class="hljs-string">'Cubic'</span>, <span class="hljs-literal">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="camera">Camera</h2>
+<p>Heavily inspired by dmaslov/phaser-screen-shake</p></div></div><div class="code"><div class="wrapper">  CameraMixin =
+
+    <span class="hljs-attribute">updatePositionWithCursors</span>: <span class="hljs-function"><span class="hljs-params">(cursors, velocity = <span class="hljs-number">4</span>)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> cursors.up.isDown <span class="hljs-keyword">then</span> <span class="hljs-property">@y</span> -= velocity
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> cursors.down.isDown <span class="hljs-keyword">then</span> <span class="hljs-property">@y</span> += velocity
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> cursors.left.isDown <span class="hljs-keyword">then</span> <span class="hljs-property">@x</span> -= velocity
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> cursors.right.isDown <span class="hljs-keyword">then</span> <span class="hljs-property">@x</span> += velocity</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Shake Flixel shim:</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-attribute">isShaking</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-property">@_shake</span>._counter &gt; <span class="hljs-number">0</span>
+
+    <span class="hljs-attribute">shake</span>: <span class="hljs-function"><span class="hljs-params">(config = {})</span> -&gt;</span>
+      <span class="hljs-property">@_shake</span> = _.defaults config,
+        <span class="hljs-attribute">_counter</span>: -<span class="hljs-number">1</span>
+        <span class="hljs-attribute">count</span>: <span class="hljs-number">4</span>
+        <span class="hljs-attribute">sensitivity</span>: <span class="hljs-number">4</span>
+        <span class="hljs-attribute">shakeX</span>: <span class="hljs-literal">on</span>
+        <span class="hljs-attribute">shakeY</span>: <span class="hljs-literal">on</span>
+
+      <span class="hljs-property">@_shake</span>._counter = <span class="hljs-property">@_shake</span>.count
+
+    <span class="hljs-attribute">updateShake</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">no</span> <span class="hljs-keyword">unless</span> <span class="hljs-property">@_shake</span>?
+
+      {_counter, sensitivity, shakeX, shakeY} = <span class="hljs-property">@_shake</span>
+
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">no</span> <span class="hljs-keyword">if</span> _counter <span class="hljs-keyword">is</span> <span class="hljs-number">0</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>TODO: Directions should not always match.</p></div></div><div class="code"><div class="wrapper">      direction = <span class="hljs-keyword">if</span> _counter % <span class="hljs-number">2</span> <span class="hljs-keyword">is</span> <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> -<span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">1</span>
+      offset = _counter * sensitivity * direction
+
+      {x, y} = @
+      x += offset <span class="hljs-keyword">if</span> shakeX
+      y += offset <span class="hljs-keyword">if</span> shakeY
+      <span class="hljs-property">@setPosition</span> x, y
+
+      <span class="hljs-property">@_shake</span>._counter-- <span class="hljs-keyword">if</span> _counter &gt; <span class="hljs-number">0</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="debugging">Debugging</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">  DebugMixin =
+
+    <span class="hljs-attribute">_initDebugMixin</span>: <span class="hljs-function"><span class="hljs-params">(gui)</span> -&gt;</span>
+      <span class="hljs-property">@debugging</span> ?= <span class="hljs-literal">on</span>
+      <span class="hljs-property">@tracing</span> ?= <span class="hljs-literal">off</span>
+      <span class="hljs-property">@debugTextItems</span> = {}
+
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">no</span> <span class="hljs-keyword">unless</span> gui?
+
+      <span class="hljs-property">@gui</span> = gui
+
+      toggle = <span class="hljs-property">@gui</span>.add(@, <span class="hljs-string">'debugging'</span>)
+      toggle.listen()
+      toggle.onFinishChange =&gt; <span class="hljs-property">@debugTextItems</span> = {}
+
+      <span class="hljs-property">@gui</span>.add @, <span class="hljs-string">'tracing'</span>
+
+      <span class="hljs-literal">yes</span>
+
+    <span class="hljs-attribute">debug</span>: <span class="hljs-function"><span class="hljs-params">(label, value, details)</span> -&gt;</span>
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">unless</span> <span class="hljs-property">@debugging</span>
+
+      value = parseFloat value.toFixed(<span class="hljs-number">2</span>) <span class="hljs-keyword">if</span> _.isNumber(value)
+      value = <span class="hljs-property">@_prettyHash</span> <span class="hljs-property">@_prettyPoint</span>(value) <span class="hljs-keyword">if</span> value <span class="hljs-keyword">instanceof</span> Point
+
+      <span class="hljs-keyword">if</span> details?.position <span class="hljs-keyword">and</span> details.position <span class="hljs-keyword">instanceof</span> Point
+        details.position = <span class="hljs-property">@_prettyPoint</span> details.position
+
+      <span class="hljs-keyword">if</span> <span class="hljs-property">@tracing</span>
+        label = <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-property">@debugNamespace</span>}</span>:<span class="hljs-subst">#{label}</span>"</span>
+        <span class="hljs-keyword">if</span> details? <span class="hljs-keyword">then</span> <span class="hljs-built_in">console</span>.trace label, value, details
+        <span class="hljs-keyword">else</span> <span class="hljs-built_in">console</span>.trace label, value
+      <span class="hljs-keyword">else</span>
+        <span class="hljs-keyword">if</span> _.isArray(value) <span class="hljs-keyword">and</span> (_.isArray(value[<span class="hljs-number">0</span>]) <span class="hljs-keyword">or</span> _.isPlainObject(value[<span class="hljs-number">0</span>]))
+          label = <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-property">@debugNamespace</span>}</span>:<span class="hljs-subst">#{label}</span>"</span>
+          <span class="hljs-built_in">console</span>.groupCollapsed label
+          <span class="hljs-built_in">console</span>.table? value
+          <span class="hljs-built_in">console</span>.groupEnd()
+        <span class="hljs-keyword">else</span>
+          details = <span class="hljs-keyword">if</span> details? <span class="hljs-keyword">then</span> <span class="hljs-property">@_prettyHash</span>(details) <span class="hljs-keyword">else</span> <span class="hljs-string">''</span>
+          <span class="hljs-property">@debugTextItems</span>[label] = <span class="hljs-string">"<span class="hljs-subst">#{label}</span>: <span class="hljs-subst">#{value}</span> <span class="hljs-subst">#{details}</span>"</span>.trim()
+
+    <span class="hljs-attribute">_prettyPoint</span>: <span class="hljs-function"><span class="hljs-params">(point)</span> -&gt;</span>
+      _.chain point
+        .pick <span class="hljs-string">'x'</span>, <span class="hljs-string">'y'</span>
+        .mapObject (n) -&gt; parseFloat n.toFixed(<span class="hljs-number">2</span>)
+        .value()
+
+    <span class="hljs-attribute">_prettyHash</span>: <span class="hljs-function"><span class="hljs-params">(hash)</span> -&gt;</span>
+      JSON.stringify hash
+        .replace RegExps.PrettyHashRemove,<span class="hljs-string">''</span>
+        .replace RegExps.PrettyHashPad, <span class="hljs-string">'$&amp; '</span>
+
+  kPhaserLayoutX = -<span class="hljs-number">8</span>
+  kPhaserLineRatio = <span class="hljs-number">1.8</span>
+
+  DebugDisplayMixin =</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Only do the minimal setup here, so it can always run.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-attribute">_initDebugDisplayMixin</span>: <span class="hljs-function"><span class="hljs-params">(game)</span> -&gt;</span>
+      <span class="hljs-property">@debugFontSize</span> ?= <span class="hljs-number">9</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Compute sizes.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@_debugGutter</span> = <span class="hljs-number">2</span> * <span class="hljs-property">@debugFontSize</span>
+      <span class="hljs-property">@_debugLine</span> = kPhaserLineRatio * <span class="hljs-property">@debugFontSize</span>
+
+      <span class="hljs-property">@debugDisplay</span> = game.debug
+      <span class="hljs-property">@debugDisplay</span>.font = <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-property">@debugFontSize</span>}</span>px Menlo"</span>
+
+    <span class="hljs-attribute">resetDebugDisplayLayout</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@_layoutX</span> = <span class="hljs-property">@_debugGutter</span> + kPhaserLayoutX
+      <span class="hljs-property">@_layoutY</span> = <span class="hljs-property">@_debugGutter</span>
+
+    <span class="hljs-attribute">renderDebugDisplayItems</span>: <span class="hljs-function"><span class="hljs-params">(items, lines)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> _.isFunction(items) <span class="hljs-keyword">and</span> lines?
+        items <span class="hljs-property">@_layoutX</span>, <span class="hljs-property">@_layoutY</span>
+        <span class="hljs-property">@_layoutY</span> += lines * <span class="hljs-property">@_debugLine</span>
+
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">for</span> own label, text <span class="hljs-keyword">of</span> items
+        <span class="hljs-property">@debugDisplay</span>.text text, <span class="hljs-property">@_layoutX</span>, <span class="hljs-property">@_layoutY</span>, <span class="hljs-literal">null</span>, <span class="hljs-property">@debugDisplay</span>.font
+        <span class="hljs-property">@_layoutY</span> += <span class="hljs-property">@_debugLine</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="developing">Developing</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper"><span class="hljs-function">
+  <span class="hljs-title">addOpenFolder</span> = -&gt;</span>
+    folder = <span class="hljs-property">@addFolder</span>.apply @, arguments
+    folder.open()
+    folder
+<span class="hljs-function">
+  <span class="hljs-title">addRange</span> = <span class="hljs-params">(obj, prop, chain = <span class="hljs-literal">yes</span>)</span> -&gt;</span>
+    value = obj[prop]
+    [min, max] = [value / <span class="hljs-number">2</span>, <span class="hljs-number">2</span> * value]
+
+    <span class="hljs-keyword">if</span> value &lt; <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> gui = @.add obj, prop, max, min
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> value &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">then</span> gui = @.add obj, prop, min, max
+    <span class="hljs-keyword">else</span> gui = @.add obj, prop
+
+    <span class="hljs-keyword">if</span> chain <span class="hljs-keyword">then</span> @ <span class="hljs-keyword">else</span> gui
+
+  _.extend dat.<span class="hljs-attribute">GUI</span>::, { addOpenFolder, addRange }</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="flixel-shims">Flixel shims</h2></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Same behavior as Flixel, but a different, more straightforward implementation.</p></div></div><div class="code"><div class="wrapper"><span class="hljs-function">  <span class="hljs-title">autoSetTiles</span> = <span class="hljs-params">(tiles)</span> -&gt;</span>
+    result = (_.clone row <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> tiles)
+
+    <span class="hljs-keyword">for</span> row, r <span class="hljs-keyword">in</span> result
+      <span class="hljs-keyword">for</span> col, c <span class="hljs-keyword">in</span> row <span class="hljs-keyword">when</span> col <span class="hljs-keyword">is</span> <span class="hljs-number">1</span>
+
+        left = right = top = bottom = <span class="hljs-number">1</span>
+        left    = tiles[r][c - <span class="hljs-number">1</span>] <span class="hljs-keyword">unless</span> c <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+        right   = tiles[r][c + <span class="hljs-number">1</span>] <span class="hljs-keyword">unless</span> c <span class="hljs-keyword">is</span> row.length - <span class="hljs-number">1</span>
+        top     = tiles[r - <span class="hljs-number">1</span>][c] <span class="hljs-keyword">unless</span> r <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+        bottom  = tiles[r + <span class="hljs-number">1</span>][c] <span class="hljs-keyword">unless</span> r <span class="hljs-keyword">is</span> tiles.length - <span class="hljs-number">1</span>
+
+        <span class="hljs-keyword">switch</span> [top, right, bottom, left].join() <span class="hljs-comment"># Tainted by CSS.</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'0,0,0,0'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">1</span> <span class="hljs-comment"># all empty</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'1,0,0,0'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">2</span> <span class="hljs-comment"># bottom tip</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'0,1,0,0'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">3</span> <span class="hljs-comment"># left tip</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'1,1,0,0'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">4</span> <span class="hljs-comment"># bottom-left corner</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'0,0,1,0'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">5</span> <span class="hljs-comment"># top tip</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'1,0,1,0'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">6</span> <span class="hljs-comment"># vertical segment</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'0,1,1,0'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">7</span> <span class="hljs-comment"># top-left corner</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'1,1,1,0'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">8</span> <span class="hljs-comment"># left edge</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'0,0,0,1'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">9</span> <span class="hljs-comment"># right tip</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'1,0,0,1'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">10</span> <span class="hljs-comment"># bottom-right corner</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'0,1,0,1'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">11</span> <span class="hljs-comment"># horizontal segment</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'1,1,0,1'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">12</span> <span class="hljs-comment"># bottom edge</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'0,0,1,1'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">13</span> <span class="hljs-comment"># top-right corner</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'1,0,1,1'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">14</span> <span class="hljs-comment"># right edge</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'0,1,1,1'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">15</span> <span class="hljs-comment"># top edge</span>
+          <span class="hljs-keyword">when</span> <span class="hljs-string">'1,1,1,1'</span> <span class="hljs-keyword">then</span> tile = <span class="hljs-number">16</span> <span class="hljs-comment"># body</span>
+
+        row[c] = tile
+
+    result</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="pointmixin">PointMixin</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">  PointMixin = 
+    <span class="hljs-attribute">addPoint</span>: <span class="hljs-function"><span class="hljs-params">(point)</span> -&gt;</span> <span class="hljs-property">@add</span> point.x, point.y
+    <span class="hljs-attribute">dividePoint</span>: <span class="hljs-function"><span class="hljs-params">(point)</span> -&gt;</span> <span class="hljs-property">@divide</span> point.x, point.y
+    <span class="hljs-attribute">multiplyPoint</span>: <span class="hljs-function"><span class="hljs-params">(point)</span> -&gt;</span> <span class="hljs-property">@multiply</span> point.x, point.y
+    <span class="hljs-attribute">subtractPoint</span>: <span class="hljs-function"><span class="hljs-params">(point)</span> -&gt;</span> <span class="hljs-property">@subtract</span> point.x, point.y</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="transition">Transition</h2>
+<p>Heavily inspired by aaccurso/phaser-state-transition-plugin</p></div></div><div class="code"><div class="wrapper">  StateManagerMixin =
+    <span class="hljs-attribute">startWithTransition</span>: <span class="hljs-function"><span class="hljs-params">(transitionOptions = {}, startArgs...)</span> -&gt;</span>
+      {duration, easing, properties} = _.defaults transitionOptions,
+        <span class="hljs-attribute">duration</span>: <span class="hljs-number">2</span> * Timer.SECOND
+        <span class="hljs-attribute">easing</span>: Easing.Exponential.InOut
+        <span class="hljs-attribute">properties</span>: { <span class="hljs-attribute">alpha</span>: <span class="hljs-number">0</span> }
+
+      [stateName] = startArgs
+      state = <span class="hljs-property">@states</span>[stateName]
+      {init, create} = state
+
+      <span class="hljs-property">@game</span>.camera.unfollow() <span class="hljs-comment"># Prevent flickering.</span>
+      <span class="hljs-property">@game</span>.paused = <span class="hljs-literal">yes</span>
+      texture = <span class="hljs-keyword">new</span> RenderTexture <span class="hljs-property">@game</span>, <span class="hljs-property">@game</span>.width, <span class="hljs-property">@game</span>.height, <span class="hljs-string">"transition-to-<span class="hljs-subst">#{stateName}</span>"</span>
+      texture.renderXY <span class="hljs-property">@game</span>.world, -<span class="hljs-property">@game</span>.camera.x, -<span class="hljs-property">@game</span>.camera.y
+      <span class="hljs-property">@game</span>.paused = <span class="hljs-literal">no</span>
+
+      interstitial = <span class="hljs-keyword">new</span> Sprite <span class="hljs-property">@game</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, texture
+      interstitial.fixedToCamera = <span class="hljs-literal">on</span>
+<span class="hljs-function">
+      <span class="hljs-title">destroy</span> = -&gt;</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">unless</span> texture? <span class="hljs-keyword">and</span> interstitial?
+        texture.destroy()
+        interstitial.destroy()
+        texture = interstitial = <span class="hljs-literal">null</span>
+        state.init = init
+        state.create = create
+
+      state.init = <span class="hljs-function">=&gt;</span>
+        init?.apply state, arguments
+        <span class="hljs-property">@game</span>.add.existing interstitial
+
+      state.create = <span class="hljs-function">=&gt;</span>
+        create?.apply state, arguments
+        interstitial.bringToTop()
+        <span class="hljs-property">@game</span>.add.tween interstitial
+          .to properties, duration, easing, <span class="hljs-literal">yes</span>
+          .onComplete.addOnce destroy
+
+      _.delay destroy, <span class="hljs-number">2</span> * duration <span class="hljs-comment"># In case of failure.</span>
+
+      <span class="hljs-property">@start</span>.apply @, startArgs</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="text">Text</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">  TextMixin =
+
+    <span class="hljs-attribute">addCenteredText</span>: <span class="hljs-function"><span class="hljs-params">(text, layout, style, group)</span> -&gt;</span>
+      _.defaults style, { <span class="hljs-attribute">boundsAlignH</span>: <span class="hljs-string">'center'</span>, <span class="hljs-attribute">boundsAlignV</span>: <span class="hljs-string">'middle'</span> }
+      text = <span class="hljs-property">@add</span>.text <span class="hljs-property">@world</span>.centerX, layout.y, text, style, group
+      text.anchor.setTo <span class="hljs-number">0.5</span>
+      layout.y += text.height + layout.baseline
+      text</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="underscore-mixins">Underscore mixins</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper"><span class="hljs-function">
+  <span class="hljs-title">isPlainObject</span> = <span class="hljs-params">(arg)</span> -&gt;</span> _.isObject(arg) <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> _.isFunction(arg)
+
+  _.mixin { isPlainObject }</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Export.</p></div></div><div class="code"><div class="wrapper">  { AnimationMixin, CameraMixin, DebugMixin, DebugDisplayMixin, PointMixin,
+    RegExps, StateManagerMixin, TextMixin, autoSetTiles }</div></div></div></div></body></html>

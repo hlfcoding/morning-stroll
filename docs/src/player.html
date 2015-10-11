@@ -1,0 +1,270 @@
+<!DOCTYPE html><html lang="en"><head><title>src/player</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/player"><meta name="groc-project-path" content="src/player.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/src/player.coffee">src/player.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="player">Player</h1>
+<p>Player configures and controls a sprite, tracks and updates state given user
+interaction. This builds off the stock Flixel / Phaser player, but tries to
+make the movement more natural, which requires more animations, logic, and
+physics.</p></div></div><div class="code"><div class="wrapper">define [
+  <span class="hljs-string">'phaser'</span>
+  <span class="hljs-string">'underscore'</span>
+  <span class="hljs-string">'app/defines'</span>
+  <span class="hljs-string">'app/helpers'</span>
+], <span class="hljs-function"><span class="hljs-params">(Phaser, _, defines, Helpers)</span> -&gt;</span>
+
+  <span class="hljs-string">'use strict'</span>
+
+  {Point} = Phaser
+
+  {playerYOffset} = defines
+
+  {AnimationMixin, DebugMixin} = Helpers
+
+  Direction =
+    <span class="hljs-attribute">Left</span>: -<span class="hljs-number">1</span>
+    <span class="hljs-attribute">Right</span>: <span class="hljs-number">1</span>
+
+  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Player</span></span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="statics">Statics</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-property">@Direction</span>: Direction
+    <span class="hljs-property">@LastFrame</span>: <span class="hljs-number">52</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="dependencies--properties">Dependencies + Properties</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(<span class="hljs-property">@config</span>, game, <span class="hljs-property">@cursors</span>, gui)</span> -&gt;</span>
+      <span class="hljs-property">@_initialize</span> game, gui
+
+    <span class="hljs-attribute">_initialize</span>: <span class="hljs-function"><span class="hljs-params">(game, gui)</span> -&gt;</span>
+      {x, y} = <span class="hljs-property">@config</span>.origin
+      <span class="hljs-property">@sprite</span> = game.add.sprite x, y, <span class="hljs-string">'player'</span>, <span class="hljs-number">17</span>
+      <span class="hljs-property">@sprite</span>.anchor = <span class="hljs-keyword">new</span> Point <span class="hljs-number">0.5</span>, <span class="hljs-number">0.5</span>
+
+      <span class="hljs-property">@cameraFocus</span> = game.add.sprite x, y
+
+      <span class="hljs-property">@animations</span> = <span class="hljs-property">@sprite</span>.animations
+      <span class="hljs-property">@_initAnimations</span>()
+
+      game.physics.arcade.enable <span class="hljs-property">@sprite</span>
+      <span class="hljs-property">@gravity</span> = game.physics.arcade.gravity
+      <span class="hljs-property">@_initPhysics</span>()
+
+      <span class="hljs-property">@_initState</span>()
+
+      <span class="hljs-property">@_initDebugging</span> gui
+
+    <span class="hljs-attribute">destroy</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Null references to disposable objects we don&#39;t own.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@animations</span> = <span class="hljs-literal">null</span>
+      <span class="hljs-property">@physics</span> = <span class="hljs-literal">null</span>
+      <span class="hljs-property">@velocity</span> = <span class="hljs-literal">null</span>
+      <span class="hljs-property">@acceleration</span> = <span class="hljs-literal">null</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="public">Public</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">distanceFallen</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">return</span> <span class="hljs-number">0</span> <span class="hljs-keyword">unless</span> <span class="hljs-property">@_fallingPoint</span>?
+      <span class="hljs-property">@sprite</span>.y - <span class="hljs-property">@_fallingPoint</span>.y
+
+    <span class="hljs-attribute">startEnding</span>: <span class="hljs-function"><span class="hljs-params">(mate)</span> -&gt;</span>
+      <span class="hljs-property">@control</span> = <span class="hljs-literal">off</span>
+      <span class="hljs-property">@sprite</span>.position.setTo mate.x - <span class="hljs-number">43</span>, mate.y
+      <span class="hljs-property">@velocity</span>.setTo <span class="hljs-number">0</span>
+      <span class="hljs-property">@acceleration</span>.setTo <span class="hljs-number">0</span>
+      <span class="hljs-property">@physics</span>.offset.setTo <span class="hljs-number">0</span>
+      <span class="hljs-property">@physics</span>.moves = <span class="hljs-literal">no</span>
+      <span class="hljs-property">@_visualizeTurn</span> Direction.Right
+      animation = <span class="hljs-property">@playAnimation</span> <span class="hljs-string">'end'</span>
+
+    <span class="hljs-attribute">update</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">unless</span> <span class="hljs-property">@control</span> <span class="hljs-keyword">is</span> <span class="hljs-literal">on</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>First.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@nextAction</span> = <span class="hljs-string">'none'</span>
+      <span class="hljs-property">@nextDirection</span> = <span class="hljs-property">@_xDirectionInput</span>()
+      <span class="hljs-property">@velocity</span>.clampY -<span class="hljs-property">@maxVelocity</span>.y, <span class="hljs-property">@maxVelocity</span>.y
+      <span class="hljs-property">@velocity</span>.clampX -<span class="hljs-property">@maxVelocity</span>.x, <span class="hljs-property">@maxVelocity</span>.x</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Second.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@nextState</span> = <span class="hljs-string">'running'</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@_canKeepRunning</span>()
+      <span class="hljs-property">@nextState</span> = <span class="hljs-string">'falling'</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@_canFall</span>()
+      <span class="hljs-property">@nextState</span> = <span class="hljs-string">'landing'</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@_canLand</span>()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Third.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@_beginTurn</span>() <span class="hljs-keyword">if</span> <span class="hljs-property">@_canBeginTurn</span>()
+      <span class="hljs-property">@_endTurn</span>() <span class="hljs-keyword">if</span> <span class="hljs-property">@_canEndTurn</span>()
+      <span class="hljs-property">@_beginRun</span>() <span class="hljs-keyword">if</span> <span class="hljs-property">@_canBeginRun</span>()
+      <span class="hljs-property">@_endRun</span>() <span class="hljs-keyword">if</span> <span class="hljs-property">@_canEndRun</span>()
+      <span class="hljs-property">@_beginJump</span>() <span class="hljs-keyword">if</span> <span class="hljs-property">@_canBeginJump</span>()
+      <span class="hljs-property">@_endJump</span>() <span class="hljs-keyword">if</span> <span class="hljs-property">@_canEndJump</span>()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Fourth.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@acceleration</span>.x = <span class="hljs-number">0</span> <span class="hljs-keyword">unless</span> <span class="hljs-property">@_isInMidAir</span>() <span class="hljs-comment"># Reset.</span>
+      <span class="hljs-property">@_buildRun</span>() <span class="hljs-keyword">if</span> <span class="hljs-property">@_canBuildRun</span>()
+      <span class="hljs-property">@_buildJump</span>() <span class="hljs-keyword">if</span> <span class="hljs-property">@_canBuildJump</span>()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Last, if needed.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@_changeAnimation</span>()
+      <span class="hljs-property">@_changeState</span>()
+      <span class="hljs-property">@_updateCameraFocus</span>()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="initialization">Initialization</h2>
+<p>So unusually big it gets its own section.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-attribute">_initAnimations</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@animations</span>.add <span class="hljs-string">'run'</span>, [<span class="hljs-number">0.</span><span class="hljs-number">.11</span>], <span class="hljs-number">30</span>, <span class="hljs-literal">on</span>
+      <span class="hljs-property">@animations</span>.add <span class="hljs-string">'stop'</span>, [<span class="hljs-number">12.</span><span class="hljs-number">.17</span>], <span class="hljs-number">24</span>
+      <span class="hljs-property">@animations</span>.add <span class="hljs-string">'start'</span>, [<span class="hljs-number">17.</span><span class="hljs-number">.12</span>], <span class="hljs-number">24</span>
+      <span class="hljs-property">@animations</span>.add <span class="hljs-string">'jump'</span>, [<span class="hljs-number">18.</span><span class="hljs-number">.31</span>], <span class="hljs-number">24</span>
+      <span class="hljs-property">@animations</span>.add <span class="hljs-string">'land'</span>, [<span class="hljs-number">32</span>,<span class="hljs-number">33</span>,<span class="hljs-number">18</span>,<span class="hljs-number">17</span>], <span class="hljs-number">24</span>
+      <span class="hljs-property">@animations</span>.add <span class="hljs-string">'end'</span>, [<span class="hljs-number">34.</span>.<span class="hljs-number">.53</span>], <span class="hljs-number">12</span>
+
+    <span class="hljs-attribute">_initDebugging</span>: <span class="hljs-function"><span class="hljs-params">(gui)</span> -&gt;</span>
+      <span class="hljs-property">@debugNamespace</span> = <span class="hljs-string">'player'</span>
+
+      {<span class="hljs-property">@debugging</span>} = defines
+      completedInit = <span class="hljs-property">@_initDebugMixin</span> gui
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">unless</span> completedInit
+
+      <span class="hljs-property">@gui</span>.addOpenFolder(<span class="hljs-string">'drag'</span>).addRange <span class="hljs-property">@physics</span>.drag, <span class="hljs-string">'x'</span>
+
+      <span class="hljs-property">@gui</span>.addOpenFolder <span class="hljs-string">'maxVelocity'</span>
+          .addRange <span class="hljs-property">@maxVelocity</span>, <span class="hljs-string">'x'</span>
+          .addRange <span class="hljs-property">@maxVelocity</span>, <span class="hljs-string">'y'</span>
+
+      <span class="hljs-property">@gui</span>.addRange @, prop <span class="hljs-keyword">for</span> prop <span class="hljs-keyword">in</span> [
+        <span class="hljs-string">'jumpAcceleration'</span>
+        <span class="hljs-string">'jumpMaxDuration'</span>
+        <span class="hljs-string">'jumpVelocityFactor'</span>
+        <span class="hljs-string">'airFrictionRatio'</span>
+        <span class="hljs-string">'runAcceleration'</span>
+      ]
+
+    <span class="hljs-attribute">_initPhysics</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@physics</span> = <span class="hljs-property">@sprite</span>.body
+      {<span class="hljs-property">@velocity</span>, <span class="hljs-property">@acceleration</span>} = <span class="hljs-property">@physics</span>
+
+      <span class="hljs-property">@physics</span>.collideWorldBounds = <span class="hljs-literal">on</span>
+      <span class="hljs-property">@physics</span>.tilePadding = <span class="hljs-keyword">new</span> Point <span class="hljs-number">0</span>, <span class="hljs-property">@sprite</span>.height
+
+      <span class="hljs-property">@physics</span>.drag.x = <span class="hljs-number">1500</span>
+
+      {height, width} = <span class="hljs-property">@sprite</span>
+      <span class="hljs-property">@_yOffset</span> = playerYOffset
+      <span class="hljs-property">@physics</span>.setSize (width / <span class="hljs-number">2</span>), (height / <span class="hljs-number">2</span>), <span class="hljs-property">@_xOffset</span>(), <span class="hljs-property">@_yOffset</span>
+
+      <span class="hljs-property">@jumpAcceleration</span> = -<span class="hljs-number">4250</span> <span class="hljs-comment"># A burst of energy on launch.</span>
+      <span class="hljs-property">@jumpMaxDuration</span> = <span class="hljs-number">500</span>
+      <span class="hljs-property">@jumpVelocityFactor</span> = <span class="hljs-number">1</span> / <span class="hljs-number">4</span>
+
+      <span class="hljs-property">@airFrictionRatio</span> = <span class="hljs-number">1</span> / <span class="hljs-number">20</span>
+      <span class="hljs-property">@runAcceleration</span> = <span class="hljs-number">300</span>
+      <span class="hljs-property">@cameraFocusFollowResistance</span> = <span class="hljs-number">30</span>
+
+      <span class="hljs-property">@maxVelocity</span> = <span class="hljs-keyword">new</span> Point <span class="hljs-number">200</span>, <span class="hljs-number">800</span> <span class="hljs-comment"># Run and terminal velocities.</span>
+
+      <span class="hljs-property">@_jumpTimer</span> = <span class="hljs-property">@sprite</span>.game.time.create() <span class="hljs-comment"># This also acts like a flag.</span>
+      <span class="hljs-property">@_isTurning</span> = <span class="hljs-literal">no</span> <span class="hljs-comment"># Because velocity won't be 0 when turning while running.</span>
+
+    <span class="hljs-attribute">_initState</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Readonly.
+Actions link states. Both correspond to animations.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@animation</span> = <span class="hljs-literal">null</span>
+      <span class="hljs-property">@direction</span> = Direction.Right
+      <span class="hljs-property">@state</span> = <span class="hljs-string">'still'</span> <span class="hljs-comment"># still, running, rising, falling</span>
+      <span class="hljs-property">@nextAction</span> = <span class="hljs-string">'none'</span> <span class="hljs-comment"># none, start, stop, jump</span>
+      <span class="hljs-property">@nextDirection</span> = <span class="hljs-literal">null</span>
+      <span class="hljs-property">@nextState</span> = <span class="hljs-literal">null</span>
+
+      <span class="hljs-property">@control</span> = <span class="hljs-literal">on</span>
+
+      <span class="hljs-property">@_fallingPoint</span> = <span class="hljs-literal">null</span>
+      <span class="hljs-property">@_keepCameraFocusUpdated</span> = <span class="hljs-literal">on</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="change">Change</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">_changeAnimation</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">unless</span> <span class="hljs-property">@_isInMidAir</span>() <span class="hljs-keyword">or</span> <span class="hljs-property">@nextAction</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'none'</span>
+        <span class="hljs-property">@playAnimation</span> <span class="hljs-property">@nextAction</span>, <span class="hljs-property">@animation</span>?.<span class="hljs-keyword">loop</span>
+        <span class="hljs-keyword">return</span>
+
+      <span class="hljs-keyword">switch</span> <span class="hljs-property">@nextState</span>
+        <span class="hljs-keyword">when</span> <span class="hljs-string">'running'</span> <span class="hljs-keyword">then</span> <span class="hljs-property">@playAnimation</span> <span class="hljs-string">'run'</span>, <span class="hljs-literal">no</span>
+        <span class="hljs-keyword">when</span> <span class="hljs-string">'still'</span> <span class="hljs-keyword">then</span> <span class="hljs-property">@playAnimation</span> <span class="hljs-number">17</span>, <span class="hljs-property">@animation</span>?.<span class="hljs-keyword">loop</span>
+        <span class="hljs-keyword">when</span> <span class="hljs-string">'falling'</span> <span class="hljs-keyword">then</span> <span class="hljs-property">@playAnimation</span> <span class="hljs-number">31</span>, <span class="hljs-property">@animation</span>?.<span class="hljs-keyword">loop</span>
+        <span class="hljs-keyword">when</span> <span class="hljs-string">'landing'</span> <span class="hljs-keyword">then</span> <span class="hljs-property">@playAnimation</span> <span class="hljs-string">'land'</span>
+
+    <span class="hljs-attribute">_changeState</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@nextState</span> <span class="hljs-keyword">is</span> <span class="hljs-property">@state</span>
+
+      <span class="hljs-property">@debug</span> <span class="hljs-string">'jump:peak'</span>, <span class="hljs-property">@physics</span>.y <span class="hljs-keyword">if</span> <span class="hljs-property">@state</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'rising'</span>
+
+      <span class="hljs-property">@debug</span> <span class="hljs-string">'state'</span>, <span class="hljs-property">@nextState</span>
+      <span class="hljs-property">@debug</span> <span class="hljs-string">'jump:start'</span>, <span class="hljs-property">@physics</span>.position <span class="hljs-keyword">if</span> <span class="hljs-property">@nextState</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'rising'</span>
+
+      <span class="hljs-keyword">if</span> <span class="hljs-property">@nextState</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'falling'</span>
+        <span class="hljs-property">@_fallingPoint</span> ?= <span class="hljs-property">@physics</span>.position?.clone()
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@nextState</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'still'</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@_fallingPoint</span>?
+        <span class="hljs-property">@_fallingPoint</span> = <span class="hljs-literal">null</span>
+
+      <span class="hljs-property">@state</span> = <span class="hljs-property">@nextState</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="computed">Computed</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">_isAnimationInterruptible</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-property">@animation</span>?.isFinished <span class="hljs-keyword">or</span> <span class="hljs-keyword">not</span> <span class="hljs-property">@animation</span>? <span class="hljs-keyword">or</span> <span class="hljs-property">@animation</span>?.<span class="hljs-keyword">loop</span>
+    <span class="hljs-attribute">_isFullyFalling</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-property">@state</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'falling'</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@velocity</span>.y <span class="hljs-keyword">is</span> <span class="hljs-property">@maxVelocity</span>.y
+    <span class="hljs-attribute">_isFullyRunning</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-property">@state</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'running'</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@animation</span>?.name <span class="hljs-keyword">is</span> <span class="hljs-string">'run'</span>
+    <span class="hljs-attribute">_isFullyStill</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-property">@state</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'still'</span> <span class="hljs-keyword">and</span> (<span class="hljs-property">@animations</span>.frame <span class="hljs-keyword">is</span> <span class="hljs-number">17</span> <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> <span class="hljs-property">@animation</span>?)
+    <span class="hljs-attribute">_isInMidAir</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-property">@state</span> <span class="hljs-keyword">in</span> [<span class="hljs-string">'rising'</span>, <span class="hljs-string">'falling'</span>]
+    <span class="hljs-attribute">_isLanded</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-property">@animation</span>?.name <span class="hljs-keyword">is</span> <span class="hljs-string">'land'</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@animation</span>.isFinished
+
+    <span class="hljs-attribute">_xDirectionInput</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">if</span> <span class="hljs-property">@cursors</span>?.left.isDown <span class="hljs-keyword">then</span> Direction.Left
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@cursors</span>?.right.isDown <span class="hljs-keyword">then</span> Direction.Right
+
+    <span class="hljs-attribute">_xOffset</span>: <span class="hljs-function"><span class="hljs-params">(direction = <span class="hljs-property">@direction</span>)</span> -&gt;</span> direction * <span class="hljs-number">10</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="jump">Jump</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">_canBeginJump</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@cursors</span>?.up.isDown <span class="hljs-keyword">and</span> (<span class="hljs-property">@_isFullyRunning</span>() <span class="hljs-keyword">or</span> <span class="hljs-property">@_isFullyStill</span>())
+    <span class="hljs-attribute">_canBuildJump</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@nextAction</span> <span class="hljs-keyword">isnt</span> <span class="hljs-string">'jump'</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@cursors</span>?.up.isDown <span class="hljs-keyword">and</span> <span class="hljs-property">@_jumpTimer</span>.running
+    <span class="hljs-attribute">_canEndJump</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@nextAction</span> <span class="hljs-keyword">isnt</span> <span class="hljs-string">'jump'</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@_jumpTimer</span>.running <span class="hljs-keyword">and</span>
+      (<span class="hljs-property">@cursors</span>?.up.isUp <span class="hljs-keyword">or</span> <span class="hljs-property">@_jumpTimer</span>.ms &gt;= <span class="hljs-property">@jumpMaxDuration</span>) <span class="hljs-comment"># Release to cancel early.</span>
+
+    <span class="hljs-attribute">_canFall</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@velocity</span>.y &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> (<span class="hljs-property">@state</span> <span class="hljs-keyword">isnt</span> <span class="hljs-string">'rising'</span> <span class="hljs-keyword">or</span>
+      (<span class="hljs-keyword">not</span> <span class="hljs-property">@_jumpTimer</span>.running <span class="hljs-keyword">and</span> <span class="hljs-property">@state</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'rising'</span>))
+    <span class="hljs-attribute">_canLand</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@state</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'falling'</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@physics</span>.onFloor()
+
+    <span class="hljs-attribute">_beginJump</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@_jumpTimer</span>.start()
+
+      <span class="hljs-property">@nextAction</span> = <span class="hljs-string">'jump'</span>
+      <span class="hljs-property">@nextState</span> = <span class="hljs-string">'rising'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Faster the run, higher the base jump, up to 25% improvement.</p></div></div><div class="code"><div class="wrapper">      ratio = Math.abs(<span class="hljs-property">@velocity</span>.x / <span class="hljs-property">@maxVelocity</span>.x)
+      kVelocity = (<span class="hljs-number">1</span> - <span class="hljs-property">@jumpVelocityFactor</span>) + <span class="hljs-property">@jumpVelocityFactor</span> * ratio
+      <span class="hljs-property">@acceleration</span>.y = <span class="hljs-property">@jumpAcceleration</span> * kVelocity
+
+    <span class="hljs-attribute">_buildJump</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Speed up by persisting the jump acceleration but with quadratic decay.
+The longer the hold, the higher the final jump, but power decays quickly.
+Also note that negative is up, positive is down.</p></div></div><div class="code"><div class="wrapper">      kEasing = (<span class="hljs-number">1000</span> - <span class="hljs-property">@jumpMaxDuration</span>) + (<span class="hljs-property">@jumpMaxDuration</span> - <span class="hljs-property">@_jumpTimer</span>.ms)
+      kEasing = Math.pow kEasing / <span class="hljs-number">1000</span>, <span class="hljs-number">2</span>
+      <span class="hljs-property">@acceleration</span>.y *= kEasing
+      <span class="hljs-property">@debug</span> <span class="hljs-string">'jump:build'</span>, kEasing
+
+    <span class="hljs-attribute">_endJump</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@debug</span> <span class="hljs-string">'jump:end'</span>, <span class="hljs-property">@_jumpTimer</span>.ms, { <span class="hljs-attribute">position</span>: <span class="hljs-property">@physics</span>.position }
+      <span class="hljs-property">@acceleration</span>.y = <span class="hljs-property">@gravity</span>.y <span class="hljs-comment"># Reset.</span>
+      <span class="hljs-property">@_jumpTimer</span>.stop()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="run">Run</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">_canBeginRun</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@nextDirection</span>? <span class="hljs-keyword">and</span> <span class="hljs-property">@nextDirection</span> <span class="hljs-keyword">is</span> <span class="hljs-property">@direction</span> <span class="hljs-keyword">and</span>
+      <span class="hljs-keyword">not</span> <span class="hljs-property">@_isInMidAir</span>() <span class="hljs-keyword">and</span> (<span class="hljs-property">@_isFullyStill</span>() <span class="hljs-keyword">or</span> <span class="hljs-property">@_isLanded</span>())
+    <span class="hljs-attribute">_canBuildRun</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@nextDirection</span>?
+    <span class="hljs-attribute">_canEndRun</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">not</span> (<span class="hljs-property">@nextDirection</span>? <span class="hljs-keyword">or</span> <span class="hljs-property">@_isInMidAir</span>())
+    <span class="hljs-attribute">_canKeepRunning</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">not</span> (<span class="hljs-property">@_canLand</span>() <span class="hljs-keyword">or</span> <span class="hljs-property">@_isInMidAir</span>())
+
+    <span class="hljs-attribute">_beginRun</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@nextAction</span> = <span class="hljs-string">'start'</span> 
+      <span class="hljs-property">@nextState</span> = <span class="hljs-string">'running'</span>
+
+    <span class="hljs-attribute">_buildRun</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@acceleration</span>.x =</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>No force, just air friction.</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-keyword">if</span> <span class="hljs-property">@_isInMidAir</span>() <span class="hljs-keyword">then</span> <span class="hljs-property">@runAcceleration</span> * <span class="hljs-property">@airFrictionRatio</span> * -<span class="hljs-property">@nextDirection</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Otherwise, just step on the pedal.</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-keyword">else</span> <span class="hljs-property">@runAcceleration</span> * <span class="hljs-property">@nextDirection</span>
+
+    <span class="hljs-attribute">_endRun</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Without user input, there&#39;s no force, so stop, then stay still.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-keyword">if</span> <span class="hljs-property">@velocity</span>.x <span class="hljs-keyword">isnt</span> <span class="hljs-number">0</span>
+        <span class="hljs-property">@nextAction</span> = <span class="hljs-string">'stop'</span>
+        <span class="hljs-keyword">return</span>
+      <span class="hljs-property">@nextState</span> = <span class="hljs-string">'still'</span>
+      <span class="hljs-property">@_isTurning</span> = <span class="hljs-literal">no</span> <span class="hljs-comment"># In case of being blocked.</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="turn">Turn</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">_canBeginTurn</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@nextDirection</span>? <span class="hljs-keyword">and</span> <span class="hljs-property">@nextAction</span> <span class="hljs-keyword">isnt</span> <span class="hljs-string">'start'</span> <span class="hljs-keyword">and</span>
+      <span class="hljs-keyword">not</span> <span class="hljs-property">@_isTurning</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@nextDirection</span> <span class="hljs-keyword">isnt</span> <span class="hljs-property">@direction</span>
+    <span class="hljs-attribute">_canEndTurn</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@nextDirection</span>? <span class="hljs-keyword">and</span> <span class="hljs-property">@nextAction</span> <span class="hljs-keyword">isnt</span> <span class="hljs-string">'stop'</span> <span class="hljs-keyword">and</span> 
+      <span class="hljs-property">@_isTurning</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@nextDirection</span> <span class="hljs-keyword">is</span> <span class="hljs-property">@direction</span> <span class="hljs-keyword">and</span>
+      <span class="hljs-property">@_isAnimationInterruptible</span>()
+
+    <span class="hljs-attribute">_beginTurn</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@nextAction</span> = <span class="hljs-string">'stop'</span>
+      <span class="hljs-property">@_isTurning</span> = <span class="hljs-literal">yes</span>
+      <span class="hljs-property">@direction</span> = <span class="hljs-property">@nextDirection</span>
+      <span class="hljs-property">@debug</span> <span class="hljs-string">'turn:start'</span>, <span class="hljs-property">@velocity</span>.x
+      <span class="hljs-property">@debug</span> <span class="hljs-string">'facing'</span>, <span class="hljs-property">@nextDirection</span>
+
+    <span class="hljs-attribute">_endTurn</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@_visualizeTurn</span>()
+
+      <span class="hljs-property">@nextAction</span> = <span class="hljs-string">'start'</span>
+      <span class="hljs-property">@_isTurning</span> = <span class="hljs-literal">no</span>
+      <span class="hljs-property">@debug</span> <span class="hljs-string">'turn:end'</span>, <span class="hljs-property">@velocity</span>.x
+
+    <span class="hljs-attribute">_visualizeTurn</span>: <span class="hljs-function"><span class="hljs-params">(direction = <span class="hljs-property">@nextDirection</span>)</span> -&gt;</span>
+      <span class="hljs-property">@sprite</span>.scale.x = direction
+      <span class="hljs-property">@physics</span>.offset.set <span class="hljs-property">@_xOffset</span>(direction), <span class="hljs-property">@_yOffset</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="update">Update</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">_updateCameraFocus</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@_keepCameraFocusUpdated</span> = <span class="hljs-literal">off</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@nextAction</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'jump'</span>
+      <span class="hljs-keyword">unless</span> <span class="hljs-property">@_keepCameraFocusUpdated</span>
+        <span class="hljs-property">@_keepCameraFocusUpdated</span> = <span class="hljs-literal">on</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@nextState</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'falling'</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">no</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Follow with easing.</p></div></div><div class="code"><div class="wrapper">      kEasing = <span class="hljs-property">@cameraFocusFollowResistance</span>
+      kEasing /= <span class="hljs-number">3</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@_isFullyFalling</span>()
+      step = <span class="hljs-property">@physics</span>.position.clone()
+        .subtractPoint <span class="hljs-property">@cameraFocus</span>.position
+        .divide kEasing, kEasing        
+      <span class="hljs-property">@cameraFocus</span>.position.addPoint step
+
+  _.extend <span class="hljs-attribute">Player</span>::, AnimationMixin, DebugMixin
+
+  Player</div></div></div></div></body></html>

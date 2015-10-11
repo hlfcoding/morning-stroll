@@ -1,0 +1,211 @@
+<!DOCTYPE html><html lang="en"><head><title>src/platforms</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/platforms"><meta name="groc-project-path" content="src/platforms.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/src/platforms.coffee">src/platforms.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="platform">Platform</h1>
+<p>Platform that can dynamically generate a map, and track the dynamically
+generated ledges. Only supports the <code>SIDE_TO_SIDE</code> generation scheme for now.</p></div></div><div class="code"><div class="wrapper">define [
+  <span class="hljs-string">'phaser'</span>
+  <span class="hljs-string">'underscore'</span>
+  <span class="hljs-string">'app/defines'</span>
+  <span class="hljs-string">'app/helpers'</span>
+], <span class="hljs-function"><span class="hljs-params">(Phaser, _, defines, Helpers)</span> -&gt;</span>
+
+  <span class="hljs-string">'use strict'</span>
+
+  {Point} = Phaser
+
+  {autoSetTiles, DebugMixin} = Helpers
+
+  Tile =
+    <span class="hljs-attribute">Empty</span>: <span class="hljs-number">0</span>
+    <span class="hljs-attribute">Solid</span>: <span class="hljs-number">1</span>
+    <span class="hljs-attribute">Meta</span>: <span class="hljs-number">2</span>
+
+  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Platforms</span></span>
+
+    <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(<span class="hljs-property">@config</span>, game, gui)</span> -&gt;</span>
+      <span class="hljs-property">@minLedgeSize</span> = <span class="hljs-number">3</span>
+      <span class="hljs-property">@maxLedgeSize</span> = <span class="hljs-number">5</span>
+      <span class="hljs-property">@minLedgeSpacing</span> = <span class="hljs-keyword">new</span> Point <span class="hljs-number">4</span>, <span class="hljs-number">2</span>
+      <span class="hljs-property">@maxLedgeSpacing</span> = <span class="hljs-keyword">new</span> Point <span class="hljs-number">8</span>, <span class="hljs-number">4</span>
+      <span class="hljs-property">@ledgeThickness</span> = <span class="hljs-number">2</span>
+      <span class="hljs-property">@tileWidth</span> = <span class="hljs-property">@tileHeight</span> = <span class="hljs-number">32</span>
+      <span class="hljs-property">@ledges</span> = []
+      <span class="hljs-property">@tiles</span> = []
+
+      <span class="hljs-property">@_initialize</span> game, gui
+
+    <span class="hljs-attribute">_initialize</span>: <span class="hljs-function"><span class="hljs-params">(game, gui)</span> -&gt;</span>
+      <span class="hljs-property">@game</span> = game <span class="hljs-comment"># <span class="hljs-doctag">FIXME:</span> Not great, but easy.</span>
+
+      <span class="hljs-property">@_initDebugging</span> gui
+
+      <span class="hljs-property">@makeMap</span> game
+
+    <span class="hljs-attribute">_initDebugging</span>: <span class="hljs-function"><span class="hljs-params">(gui)</span> -&gt;</span>
+      <span class="hljs-property">@debugNamespace</span> = <span class="hljs-string">'platforms'</span>
+
+      {<span class="hljs-property">@debugging</span>} = defines
+      completedInit = <span class="hljs-property">@_initDebugMixin</span> gui
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">unless</span> completedInit
+
+    <span class="hljs-attribute">destroy</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Null references to disposable objects we don&#39;t own.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="public">Public</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">makeMap</span>: <span class="hljs-function"><span class="hljs-params">(game)</span> -&gt;</span>
+      <span class="hljs-property">@_generateTiles</span>() <span class="hljs-keyword">unless</span> <span class="hljs-property">@tiles</span>.length
+
+      tilesCSV = (rowCSV = row.join <span class="hljs-string">','</span> <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> <span class="hljs-property">@tiles</span>).join <span class="hljs-string">"\n"</span>
+      game.load.tilemap <span class="hljs-string">'platforms'</span>, <span class="hljs-literal">null</span>, tilesCSV
+
+      <span class="hljs-property">@tilemap</span> = game.add.tilemap <span class="hljs-string">'platforms'</span>, <span class="hljs-property">@tileWidth</span>, <span class="hljs-property">@tileHeight</span>
+      <span class="hljs-property">@tilemap</span>.addTilesetImage <span class="hljs-property">@config</span>.tileImageKey
+      <span class="hljs-property">@tilemap</span>.setCollisionBetween <span class="hljs-number">1</span>, <span class="hljs-number">16</span>
+
+      <span class="hljs-property">@layer</span> = <span class="hljs-property">@tilemap</span>.createLayer <span class="hljs-number">0</span>
+      <span class="hljs-property">@layer</span>.resizeWorld()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="internal">Internal</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">_createTileGeneratorState</span>: <span class="hljs-function">-&gt;</span>
+      mapSize = <span class="hljs-property">@game</span>.world.getBounds()
+      vars =
+        <span class="hljs-attribute">facing</span>: <span class="hljs-string">'right'</span> <span class="hljs-comment"># left, right</span>
+        <span class="hljs-attribute">prevFacing</span>: <span class="hljs-literal">null</span>
+
+        <span class="hljs-attribute">iCol</span>: -<span class="hljs-number">1</span>
+        <span class="hljs-attribute">iColStart</span>: -<span class="hljs-number">1</span>
+        <span class="hljs-attribute">iColEnd</span>: -<span class="hljs-number">1</span>
+
+        <span class="hljs-attribute">iRow</span>: -<span class="hljs-number">1</span>
+        <span class="hljs-attribute">iRowStart</span>: -<span class="hljs-number">1</span>
+        <span class="hljs-attribute">iRowEnd</span>: <span class="hljs-number">0</span>
+
+        <span class="hljs-attribute">iLedgeRow</span>: -<span class="hljs-number">1</span> <span class="hljs-comment"># when used, starts at 1</span>
+        <span class="hljs-attribute">iLedgeLayer</span>: -<span class="hljs-number">1</span>
+
+        <span class="hljs-attribute">numCols</span>: Math.floor mapSize.width / <span class="hljs-property">@tileWidth</span>
+        <span class="hljs-attribute">numRows</span>: Math.floor <span class="hljs-property">@config</span>.mapH / <span class="hljs-property">@tileHeight</span>
+        <span class="hljs-attribute">numRowsClearance</span>: <span class="hljs-property">@minLedgeSpacing</span>.y + <span class="hljs-property">@ledgeThickness</span>
+        <span class="hljs-attribute">numLedgeRows</span>: -<span class="hljs-number">1</span>
+
+        <span class="hljs-attribute">rangeLedgeSize</span>: <span class="hljs-property">@maxLedgeSize</span> - <span class="hljs-property">@minLedgeSize</span>
+        <span class="hljs-attribute">rangeRowSpacing</span>: <span class="hljs-property">@maxLedgeSpacing</span>.y - <span class="hljs-property">@minLedgeSpacing</span>.y
+
+        <span class="hljs-attribute">rowSize</span>: -<span class="hljs-number">1</span>
+        <span class="hljs-attribute">rowSpacing</span>: -<span class="hljs-number">1</span>
+        <span class="hljs-attribute">rowTiles</span>: <span class="hljs-literal">null</span>
+        <span class="hljs-attribute">rowType</span>: <span class="hljs-literal">null</span> <span class="hljs-comment"># empty, ledge, solid</span>
+
+      numRowsLedge = (<span class="hljs-property">@maxLedgeSpacing</span>.y + <span class="hljs-property">@minLedgeSpacing</span>.y) / <span class="hljs-number">2</span> + (<span class="hljs-property">@ledgeThickness</span> - <span class="hljs-number">1</span>)
+      vars.numLedgeRows = Math.round vars.numRows / numRowsLedge
+
+      vars
+
+    <span class="hljs-attribute">_generateTiles</span>: <span class="hljs-function">-&gt;</span>
+      vars = <span class="hljs-property">@_createTileGeneratorState</span>()
+
+      <span class="hljs-property">@tiles</span> = [] <span class="hljs-comment"># Reset.</span>
+
+      vars.iLedgeLayer = <span class="hljs-number">0</span>
+      vars.iLedgeRow = <span class="hljs-number">0</span>
+      vars.rowSpacing = <span class="hljs-property">@minLedgeSpacing</span>.y
+
+      vars.iRow = vars.iRowStart = vars.numRows - <span class="hljs-number">1</span>
+      <span class="hljs-keyword">until</span> vars.iRow &lt; vars.iRowEnd
+        <span class="hljs-property">@_setupEachRow</span> vars
+
+        <span class="hljs-keyword">if</span> (vars.iRow - vars.numRowsClearance) &lt;= vars.iRowEnd</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Fill out the last rows after last ledge.</p></div></div><div class="code"><div class="wrapper">          <span class="hljs-property">@_setupEmptyRow</span> vars
+
+          <span class="hljs-keyword">if</span> vars.iLedgeLayer &gt; <span class="hljs-number">0</span>
+            vars.iLedgeLayer--
+            _.last(<span class="hljs-property">@ledges</span>).rowIndex = vars.iRowStart - vars.iRow
+          <span class="hljs-keyword">else</span>
+            vars.rowTiles = []
+
+        <span class="hljs-keyword">else</span>
+          <span class="hljs-keyword">if</span> vars.rowSpacing <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+            <span class="hljs-property">@_setupLedgeRow</span> vars
+            vars.iLedgeLayer = <span class="hljs-property">@ledgeThickness</span> - <span class="hljs-number">1</span>
+
+          <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> vars.iLedgeLayer &gt; <span class="hljs-number">0</span>
+            vars.iLedgeLayer--
+
+          <span class="hljs-keyword">else</span>
+            <span class="hljs-property">@_setupEmptyRow</span> vars
+            vars.rowSpacing--
+            vars.iLedgeLayer = <span class="hljs-number">0</span>
+
+        <span class="hljs-property">@_addRow</span> vars
+
+        vars.iRow--
+
+      <span class="hljs-property">@tiles</span>.reverse()
+
+      <span class="hljs-property">@tiles</span> = autoSetTiles <span class="hljs-property">@tiles</span>
+
+      <span class="hljs-property">@debug</span> <span class="hljs-string">'tiles'</span>, <span class="hljs-property">@tiles</span>
+
+    <span class="hljs-attribute">_addLedgeDifficulty</span>: <span class="hljs-function"><span class="hljs-params">(ledge, vars)</span> -&gt;</span>
+      easiness = Math.pow (vars.numLedgeRows / ledge.index), <span class="hljs-number">0.3</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Amplify.</p></div></div><div class="code"><div class="wrapper">      ledge.spacing = Math.round ledge.spacing / easiness
+      ledge.size = Math.round ledge.size * easiness</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Normalize.</p></div></div><div class="code"><div class="wrapper">      ledge.spacing = Phaser.Math.clamp ledge.spacing, <span class="hljs-property">@minLedgeSpacing</span>.y, <span class="hljs-property">@maxLedgeSpacing</span>.y
+      ledge.size = Phaser.Math.clamp ledge.size, <span class="hljs-property">@minLedgeSize</span>, <span class="hljs-property">@maxLedgeSize</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Update.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-keyword">switch</span> ledge.facing
+        <span class="hljs-keyword">when</span> <span class="hljs-string">'left'</span> <span class="hljs-keyword">then</span> ledge.end = ledge.size - <span class="hljs-number">1</span>
+        <span class="hljs-keyword">when</span> <span class="hljs-string">'right'</span> <span class="hljs-keyword">then</span> ledge.start = ledge.end + <span class="hljs-number">1</span> - ledge.size
+
+    <span class="hljs-attribute">_addRow</span>: <span class="hljs-function"><span class="hljs-params">(vars)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> vars.rowType <span class="hljs-keyword">is</span> <span class="hljs-string">'ledge'</span>
+        ledge = <span class="hljs-keyword">new</span> Ledge()
+        ledge.index = vars.iLedgeRow
+        ledge.rowIndex = vars.iRowStart - vars.iRow
+        ledge.size = vars.rowSize
+        ledge.spacing = vars.rowSpacing
+        ledge.start = vars.iColStart
+        ledge.end = vars.iColEnd
+        ledge.facing = vars.prevFacing</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Transform.</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-property">@_addLedgeDifficulty</span> ledge, vars</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Save.</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-property">@ledges</span>.push ledge</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Unpack.</p></div></div><div class="code"><div class="wrapper">        vars.iColStart = ledge.start
+        vars.iColEnd = ledge.end</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Build row&#39;s tiles.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-keyword">unless</span> vars.rowTiles.length
+        <span class="hljs-keyword">for</span> index <span class="hljs-keyword">in</span> [<span class="hljs-number">0.</span>..vars.numCols]
+          vars.rowTiles.push Tile.Empty <span class="hljs-keyword">if</span> (
+            (<span class="hljs-number">0</span> &lt;= index &lt; vars.iColStart) <span class="hljs-keyword">or</span>
+            (vars.iColEnd &lt; index &lt; vars.numCols) <span class="hljs-keyword">or</span>
+            (vars.iColStart <span class="hljs-keyword">is</span> vars.iColEnd)
+          )
+          vars.rowTiles.push Tile.Solid <span class="hljs-keyword">if</span> (
+            (vars.iColStart &lt;= index &lt;= vars.iColEnd) <span class="hljs-keyword">and</span>
+            (vars.iColStart <span class="hljs-keyword">isnt</span> vars.iColEnd)
+          )</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Add tiles.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@tiles</span>.push vars.rowTiles
+
+    <span class="hljs-attribute">_setupEmptyRow</span>: <span class="hljs-function"><span class="hljs-params">(vars)</span> -&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Prepare for empty plot.</p></div></div><div class="code"><div class="wrapper">      vars.iColStart = <span class="hljs-number">0</span>
+      vars.iColEnd = <span class="hljs-number">0</span>
+      vars.rowType = <span class="hljs-string">'empty'</span>
+
+    <span class="hljs-attribute">_setupLedgeRow</span>: <span class="hljs-function"><span class="hljs-params">(vars)</span> -&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Prepare for partial plot. This just does a simple random, anything
+more complicated is delegated to _addLedgeDifficulty.</p></div></div><div class="code"><div class="wrapper">      vars.iLedgeRow++
+      vars.rowSize = <span class="hljs-property">@minLedgeSize</span> + parseInt(Math.random() * vars.rangeLedgeSize)
+      vars.rowSpacing = <span class="hljs-property">@minLedgeSpacing</span>.y + parseInt(Math.random() * vars.rangeRowSpacing) <span class="hljs-comment"># Prepare for next ledge.</span>
+      vars.rowType = <span class="hljs-string">'ledge'</span>
+
+      vars.prevFacing = vars.facing
+      <span class="hljs-keyword">switch</span> vars.facing
+        <span class="hljs-keyword">when</span> <span class="hljs-string">'left'</span>
+          vars.iColStart = <span class="hljs-number">0</span>
+          vars.iColEnd = vars.rowSize - <span class="hljs-number">1</span>
+          vars.facing = <span class="hljs-string">'right'</span> <span class="hljs-comment"># Prepare for next ledge.</span>
+        <span class="hljs-keyword">when</span> <span class="hljs-string">'right'</span>
+          vars.iColStart = vars.numCols - vars.rowSize
+          vars.iColEnd = vars.numCols - <span class="hljs-number">1</span>
+          vars.facing = <span class="hljs-string">'left'</span> <span class="hljs-comment"># Prepare for next ledge.</span>
+
+    <span class="hljs-attribute">_setupEachRow</span>: <span class="hljs-function"><span class="hljs-params">(vars)</span> -&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Reset on each row.</p></div></div><div class="code"><div class="wrapper">      vars.rowTiles = [] <span class="hljs-keyword">if</span> vars.iLedgeLayer <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+
+  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Ledge</span></span>
+
+    <span class="hljs-attribute">constructor</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@index</span> = -<span class="hljs-number">1</span>
+      <span class="hljs-property">@rowIndex</span> = -<span class="hljs-number">1</span>
+      <span class="hljs-property">@size</span> = -<span class="hljs-number">1</span>
+      <span class="hljs-property">@spacing</span> = -<span class="hljs-number">1</span>
+      <span class="hljs-property">@start</span> = -<span class="hljs-number">1</span>
+      <span class="hljs-property">@end</span> = -<span class="hljs-number">1</span>
+      <span class="hljs-property">@facing</span> = <span class="hljs-string">'left'</span>
+
+    <span class="hljs-attribute">createMidpoint</span>: <span class="hljs-function"><span class="hljs-params">(platforms)</span> -&gt;</span>
+      point = <span class="hljs-keyword">new</span> Point()
+      point.x = (<span class="hljs-property">@size</span> / <span class="hljs-number">2</span>) * platforms.tileWidth
+      point.x = platforms.tilemap.widthInPixels - point.x <span class="hljs-keyword">if</span> <span class="hljs-property">@facing</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'right'</span>
+      point.y = ((platforms.tiles.length - <span class="hljs-number">1</span>) - <span class="hljs-property">@rowIndex</span>) * platforms.tileHeight
+      point
+
+  _.extend <span class="hljs-attribute">Platforms</span>::, DebugMixin
+
+  _.extend Platforms, { Ledge, Tile }</div></div></div></div></body></html>

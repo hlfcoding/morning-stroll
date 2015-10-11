@@ -1,0 +1,229 @@
+<!DOCTYPE html><html lang="en"><head><title>src/state-play</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/state-play"><meta name="groc-project-path" content="src/state-play.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/src/state-play.coffee">src/state-play.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="playstate">PlayState</h1></div></div></div><div class="segment"><div class="code"><div class="wrapper">define [
+  <span class="hljs-string">'dat.gui'</span>
+  <span class="hljs-string">'phaser'</span>
+  <span class="hljs-string">'underscore'</span>
+  <span class="hljs-string">'app/background'</span>
+  <span class="hljs-string">'app/defines'</span>
+  <span class="hljs-string">'app/helpers'</span>
+  <span class="hljs-string">'app/in-state-menu'</span>
+  <span class="hljs-string">'app/platforms'</span>
+  <span class="hljs-string">'app/player'</span>
+], <span class="hljs-function"><span class="hljs-params">(dat, Phaser, _, Background, defines, Helpers, InStateMenu, Platforms, Player)</span> -&gt;</span>
+
+  <span class="hljs-string">'use strict'</span>
+
+  {Key, Keyboard, Physics, Point, Rectangle, State, Timer} = Phaser
+
+  {artH, mapH, fontLarge, fontSmall, playerH, playerW, playerYOffset, shakeFallH, deadzoneH} = defines
+
+  {AnimationMixin, CameraMixin, DebugMixin, DebugDisplayMixin, TextMixin} = Helpers
+
+  MateLastFrame = <span class="hljs-number">14</span>
+
+  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PlayState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span></span>
+
+    <span class="hljs-attribute">init</span>: <span class="hljs-function">-&gt;</span>
+      {<span class="hljs-property">@debugging</span>, <span class="hljs-property">@developing</span>} = defines
+      <span class="hljs-property">@detachedCamera</span> = <span class="hljs-literal">off</span>
+      <span class="hljs-property">@ended</span> = <span class="hljs-literal">no</span>
+
+      <span class="hljs-property">@debugDisplay</span> = <span class="hljs-property">@gui</span> = <span class="hljs-literal">null</span>
+      <span class="hljs-property">@cursors</span> = <span class="hljs-literal">null</span>
+      <span class="hljs-property">@background</span> = <span class="hljs-property">@mate</span> = <span class="hljs-property">@platforms</span> = <span class="hljs-property">@player</span> = <span class="hljs-literal">null</span>
+      <span class="hljs-property">@textLayout</span> = <span class="hljs-literal">null</span>
+
+      _.extend <span class="hljs-property">@camera</span>, CameraMixin
+
+      <span class="hljs-property">@game</span>.onBlur.add <span class="hljs-property">@onBlur</span>, @
+      <span class="hljs-property">@game</span>.onFocus.add <span class="hljs-property">@onFocus</span>, @
+
+      <span class="hljs-property">@_initDebugMixin</span>
+      <span class="hljs-property">@_initDebugDisplayMixin</span> <span class="hljs-property">@game</span>
+
+    <span class="hljs-attribute">create</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@physics</span>.startSystem Physics.ARCADE
+      <span class="hljs-property">@physics</span>.arcade.gravity.y = <span class="hljs-number">500</span>
+
+      <span class="hljs-property">@cursors</span> = <span class="hljs-property">@input</span>.keyboard.createCursorKeys()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Quit on Q</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@quitKey</span> = <span class="hljs-property">@_addKey</span> Keyboard.Q, <span class="hljs-property">@quit</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Quit on click at end.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@onHit</span> = <span class="hljs-property">@input</span>[<span class="hljs-keyword">if</span> <span class="hljs-property">@game</span>.device.touch <span class="hljs-keyword">then</span> <span class="hljs-string">'onTap'</span> <span class="hljs-keyword">else</span> <span class="hljs-string">'onUp'</span>]
+      <span class="hljs-property">@onHit</span>.add (trigger) =&gt; 
+        <span class="hljs-keyword">unless</span> <span class="hljs-property">@quit</span> trigger
+          <span class="hljs-property">@inStateMenu</span>.toggle()
+      , @
+
+      <span class="hljs-keyword">if</span> <span class="hljs-property">@developing</span>
+        <span class="hljs-property">@gui</span> = <span class="hljs-keyword">new</span> dat.GUI()
+        <span class="hljs-property">@gui</span>.add(@, <span class="hljs-string">'debugging'</span>).listen().onFinishChange =&gt;
+          <span class="hljs-property">@background</span>.debugging = <span class="hljs-property">@platforms</span>.debugging = <span class="hljs-property">@player</span>.debugging = <span class="hljs-property">@debugging</span>
+          <span class="hljs-property">@debugDisplay</span>.reset() <span class="hljs-keyword">unless</span> <span class="hljs-property">@debugging</span>
+        <span class="hljs-property">@gui</span>.add(@, <span class="hljs-string">'detachedCamera'</span>).onFinishChange =&gt; <span class="hljs-property">@_toggleCameraAttachment</span>()
+        <span class="hljs-property">@gui</span>.addOpenFolder(<span class="hljs-string">'gravity'</span>).addRange <span class="hljs-property">@physics</span>.arcade.gravity, <span class="hljs-string">'y'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>First:</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@_addMusic</span>()
+      <span class="hljs-property">@_addBackground</span>()
+      <span class="hljs-property">@_addPlatforms</span>()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Then:</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@_addPlayer</span>()
+      <span class="hljs-property">@_addMate</span>()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Last:</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@_addInStateMenu</span>()
+
+      <span class="hljs-property">@_toggleCameraAttachment</span> <span class="hljs-literal">on</span>
+
+    <span class="hljs-attribute">update</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@physics</span>.arcade.collide <span class="hljs-property">@player</span>.sprite, <span class="hljs-property">@platforms</span>.layer
+
+      <span class="hljs-property">@background</span>.update()
+      <span class="hljs-property">@player</span>.update()
+
+      <span class="hljs-property">@_updateVolumeOnPlayerLand</span>()
+
+      <span class="hljs-property">@camera</span>.updateShake()
+      <span class="hljs-keyword">if</span> <span class="hljs-property">@_shakeOnPlayerFall</span>()
+        <span class="hljs-property">@camera</span>.unfollow()
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">unless</span> <span class="hljs-property">@detachedCamera</span> <span class="hljs-keyword">or</span> <span class="hljs-property">@camera</span>.target? <span class="hljs-keyword">or</span> <span class="hljs-property">@camera</span>.isShaking()
+        <span class="hljs-property">@camera</span>.follow <span class="hljs-property">@player</span>.cameraFocus
+
+      <span class="hljs-property">@camera</span>.updatePositionWithCursors <span class="hljs-property">@cursors</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@detachedCamera</span>
+
+      <span class="hljs-property">@end</span>() <span class="hljs-keyword">if</span> <span class="hljs-property">@_isPlayerReadyToEnd</span>()
+
+    <span class="hljs-attribute">render</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@_renderDebugDisplay</span>() <span class="hljs-keyword">if</span> <span class="hljs-property">@debugging</span>
+      <span class="hljs-property">@_renderDebugOverlays</span>() <span class="hljs-keyword">if</span> <span class="hljs-property">@debugging</span>
+
+    <span class="hljs-attribute">shutdown</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Null references to disposable objects we don&#39;t own.</p></div></div><div class="code"><div class="wrapper">      gameObject.destroy() <span class="hljs-keyword">for</span> gameObject <span class="hljs-keyword">in</span> [<span class="hljs-property">@background</span>, <span class="hljs-property">@inStateMenu</span>, <span class="hljs-property">@music</span>, <span class="hljs-property">@platforms</span>, <span class="hljs-property">@player</span>]
+
+      <span class="hljs-property">@game</span>.onBlur.remove <span class="hljs-property">@onBlur</span>, @
+      <span class="hljs-property">@game</span>.onFocus.remove <span class="hljs-property">@onFocus</span>, @
+      <span class="hljs-property">@onHit</span>.remove <span class="hljs-property">@quit</span>, @
+
+      key.onDown.removeAll @ <span class="hljs-keyword">for</span> key <span class="hljs-keyword">in</span> [<span class="hljs-property">@loudKey</span>, <span class="hljs-property">@muteKey</span>, <span class="hljs-property">@quietKey</span>, <span class="hljs-property">@quitKey</span>]
+
+      <span class="hljs-property">@gui</span>?.destroy()
+
+    <span class="hljs-attribute">onBlur</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@music</span>?.pause()
+
+    <span class="hljs-attribute">onFocus</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@music</span>?.resume()
+
+    <span class="hljs-attribute">end</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>First animate player.</p></div></div><div class="code"><div class="wrapper">      animation = <span class="hljs-property">@player</span>.startEnding <span class="hljs-property">@mate</span>
+      animation.onComplete.addOnce =&gt;</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Then animate mate.</p></div></div><div class="code"><div class="wrapper">        animation = <span class="hljs-property">@mate</span>.play <span class="hljs-string">'end'</span>
+        animation.onComplete.addOnce =&gt;</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Then lock them onto their final frames.</p></div></div><div class="code"><div class="wrapper">          <span class="hljs-property">@player</span>.animations.frame = Player.LastFrame
+          <span class="hljs-property">@mate</span>.animations.frame = MateLastFrame</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Then render ending display.</p></div></div><div class="code"><div class="wrapper">      _.delay =&gt;
+        <span class="hljs-property">@_renderEndingDisplay</span>()
+      , <span class="hljs-number">5</span> * Timer.SECOND
+
+    <span class="hljs-attribute">quit</span>: <span class="hljs-function"><span class="hljs-params">(trigger)</span> -&gt;</span>
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">no</span> <span class="hljs-keyword">unless</span> <span class="hljs-property">@ended</span> <span class="hljs-keyword">or</span> trigger <span class="hljs-keyword">instanceof</span> Key
+<span class="hljs-function">      <span class="hljs-title">_quit</span> = =&gt;</span> <span class="hljs-property">@state</span>.startWithTransition <span class="hljs-literal">null</span>, <span class="hljs-string">'menu'</span>, <span class="hljs-literal">yes</span>
+      <span class="hljs-keyword">if</span> <span class="hljs-property">@music</span>.volume <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+        _quit()
+      <span class="hljs-keyword">else</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Fade the music.</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-property">@music</span>.fadeOut <span class="hljs-number">3</span> * Timer.SECOND</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Then go back to menu while clearing world.</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-property">@music</span>.onFadeComplete.addOnce _quit
+
+    <span class="hljs-attribute">_addBackground</span>: <span class="hljs-function">-&gt;</span>
+      parallaxTolerance = mapH - artH
+      <span class="hljs-property">@background</span> = <span class="hljs-keyword">new</span> Background { parallaxTolerance }, <span class="hljs-property">@game</span>
+      <span class="hljs-property">@background</span>.addImages _.template(<span class="hljs-string">'bg&lt;%= zIndex %&gt;'</span>), <span class="hljs-number">16</span>
+      <span class="hljs-property">@background</span>.layout()
+
+    <span class="hljs-attribute">_addInStateMenu</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@inStateMenu</span> = <span class="hljs-keyword">new</span> InStateMenu [
+        [<span class="hljs-string">'Paused'</span>, { <span class="hljs-attribute">fontSize</span>: fontLarge }]
+        [<span class="hljs-string">'Hold arrow keys to accelerate'</span>, { <span class="hljs-attribute">fontSize</span>: fontSmall }]
+        [<span class="hljs-string">'Press 0, -, + for volume'</span>, { <span class="hljs-attribute">fontSize</span>: fontSmall }]
+        [<span class="hljs-string">'Press Q to quit'</span>, { <span class="hljs-attribute">fontSize</span>: fontSmall }]
+      ], <span class="hljs-property">@game</span>,
+        <span class="hljs-attribute">pauseHandler</span>: <span class="hljs-function"><span class="hljs-params">(paused)</span> =&gt;</span> <span class="hljs-property">@player</span>.control = <span class="hljs-keyword">not</span> paused
+
+    <span class="hljs-attribute">_addKey</span>: <span class="hljs-function"><span class="hljs-params">(keyCode, callback)</span> -&gt;</span>
+      key = <span class="hljs-property">@input</span>.keyboard.addKey keyCode
+      key.onDown.add callback, @
+      <span class="hljs-property">@input</span>.keyboard.removeKeyCapture keyCode
+      key
+
+    <span class="hljs-attribute">_addMate</span>: <span class="hljs-function">-&gt;</span>
+      {x, y} = <span class="hljs-property">@endingPoint</span>
+      x += <span class="hljs-number">20</span>
+      y -= <span class="hljs-number">10</span>
+      <span class="hljs-property">@mate</span> = <span class="hljs-property">@add</span>.sprite x, y, <span class="hljs-string">'mate'</span>, <span class="hljs-number">1</span>
+      <span class="hljs-property">@mate</span>.anchor = <span class="hljs-keyword">new</span> Point <span class="hljs-number">0.5</span>, <span class="hljs-number">0.5</span>
+      <span class="hljs-property">@mate</span>.animations.add <span class="hljs-string">'end'</span>, [<span class="hljs-number">4.</span>.MateLastFrame], <span class="hljs-number">12</span>
+
+    <span class="hljs-attribute">_addMusic</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@userVolume</span> = <span class="hljs-number">1</span>
+      <span class="hljs-property">@music</span> = <span class="hljs-property">@add</span>.audio <span class="hljs-string">'bgm'</span>, <span class="hljs-number">0.2</span>, <span class="hljs-literal">yes</span>
+      <span class="hljs-property">@music</span>.mute = <span class="hljs-property">@developing</span> <span class="hljs-keyword">or</span> <span class="hljs-property">@debugging</span>
+      <span class="hljs-property">@music</span>.play()
+      <span class="hljs-property">@gui</span>?.add(<span class="hljs-property">@music</span>, <span class="hljs-string">'mute'</span>).listen()
+      increment = <span class="hljs-number">0.1</span>
+      <span class="hljs-property">@loudKey</span> = <span class="hljs-property">@_addKey</span> Keyboard.EQUALS, <span class="hljs-function">=&gt;</span> <span class="hljs-property">@userVolume</span> += increment
+      <span class="hljs-property">@muteKey</span> = <span class="hljs-property">@_addKey</span> Keyboard.ZERO, <span class="hljs-function">=&gt;</span> <span class="hljs-property">@music</span>.mute = <span class="hljs-keyword">not</span> <span class="hljs-property">@music</span>.mute
+      <span class="hljs-property">@quietKey</span> = <span class="hljs-property">@_addKey</span> Keyboard.UNDERSCORE, <span class="hljs-function">=&gt;</span> <span class="hljs-property">@userVolume</span> -= increment
+
+    <span class="hljs-attribute">_addPlatforms</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@platforms</span> = <span class="hljs-keyword">new</span> Platforms 
+        <span class="hljs-attribute">mapH</span>: mapH
+        <span class="hljs-attribute">tileImageKey</span>: <span class="hljs-string">'balcony'</span>
+      , <span class="hljs-property">@game</span>, <span class="hljs-property">@gui</span>?.addOpenFolder <span class="hljs-string">'platforms'</span>
+
+      <span class="hljs-property">@endingPoint</span> = <span class="hljs-property">@platforms</span>.ledges[-<span class="hljs-number">1.</span>..][<span class="hljs-number">0</span>].createMidpoint <span class="hljs-property">@platforms</span>
+      <span class="hljs-property">@startingPoint</span> = <span class="hljs-keyword">new</span> Point playerW, (<span class="hljs-property">@world</span>.height - playerH + playerYOffset)</div></div></div><div class="segment"><div class="comments doc-section"><div class="wrapper"><p><span class='doc-section-header'> startingPoint = @platforms.ledges[-2...-1][0].createMidpoint @platforms</span></p>
+<p>Use for debugging ending.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-attribute">_addPlayer</span>: <span class="hljs-function">-&gt;</span>
+      origin = <span class="hljs-property">@startingPoint</span>
+      <span class="hljs-property">@player</span> = <span class="hljs-keyword">new</span> Player { origin }, <span class="hljs-property">@game</span>, <span class="hljs-property">@cursors</span>, <span class="hljs-property">@gui</span>?.addOpenFolder <span class="hljs-string">'player'</span>
+
+    <span class="hljs-attribute">_addText</span>: <span class="hljs-function"><span class="hljs-params">(text, style)</span> -&gt;</span>
+      _.defaults style, { <span class="hljs-attribute">fill</span>: <span class="hljs-string">'#fff'</span>, <span class="hljs-attribute">font</span>: <span class="hljs-string">'Enriqueta'</span> }
+      text = <span class="hljs-property">@addCenteredText</span> text, <span class="hljs-property">@textLayout</span>, style
+      tween = <span class="hljs-property">@fadeTo</span> text, Timer.SECOND, <span class="hljs-number">1</span>
+
+    <span class="hljs-attribute">_isPlayerReadyToEnd</span>: <span class="hljs-function">-&gt;</span>
+      (<span class="hljs-property">@player</span>.state <span class="hljs-keyword">is</span> <span class="hljs-string">'still'</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@player</span>.control <span class="hljs-keyword">is</span> <span class="hljs-literal">on</span> <span class="hljs-keyword">and</span>
+       <span class="hljs-property">@player</span>.sprite.y &lt;= <span class="hljs-property">@endingPoint</span>.y)
+
+    <span class="hljs-attribute">_renderDebugDisplay</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@resetDebugDisplayLayout</span>()
+
+      <span class="hljs-keyword">if</span> <span class="hljs-property">@player</span>.debugging
+        <span class="hljs-property">@renderDebugDisplayItems</span> (layoutX, layoutY) =&gt;
+          <span class="hljs-property">@debugDisplay</span>.bodyInfo <span class="hljs-property">@player</span>.sprite, layoutX, layoutY
+        , <span class="hljs-number">6</span>
+        <span class="hljs-property">@renderDebugDisplayItems</span> <span class="hljs-property">@player</span>.debugTextItems
+
+    <span class="hljs-attribute">_renderDebugOverlays</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">if</span> <span class="hljs-property">@player</span>.debugging
+        <span class="hljs-property">@debugDisplay</span>.body <span class="hljs-property">@player</span>.sprite
+        <span class="hljs-property">@debugDisplay</span>.spriteBounds <span class="hljs-property">@player</span>.sprite
+        <span class="hljs-property">@debugDisplay</span>.spriteBounds <span class="hljs-property">@player</span>.cameraFocus
+
+    <span class="hljs-attribute">_renderEndingDisplay</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@textLayout</span> = { <span class="hljs-attribute">y</span>: <span class="hljs-number">120</span>, <span class="hljs-attribute">baseline</span>: <span class="hljs-number">40</span> }
+
+      <span class="hljs-property">@_addText</span> <span class="hljs-string">'The End'</span>, { <span class="hljs-attribute">fontSize</span>: fontLarge }
+        .onComplete.addOnce =&gt;
+          <span class="hljs-property">@_addText</span> <span class="hljs-string">'Click to play again'</span>, { <span class="hljs-attribute">fontSize</span>: fontSmall }
+          <span class="hljs-property">@ended</span> = <span class="hljs-literal">yes</span>
+
+    <span class="hljs-attribute">_shakeOnPlayerFall</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">no</span> <span class="hljs-keyword">unless</span> <span class="hljs-property">@player</span>.nextState <span class="hljs-keyword">is</span> <span class="hljs-string">'landing'</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@player</span>.distanceFallen() &gt; shakeFallH
+      <span class="hljs-property">@camera</span>.shake()
+
+    <span class="hljs-attribute">_toggleCameraAttachment</span>: <span class="hljs-function"><span class="hljs-params">(attached)</span> -&gt;</span>
+      attached ?= <span class="hljs-keyword">not</span> <span class="hljs-property">@detachedCamera</span>
+      <span class="hljs-keyword">if</span> attached
+        <span class="hljs-property">@camera</span>.follow <span class="hljs-property">@player</span>.cameraFocus
+        <span class="hljs-property">@player</span>.cursors ?= <span class="hljs-property">@cursors</span>
+
+        <span class="hljs-property">@camera</span>.deadzone ?= <span class="hljs-keyword">new</span> Rectangle(
+          <span class="hljs-number">0</span>, (<span class="hljs-property">@game</span>.height - deadzoneH) / <span class="hljs-number">2</span>,
+          <span class="hljs-property">@game</span>.width, deadzoneH
+        )
+      <span class="hljs-keyword">else</span>
+        <span class="hljs-property">@camera</span>.unfollow()
+        <span class="hljs-property">@player</span>.cursors = <span class="hljs-literal">null</span>
+
+    <span class="hljs-attribute">_updateVolumeOnPlayerLand</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">no</span> <span class="hljs-keyword">unless</span> <span class="hljs-property">@player</span>.nextState <span class="hljs-keyword">is</span> <span class="hljs-string">'landing'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The music gets louder the higher the player gets.</p></div></div><div class="code"><div class="wrapper">      volume = ((<span class="hljs-property">@platforms</span>.tilemap.heightInPixels - <span class="hljs-property">@player</span>.sprite.y) /
+                 <span class="hljs-property">@platforms</span>.tilemap.heightInPixels) ** <span class="hljs-number">1.3</span>
+      volume *= <span class="hljs-property">@math</span>.clamp <span class="hljs-property">@userVolume</span>, <span class="hljs-number">0</span>, <span class="hljs-number">2</span> <span class="hljs-comment"># Factor in user controls.</span>
+      volume = <span class="hljs-property">@math</span>.clamp volume, <span class="hljs-number">0.2</span>, <span class="hljs-number">0.8</span>
+      <span class="hljs-property">@music</span>.fadeTo Timer.SECOND, volume
+
+  _.extend <span class="hljs-attribute">PlayState</span>::, AnimationMixin, DebugMixin, DebugDisplayMixin, TextMixin
+
+  PlayState</div></div></div></div></body></html>
