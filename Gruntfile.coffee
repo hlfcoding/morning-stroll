@@ -8,7 +8,8 @@ module.exports = (grunt) ->
     ]
     docs: [
       'src/**/*.coffee'
-      'README.md'
+      'tests/**/*.coffee'
+      'docs/README.md'
     ]
     tests: [
       'tests/**/*.coffee'
@@ -46,7 +47,7 @@ module.exports = (grunt) ->
         pushTo: 'origin'
 
     clean:
-      docs: ['docs/*']
+      docs: ['docs/*', '!docs/README.md']
       js: { src: ['release/*'], filter: 'isFile' }
       lib: ['lib/*']
       site: ['site/*']
@@ -92,6 +93,7 @@ module.exports = (grunt) ->
 
     groc:
       options:
+        index: 'docs/README.md'
         out: 'docs'
         'repository-url': 'https://bitbucket.org/hlfcoding/morning-stroll'
       docs: src.docs
