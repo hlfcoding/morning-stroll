@@ -1,2 +1,3 @@
 release/**/*.js*
 release/**/*.css*
+.grunt
