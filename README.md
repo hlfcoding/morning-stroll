@@ -28,16 +28,17 @@ $ grunt
       "path": "morning-stroll",
       "file_exclude_patterns":
       [
-        "*.mp3",
-        "docs/*",
+        "assets/*",
+        "docs/src/*",
         "lib/*",
         "release/*",
-        "tests/specs/*"
+        "tests/js/*"
       ],
       "folder_exclude_patterns":
       [
         ".grunt",
-        "node_modules"
+        "node_modules",
+        "morning-stroll/site"
       ]
     }
   ]
