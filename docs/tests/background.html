@@ -1,0 +1,33 @@
+<!DOCTYPE html><html lang="en"><head><title>tests/background</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="tests/background"><meta name="groc-project-path" content="tests/background.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/tests/background.coffee">tests/background.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper">define [
+  <span class="hljs-string">'phaser'</span>
+  <span class="hljs-string">'underscore'</span>
+  <span class="hljs-string">'app/background'</span>
+  <span class="hljs-string">'test/fakes'</span>
+], <span class="hljs-function"><span class="hljs-params">(Phaser, _, Background, fakes)</span> -&gt;</span>
+
+  describe <span class="hljs-string">'Background'</span>, <span class="hljs-function">-&gt;</span>
+    game = <span class="hljs-literal">null</span>
+    bg = <span class="hljs-literal">null</span>
+
+    beforeEach -&gt;
+      spyOn <span class="hljs-attribute">Background</span>::, <span class="hljs-string">'_initialize'</span>
+      bg = <span class="hljs-keyword">new</span> Background { <span class="hljs-attribute">parallaxTolerance</span>: <span class="hljs-number">240</span> }
+      _.extend bg, fakes.createBackgroundProps(bg)
+
+    describe <span class="hljs-string">'#layout'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'updates scroll-factors on each layer'</span>, <span class="hljs-function">-&gt;</span>
+        oldFactors = _.pluck bg.layers, <span class="hljs-string">'scrollFactor'</span>
+        bg.layout()
+        newFactors = _.pluck bg.layers, <span class="hljs-string">'scrollFactor'</span>
+        expect(newFactors).<span class="hljs-keyword">not</span>.toEqual oldFactors
+
+      it <span class="hljs-string">'decreases scroll-factor with z-index'</span>, <span class="hljs-function">-&gt;</span>
+        bg.layout()
+        expect(bg.layers[<span class="hljs-number">0</span>].scrollFactor).toBeLessThan _.last(bg.layers).scrollFactor
+
+      it <span class="hljs-string">'updates y offset for all but nearest layer'</span>, <span class="hljs-function">-&gt;</span>
+        oldOffsets = _.chain(bg.layers).pluck(<span class="hljs-string">'image'</span>).pluck(<span class="hljs-string">'y'</span>)
+        bg.layout()
+        newOffsets = _.chain(bg.layers).pluck(<span class="hljs-string">'image'</span>).pluck(<span class="hljs-string">'y'</span>)
+        expect(_.difference(newOffsets, oldOffsets).length).toBe (bg.layers.length - <span class="hljs-number">1</span>)
+        expect(newOffsets[<span class="hljs-number">0</span>]).toBe oldOffsets[<span class="hljs-number">0</span>]</div></div></div></div></body></html>

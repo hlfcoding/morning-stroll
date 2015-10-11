@@ -1,0 +1,211 @@
+<!DOCTYPE html><html lang="en"><head><title>tests/platforms</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="tests/platforms"><meta name="groc-project-path" content="tests/platforms.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/tests/platforms.coffee">tests/platforms.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper">define [
+  <span class="hljs-string">'phaser'</span>
+  <span class="hljs-string">'underscore'</span>
+  <span class="hljs-string">'app/platforms'</span>
+  <span class="hljs-string">'test/fakes'</span>
+], <span class="hljs-function"><span class="hljs-params">(Phaser, _, Platforms, fakes)</span> -&gt;</span>
+
+  describe <span class="hljs-string">'Platforms'</span>, <span class="hljs-function">-&gt;</span>
+    game = <span class="hljs-literal">null</span>
+    platforms = <span class="hljs-literal">null</span>
+
+    beforeEach -&gt;
+      spyOn <span class="hljs-attribute">Platforms</span>::, <span class="hljs-string">'_initialize'</span>
+      platforms = <span class="hljs-keyword">new</span> Platforms {}
+      _.extend platforms, fakes.createPlatformsProps(platforms)
+      fakes.configurePlatformsWithDefaults platforms
+
+    describe <span class="hljs-string">'when constructed'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'should have set ledge constraints'</span>, <span class="hljs-function">-&gt;</span>
+        expect(platforms.minLedgeSize).toBeDefined()
+        expect(platforms.maxLedgeSize).toBeDefined()
+        expect(platforms.minLedgeSpacing).toBeDefined()
+        expect(platforms.maxLedgeSpacing).toBeDefined()
+
+      it <span class="hljs-string">'should have configured sizes'</span>, <span class="hljs-function">-&gt;</span>
+        expect(platforms.tileWidth).toBeDefined()
+        expect(platforms.tileHeight).toBeDefined()
+
+      it <span class="hljs-string">'should have empty ledges array'</span>, <span class="hljs-function">-&gt;</span>
+        expect(platforms.ledges).toEqual []
+
+    describe <span class="hljs-string">'#_createTileGeneratorState'</span>, <span class="hljs-function">-&gt;</span>
+      state = <span class="hljs-literal">null</span>
+
+      beforeEach -&gt; state = platforms._createTileGeneratorState()
+
+      it <span class="hljs-string">'returns expected number of columns and rows'</span>, <span class="hljs-function">-&gt;</span>
+        expect(state.numCols).toBe <span class="hljs-number">13</span>
+        expect(state.numRows).toBe <span class="hljs-number">98</span>
+
+      it <span class="hljs-string">'returns expected ledge size and row spacing ranges'</span>, <span class="hljs-function">-&gt;</span>
+        expect(state.rangeLedgeSize).toBe <span class="hljs-number">2</span>
+        expect(state.rangeRowSpacing).toBe <span class="hljs-number">2</span>
+
+      it <span class="hljs-string">'returns expected base number of ledges'</span>, <span class="hljs-function">-&gt;</span>
+        expect(state.numLedgeRows).toBe <span class="hljs-number">25</span>
+
+    describe <span class="hljs-string">'#_addLedgeDifficulty'</span>, <span class="hljs-function">-&gt;</span>
+      ledge = <span class="hljs-literal">null</span>
+      vars = { <span class="hljs-attribute">numLedgeRows</span>: <span class="hljs-number">23</span> }
+
+      beforeEach -&gt;
+        ledge = <span class="hljs-keyword">new</span> Platforms.Ledge()
+        ledge.index = <span class="hljs-number">1</span>
+        ledge.rowIndex = <span class="hljs-number">4</span>
+        ledge.size = <span class="hljs-number">4</span>
+        ledge.spacing = <span class="hljs-number">3</span>
+        ledge.start = <span class="hljs-number">0</span>
+        ledge.end = <span class="hljs-number">3</span>
+        ledge.facing = <span class="hljs-string">'left'</span>
+
+      it <span class="hljs-string">'makes initial ledges longer and closer together'</span>, <span class="hljs-function">-&gt;</span>
+        platforms._addLedgeDifficulty ledge, vars
+
+        expect(ledge.spacing).toBe <span class="hljs-number">2</span>
+        expect(ledge.size).toBe <span class="hljs-number">5</span>
+        expect(ledge.end).toBe <span class="hljs-number">4</span>
+
+      it <span class="hljs-string">'makes final ledges shorter and farther apart'</span>, <span class="hljs-function">-&gt;</span>
+        ledge.index = vars.numLedgeRows - <span class="hljs-number">1</span>
+        platforms._addLedgeDifficulty ledge, vars
+
+        expect(ledge.spacing).toBe <span class="hljs-number">3</span>
+        expect(ledge.size).toBe <span class="hljs-number">4</span>
+        expect(ledge.end).toBe <span class="hljs-number">3</span>
+
+      it <span class="hljs-string">'correctly updates start and end values for ledges facing right'</span>, <span class="hljs-function">-&gt;</span>
+        ledge.facing = <span class="hljs-string">'right'</span>
+        ledge.start = <span class="hljs-number">8</span>
+        ledge.end = <span class="hljs-number">12</span>
+        platforms._addLedgeDifficulty ledge, vars
+
+        expect(ledge.start).toBe <span class="hljs-number">8</span>
+
+    describe <span class="hljs-string">'#_addRow'</span>, <span class="hljs-function">-&gt;</span>
+      vars = <span class="hljs-literal">null</span>
+
+      beforeEach -&gt;
+        vars =
+          <span class="hljs-attribute">iColStart</span>: <span class="hljs-number">0</span>
+          <span class="hljs-attribute">iColEnd</span>: <span class="hljs-number">3</span>
+          <span class="hljs-attribute">numCols</span>: <span class="hljs-number">13</span>
+          <span class="hljs-attribute">numLedgeRows</span>: <span class="hljs-number">23</span>
+          <span class="hljs-attribute">rowTiles</span>: []
+          <span class="hljs-attribute">rowType</span>: <span class="hljs-string">'empty'</span>
+
+      it <span class="hljs-string">'generates and adds a row of tiles'</span>, <span class="hljs-function">-&gt;</span>
+        prevLength = platforms.tiles.length
+        platforms._addRow vars
+
+        expect(vars.rowTiles.length).toBeGreaterThan <span class="hljs-number">0</span>
+        expect(platforms.tiles[<span class="hljs-number">0</span>]).toEqual vars.rowTiles
+
+      it <span class="hljs-string">'adds the same row of tiles if called again'</span>, <span class="hljs-function">-&gt;</span>
+        platforms._addRow vars
+        prevRowTiles = vars.rowTiles
+        platforms._addRow vars
+
+        expect(vars.rowTiles).toBe prevRowTiles
+        expect(platforms.tiles[<span class="hljs-number">1</span>]).toEqual platforms.tiles[<span class="hljs-number">0</span>]
+
+      it <span class="hljs-string">'adds a ledge if provided correct row type'</span>, <span class="hljs-function">-&gt;</span>
+        vars.rowType = <span class="hljs-string">'ledge'</span>
+        platforms._addRow vars
+
+        expect(platforms.ledges[<span class="hljs-number">0</span>] <span class="hljs-keyword">instanceof</span> Platforms.Ledge).toBe <span class="hljs-literal">yes</span>
+
+      it <span class="hljs-string">'sets row tiles so only those within start and end indexes are solid'</span>, <span class="hljs-function">-&gt;</span>
+        vars.rowType = <span class="hljs-string">'ledge'</span>
+        platforms._addRow vars
+
+        expect(platforms.tiles[<span class="hljs-number">0</span>][..vars.iColEnd]).<span class="hljs-keyword">not</span>.toContain Platforms.Tile.Empty
+        expect(platforms.tiles[<span class="hljs-number">0</span>][vars.iColEnd + <span class="hljs-number">1.</span>..]).<span class="hljs-keyword">not</span>.toContain Platforms.Tile.Solid
+
+    describe <span class="hljs-string">'#_setupEmptyRow'</span>, <span class="hljs-function">-&gt;</span>
+      vars = <span class="hljs-literal">null</span>
+
+      beforeEach -&gt;
+        vars = {}
+        platforms._setupEmptyRow vars
+
+      it <span class="hljs-string">'resets column indexes for upcoming row'</span>, <span class="hljs-function">-&gt;</span>
+        expect(vars.iColStart).toBe <span class="hljs-number">0</span>
+        expect(vars.iColEnd).toBe <span class="hljs-number">0</span>
+
+      it <span class="hljs-string">'resets row type for upcoming row'</span>, <span class="hljs-function">-&gt;</span>
+        expect(vars.rowType).toBe <span class="hljs-string">'empty'</span>
+
+    describe <span class="hljs-string">'#_setupLedgeRow'</span>, <span class="hljs-function">-&gt;</span>
+      vars = <span class="hljs-literal">null</span>
+
+      beforeEach -&gt;
+        vars =
+          <span class="hljs-attribute">facing</span>: <span class="hljs-string">'left'</span>
+          <span class="hljs-attribute">iLedgeRow</span>: <span class="hljs-number">0</span>
+          <span class="hljs-attribute">numCols</span>: <span class="hljs-number">13</span>
+          <span class="hljs-attribute">rangeLedgeSize</span>: <span class="hljs-number">2</span>
+          <span class="hljs-attribute">rangeRowSpacing</span>: <span class="hljs-number">2</span>
+
+      it <span class="hljs-string">'resets column indexes for upcoming ledge facing left, with variance'</span>, <span class="hljs-function">-&gt;</span>
+        platforms._setupLedgeRow vars
+
+        expect(vars.iColStart).toBe <span class="hljs-number">0</span>
+        expect(vars.iColEnd &gt;= platforms.minLedgeSize - <span class="hljs-number">1</span>).toBe <span class="hljs-literal">yes</span>
+
+      it <span class="hljs-string">'resets column indexes for upcoming ledge facing right, with variance'</span>, <span class="hljs-function">-&gt;</span>
+        vars.facing = <span class="hljs-string">'right'</span>
+        platforms._setupLedgeRow vars
+
+        expect(vars.iColStart &lt;= <span class="hljs-number">13</span> - platforms.minLedgeSize).toBe <span class="hljs-literal">yes</span>
+        expect(vars.iColEnd).toBe <span class="hljs-number">12</span>
+
+      it <span class="hljs-string">'resets row data for upcoming row, with variance'</span>, <span class="hljs-function">-&gt;</span>
+        platforms._setupLedgeRow vars
+
+        expect(vars.rowSize &gt;= platforms.minLedgeSize).toBe <span class="hljs-literal">yes</span>
+        expect(vars.rowSpacing &gt;= platforms.minLedgeSpacing.y).toBe <span class="hljs-literal">yes</span>
+        expect(vars.rowType).toBe <span class="hljs-string">'ledge'</span>
+
+      it <span class="hljs-string">'updates other related state'</span>, <span class="hljs-function">-&gt;</span>
+        platforms._setupLedgeRow vars
+
+        expect(vars.iLedgeRow).toBe <span class="hljs-number">1</span>
+        expect(vars.prevFacing).toBe <span class="hljs-string">'left'</span>
+
+    describe <span class="hljs-string">'#_setupEachRow'</span>, <span class="hljs-function">-&gt;</span>
+      vars = <span class="hljs-literal">null</span>
+
+      beforeEach -&gt; vars = { <span class="hljs-attribute">iLedgeLayer</span>: <span class="hljs-number">0</span> }
+
+      it <span class="hljs-string">'resets row tiles for upcoming row only on first ledge layer'</span>, <span class="hljs-function">-&gt;</span>
+        platforms._setupEachRow vars
+        expect(vars.rowTiles).toEqual []
+
+        vars.iLedgeLayer++
+        vars.rowTiles.push Platforms.Tile.Solid <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> [<span class="hljs-number">0.</span>.<span class="hljs-number">.13</span>]
+        platforms._setupEachRow vars
+        expect(vars.rowTiles).<span class="hljs-keyword">not</span>.toEqual []
+
+    describe <span class="hljs-string">'#_generateTiles'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'calls #_addRow for each row'</span>, <span class="hljs-function">-&gt;</span>
+        spyOn(platforms, <span class="hljs-string">'_addRow'</span>).<span class="hljs-keyword">and</span>.callThrough()
+        platforms._generateTiles()
+
+        expect(platforms._addRow.calls.count()).toBe platforms.tiles.length
+
+      it <span class="hljs-string">'calls #_setupEachRow for the each row'</span>, <span class="hljs-function">-&gt;</span>
+        spyOn(platforms, <span class="hljs-string">'_setupEachRow'</span>).<span class="hljs-keyword">and</span>.callThrough()
+        platforms._generateTiles()
+
+        expect(platforms._setupEachRow.calls.count()).toBe platforms.tiles.length
+
+      it <span class="hljs-string">'calls #_setupLedgeRow for each ledge and #_setupEmptyRow for the rest'</span>, <span class="hljs-function">-&gt;</span>
+        spyOn(platforms, <span class="hljs-string">'_setupLedgeRow'</span>).<span class="hljs-keyword">and</span>.callThrough()
+        spyOn(platforms, <span class="hljs-string">'_setupEmptyRow'</span>).<span class="hljs-keyword">and</span>.callThrough()
+        platforms._generateTiles()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>FIXME: Not sure why rounding is needed.</p></div></div><div class="code"><div class="wrapper">        expect(platforms._setupLedgeRow.calls.count()).toBe(
+          Math.round(platforms.ledges.length / platforms.ledgeThickness)
+        )
+        expect(platforms._setupEmptyRow.calls.count()).toBe(
+          platforms.tiles.length - platforms.ledges.length
+        )</div></div></div></div></body></html>

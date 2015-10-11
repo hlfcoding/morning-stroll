@@ -2,7 +2,7 @@
 <p>Player configures and controls a sprite, tracks and updates state given user
 interaction. This builds off the stock Flixel / Phaser player, but tries to
 make the movement more natural, which requires more animations, logic, and
-physics.</p></div></div><div class="code"><div class="wrapper">define [
+physics. Start reading from <code>update</code>.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>See</strong>: <a href="../tests/player.html">tests</a>.</p></div></div><div class="code"><div class="wrapper">define [
   <span class="hljs-string">'phaser'</span>
   <span class="hljs-string">'underscore'</span>
   <span class="hljs-string">'app/defines'</span>
@@ -83,6 +83,7 @@ physics.</p></div></div><div class="code"><div class="wrapper">define [
       <span class="hljs-property">@animations</span>.add <span class="hljs-string">'jump'</span>, [<span class="hljs-number">18.</span><span class="hljs-number">.31</span>], <span class="hljs-number">24</span>
       <span class="hljs-property">@animations</span>.add <span class="hljs-string">'land'</span>, [<span class="hljs-number">32</span>,<span class="hljs-number">33</span>,<span class="hljs-number">18</span>,<span class="hljs-number">17</span>], <span class="hljs-number">24</span>
       <span class="hljs-property">@animations</span>.add <span class="hljs-string">'end'</span>, [<span class="hljs-number">34.</span>.<span class="hljs-number">.53</span>], <span class="hljs-number">12</span>
+      <span class="hljs-property">@_nextActionOnComplete</span> = <span class="hljs-literal">null</span>
 
     <span class="hljs-attribute">_initDebugging</span>: <span class="hljs-function"><span class="hljs-params">(gui)</span> -&gt;</span>
       <span class="hljs-property">@debugNamespace</span> = <span class="hljs-string">'player'</span>
@@ -129,7 +130,6 @@ physics.</p></div></div><div class="code"><div class="wrapper">define [
       <span class="hljs-property">@maxVelocity</span> = <span class="hljs-keyword">new</span> Point <span class="hljs-number">200</span>, <span class="hljs-number">800</span> <span class="hljs-comment"># Run and terminal velocities.</span>
 
       <span class="hljs-property">@_jumpTimer</span> = <span class="hljs-property">@sprite</span>.game.time.create() <span class="hljs-comment"># This also acts like a flag.</span>
-      <span class="hljs-property">@_isTurning</span> = <span class="hljs-literal">no</span> <span class="hljs-comment"># Because velocity won't be 0 when turning while running.</span>
 
     <span class="hljs-attribute">_initState</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Readonly.
 Actions link states. Both correspond to animations.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@animation</span> = <span class="hljs-literal">null</span>
@@ -142,9 +142,13 @@ Actions link states. Both correspond to animations.</p></div></div><div class="c
       <span class="hljs-property">@control</span> = <span class="hljs-literal">on</span>
 
       <span class="hljs-property">@_fallingPoint</span> = <span class="hljs-literal">null</span>
-      <span class="hljs-property">@_keepCameraFocusUpdated</span> = <span class="hljs-literal">on</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="change">Change</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">_changeAnimation</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@_keepCameraFocusUpdated</span> = <span class="hljs-literal">on</span>
+      <span class="hljs-property">@_turnDirection</span> = <span class="hljs-literal">null</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="change">Change</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">_changeAnimation</span>: <span class="hljs-function">-&gt;</span>
       <span class="hljs-keyword">unless</span> <span class="hljs-property">@_isInMidAir</span>() <span class="hljs-keyword">or</span> <span class="hljs-property">@nextAction</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'none'</span>
-        <span class="hljs-property">@playAnimation</span> <span class="hljs-property">@nextAction</span>, <span class="hljs-property">@animation</span>?.<span class="hljs-keyword">loop</span>
+        animation = <span class="hljs-property">@playAnimation</span> <span class="hljs-property">@nextAction</span>, <span class="hljs-property">@animation</span>?.<span class="hljs-keyword">loop</span>
+        <span class="hljs-keyword">if</span> animation <span class="hljs-keyword">and</span> <span class="hljs-property">@_nextActionOnComplete</span>?
+          animation.onComplete.addOnce <span class="hljs-property">@_nextActionOnComplete</span>, @
+          <span class="hljs-property">@_nextActionOnComplete</span> = <span class="hljs-literal">null</span>
         <span class="hljs-keyword">return</span>
 
       <span class="hljs-keyword">switch</span> <span class="hljs-property">@nextState</span>
@@ -230,29 +234,26 @@ Also note that negative is up, positive is down.</p></div></div><div class="code
         <span class="hljs-property">@nextAction</span> = <span class="hljs-string">'stop'</span>
         <span class="hljs-keyword">return</span>
       <span class="hljs-property">@nextState</span> = <span class="hljs-string">'still'</span>
-      <span class="hljs-property">@_isTurning</span> = <span class="hljs-literal">no</span> <span class="hljs-comment"># In case of being blocked.</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="turn">Turn</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">_canBeginTurn</span>: <span class="hljs-function">-&gt;</span>
-      <span class="hljs-property">@nextDirection</span>? <span class="hljs-keyword">and</span> <span class="hljs-property">@nextAction</span> <span class="hljs-keyword">isnt</span> <span class="hljs-string">'start'</span> <span class="hljs-keyword">and</span>
-      <span class="hljs-keyword">not</span> <span class="hljs-property">@_isTurning</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@nextDirection</span> <span class="hljs-keyword">isnt</span> <span class="hljs-property">@direction</span>
+      <span class="hljs-property">@_turnDirection</span> = <span class="hljs-literal">null</span> <span class="hljs-comment"># In case of being blocked.</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="turn">Turn</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">_canBeginTurn</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@nextDirection</span>? <span class="hljs-keyword">and</span> <span class="hljs-property">@nextDirection</span> <span class="hljs-keyword">isnt</span> <span class="hljs-property">@direction</span> <span class="hljs-keyword">and</span>
+      <span class="hljs-property">@nextAction</span> <span class="hljs-keyword">isnt</span> <span class="hljs-string">'start'</span> <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> <span class="hljs-property">@_turnDirection</span>?
     <span class="hljs-attribute">_canEndTurn</span>: <span class="hljs-function">-&gt;</span>
-      <span class="hljs-property">@nextDirection</span>? <span class="hljs-keyword">and</span> <span class="hljs-property">@nextAction</span> <span class="hljs-keyword">isnt</span> <span class="hljs-string">'stop'</span> <span class="hljs-keyword">and</span> 
-      <span class="hljs-property">@_isTurning</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@nextDirection</span> <span class="hljs-keyword">is</span> <span class="hljs-property">@direction</span> <span class="hljs-keyword">and</span>
+      <span class="hljs-property">@nextAction</span> <span class="hljs-keyword">isnt</span> <span class="hljs-string">'stop'</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@_turnDirection</span>? <span class="hljs-keyword">and</span>
       <span class="hljs-property">@_isAnimationInterruptible</span>()
 
     <span class="hljs-attribute">_beginTurn</span>: <span class="hljs-function">-&gt;</span>
-      <span class="hljs-property">@nextAction</span> = <span class="hljs-string">'stop'</span>
-      <span class="hljs-property">@_isTurning</span> = <span class="hljs-literal">yes</span>
-      <span class="hljs-property">@direction</span> = <span class="hljs-property">@nextDirection</span>
+      <span class="hljs-property">@nextAction</span> = <span class="hljs-string">'stop'</span> <span class="hljs-keyword">unless</span> <span class="hljs-property">@_isFullyStill</span>()
+      <span class="hljs-property">@_turnDirection</span> = <span class="hljs-property">@nextDirection</span>
       <span class="hljs-property">@debug</span> <span class="hljs-string">'turn:start'</span>, <span class="hljs-property">@velocity</span>.x
       <span class="hljs-property">@debug</span> <span class="hljs-string">'facing'</span>, <span class="hljs-property">@nextDirection</span>
 
-    <span class="hljs-attribute">_endTurn</span>: <span class="hljs-function">-&gt;</span>
-      <span class="hljs-property">@_visualizeTurn</span>()
-
+    <span class="hljs-attribute">_endTurn</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Turn after stopping.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@_visualizeTurn</span>()
       <span class="hljs-property">@nextAction</span> = <span class="hljs-string">'start'</span>
-      <span class="hljs-property">@_isTurning</span> = <span class="hljs-literal">no</span>
+      <span class="hljs-property">@direction</span> = <span class="hljs-property">@_turnDirection</span>
+      <span class="hljs-property">@_turnDirection</span> = <span class="hljs-literal">null</span>
       <span class="hljs-property">@debug</span> <span class="hljs-string">'turn:end'</span>, <span class="hljs-property">@velocity</span>.x
 
-    <span class="hljs-attribute">_visualizeTurn</span>: <span class="hljs-function"><span class="hljs-params">(direction = <span class="hljs-property">@nextDirection</span>)</span> -&gt;</span>
+    <span class="hljs-attribute">_visualizeTurn</span>: <span class="hljs-function"><span class="hljs-params">(direction = <span class="hljs-property">@_turnDirection</span>)</span> -&gt;</span>
       <span class="hljs-property">@sprite</span>.scale.x = direction
       <span class="hljs-property">@physics</span>.offset.set <span class="hljs-property">@_xOffset</span>(direction), <span class="hljs-property">@_yOffset</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="update">Update</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">_updateCameraFocus</span>: <span class="hljs-function">-&gt;</span>
       <span class="hljs-property">@_keepCameraFocusUpdated</span> = <span class="hljs-literal">off</span> <span class="hljs-keyword">if</span> <span class="hljs-property">@nextAction</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'jump'</span>

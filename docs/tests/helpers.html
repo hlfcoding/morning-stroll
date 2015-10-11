@@ -1,0 +1,165 @@
+<!DOCTYPE html><html lang="en"><head><title>tests/helpers</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="tests/helpers"><meta name="groc-project-path" content="tests/helpers.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/tests/helpers.coffee">tests/helpers.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper">define [
+  <span class="hljs-string">'phaser'</span>
+  <span class="hljs-string">'underscore'</span>
+  <span class="hljs-string">'app/helpers'</span>
+], <span class="hljs-function"><span class="hljs-params">(Phaser, _, Helpers)</span> -&gt;</span>
+
+  {AnimationMixin, CameraMixin, DebugMixin} = Helpers
+
+  obj = <span class="hljs-literal">null</span>
+  beforeEach -&gt; obj = {}
+
+  describe <span class="hljs-string">'Helpers.AnimationMixin'</span>, <span class="hljs-function">-&gt;</span>
+    beforeEach -&gt; _.extend obj, AnimationMixin
+
+    describe <span class="hljs-string">'#playAnimation'</span>, <span class="hljs-function">-&gt;</span>
+      beforeEach -&gt;
+        obj.animations = { <span class="hljs-attribute">play</span>: <span class="hljs-function"><span class="hljs-params">(name)</span> -&gt;</span> { name } } <span class="hljs-comment"># Fake.</span>
+        obj.animation = { <span class="hljs-attribute">isPlaying</span>: <span class="hljs-literal">no</span> } <span class="hljs-comment"># Fake.</span>
+
+      it <span class="hljs-string">'plays if allowed to interrupt or current animation isn\'t playing'</span>, <span class="hljs-function">-&gt;</span>
+        expect(obj.playAnimation(<span class="hljs-string">'foo'</span>)).<span class="hljs-keyword">not</span>.toBe <span class="hljs-literal">no</span>
+
+        obj.animation = { <span class="hljs-attribute">isPlaying</span>: <span class="hljs-literal">yes</span> }
+        expect(obj.playAnimation(<span class="hljs-string">'foo'</span>, <span class="hljs-literal">no</span>)).toBe <span class="hljs-literal">no</span>
+
+      it <span class="hljs-string">'sets frame if given a number'</span>, <span class="hljs-function">-&gt;</span>
+        obj.playAnimation <span class="hljs-number">1</span>
+        expect(obj.animation).toBeNull()
+        expect(obj.animations.frame).toBe <span class="hljs-number">1</span>
+
+      it <span class="hljs-string">'plays animation if given a string, but only if it\'s different'</span>, <span class="hljs-function">-&gt;</span>
+        expect(obj.playAnimation(<span class="hljs-string">'foo'</span>)).toBeDefined()
+        expect(obj.animation).toBeDefined()
+        expect(obj.playAnimation(<span class="hljs-string">'foo'</span>)).toBe <span class="hljs-literal">no</span>
+
+  describe <span class="hljs-string">'Helpers.CameraMixin'</span>, <span class="hljs-function">-&gt;</span>
+    beforeEach -&gt; _.extend obj, CameraMixin
+
+    describe <span class="hljs-string">'#shake with #updateShake'</span>, <span class="hljs-function">-&gt;</span>
+      originalX = <span class="hljs-number">1</span>
+      originalY = <span class="hljs-number">1</span>
+
+      beforeEach -&gt;
+        obj.setPosition = <span class="hljs-function"><span class="hljs-params">(x, y)</span> -&gt;</span> <span class="hljs-property">@x</span> = x; <span class="hljs-property">@y</span> = y <span class="hljs-comment"># Fake.</span>
+        obj.setPosition originalX, originalY
+        obj.shake()
+
+      it <span class="hljs-string">'resets shake counter to count'</span>, <span class="hljs-function">-&gt;</span>
+        expect(obj._shake._counter).toBe obj._shake.count
+        expect(obj.isShaking()).toBe <span class="hljs-literal">yes</span>
+
+      it <span class="hljs-string">'shakes only until counter runs out'</span>, <span class="hljs-function">-&gt;</span>
+        obj._shake._counter = <span class="hljs-number">0</span>
+        expect(obj.isShaking()).toBe <span class="hljs-literal">no</span>
+        expect(obj.updateShake()).toBe <span class="hljs-literal">no</span>
+        expect(obj.x).toBe originalX
+        expect(obj.y).toBe originalY
+
+      it <span class="hljs-string">'updates camera x and y on successful shake'</span>, <span class="hljs-function">-&gt;</span>
+        expect(obj.updateShake()).<span class="hljs-keyword">not</span>.toBe <span class="hljs-literal">no</span>
+        expect(obj.x).<span class="hljs-keyword">not</span>.toBe originalX
+        expect(obj.y).<span class="hljs-keyword">not</span>.toBe originalY
+        expect(obj._shake._counter).toBe obj._shake.count - <span class="hljs-number">1</span>
+
+      it <span class="hljs-string">'alterates direction for each shake'</span>, <span class="hljs-function">-&gt;</span>
+        obj.updateShake()
+        {x, y} = obj
+        expect(x).toBeLessThan originalX
+        expect(y).toBeLessThan originalY
+
+        obj.updateShake()
+        expect(obj.x).toBeGreaterThan x
+        expect(obj.y).toBeGreaterThan y
+
+  describe <span class="hljs-string">'Helpers.DebugMixin'</span>, <span class="hljs-function">-&gt;</span>
+    beforeEach -&gt; _.extend obj, DebugMixin
+
+    describe <span class="hljs-string">'#_initDebugMixin'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'initializes debug-related flags'</span>, <span class="hljs-function">-&gt;</span>
+        completedInit = obj._initDebugMixin()
+        expect(obj.debugging).toBeDefined()
+        expect(obj.tracing).toBeDefined()
+        expect(completedInit).toBe <span class="hljs-literal">no</span>
+
+      it <span class="hljs-string">'creates #debugTextItems key-value store for info for Phaser.Utils.Debug'</span>, <span class="hljs-function">-&gt;</span>
+        obj._initDebugMixin()
+        expect(obj.debugTextItems).toEqual {}
+
+      it <span class="hljs-string">'sets up gui (folder) if provided one'</span>, <span class="hljs-function">-&gt;</span>
+        gui = { <span class="hljs-attribute">add</span>: <span class="hljs-function">-&gt;</span> }
+        spyOn(gui, <span class="hljs-string">'add'</span>).<span class="hljs-keyword">and</span>.returnValue jasmine.createSpyObj(<span class="hljs-string">'control'</span>, [<span class="hljs-string">'listen'</span>, <span class="hljs-string">'onFinishChange'</span>])
+
+        completedInit = obj._initDebugMixin gui
+        expect(obj.gui).toBe gui
+        expect(gui.add).toHaveBeenCalledWith obj, <span class="hljs-string">'debugging'</span>
+        expect(gui.add).toHaveBeenCalledWith obj, <span class="hljs-string">'tracing'</span>
+        expect(completedInit).toBe <span class="hljs-literal">yes</span>
+
+    describe <span class="hljs-string">'#debug'</span>, <span class="hljs-function">-&gt;</span>
+      beforeEach -&gt;
+        spyOn <span class="hljs-built_in">console</span>, <span class="hljs-string">'trace'</span>
+        obj._initDebugMixin()
+
+      it <span class="hljs-string">'only works if debugging flag is on'</span>, <span class="hljs-function">-&gt;</span>
+        obj.debugging = <span class="hljs-literal">off</span>
+
+        obj.debug <span class="hljs-string">'someItem'</span>, <span class="hljs-string">'value'</span>
+        expect(<span class="hljs-built_in">console</span>.trace).<span class="hljs-keyword">not</span>.toHaveBeenCalled()
+        expect(obj.debugTextItems).toEqual {}
+
+      it <span class="hljs-string">'calls console.trace with namespaced label instead if tracing flag is on'</span>, <span class="hljs-function">-&gt;</span>
+        obj.tracing = <span class="hljs-literal">on</span>
+        obj.debugNamespace = <span class="hljs-string">'obj'</span>
+
+        obj.debug <span class="hljs-string">'someItem'</span>, <span class="hljs-string">'value'</span>
+        expect(<span class="hljs-built_in">console</span>.trace).toHaveBeenCalledWith <span class="hljs-string">'obj:someItem'</span>, <span class="hljs-string">'value'</span>
+        expect(obj.debugTextItems).toEqual {}
+
+      it <span class="hljs-string">'calls console.table instead for values that are 2D arrays'</span>, <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Since they are too big to render on game screen.</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-keyword">if</span> <span class="hljs-built_in">console</span>.table? <span class="hljs-keyword">then</span> spyOn(<span class="hljs-built_in">console</span>, <span class="hljs-string">'table'</span>) <span class="hljs-keyword">else</span> <span class="hljs-built_in">console</span>.table = jasmine.createSpy(<span class="hljs-string">'table'</span>)
+        spyOn <span class="hljs-built_in">console</span>, <span class="hljs-string">'groupCollapsed'</span>
+        spyOn <span class="hljs-built_in">console</span>, <span class="hljs-string">'groupEnd'</span>
+        obj.debugNamespace = <span class="hljs-string">'obj'</span>
+
+        obj.debug <span class="hljs-string">'someTable'</span>, [[<span class="hljs-number">0</span>],[<span class="hljs-number">1</span>]]
+        expect(<span class="hljs-built_in">console</span>.groupCollapsed).toHaveBeenCalledWith <span class="hljs-string">'obj:someTable'</span>
+        expect(<span class="hljs-built_in">console</span>.table).toHaveBeenCalledWith [[<span class="hljs-number">0</span>],[<span class="hljs-number">1</span>]]
+        expect(<span class="hljs-built_in">console</span>.groupEnd).toHaveBeenCalled()
+        expect(obj.debugTextItems).toEqual {}
+
+      it <span class="hljs-string">'truncates float values to 2 fixed decimal places'</span>, <span class="hljs-function">-&gt;</span>
+        obj.debug <span class="hljs-string">'someFloat'</span>, <span class="hljs-number">1.2345</span>
+        expect(obj.debugTextItems.someFloat).toBe <span class="hljs-string">'someFloat: 1.23'</span>
+
+      it <span class="hljs-string">'serializes Phaser.Point values to simple text'</span>, <span class="hljs-function">-&gt;</span>
+        obj.debug <span class="hljs-string">'somePoint'</span>, <span class="hljs-keyword">new</span> Phaser.Point(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
+        expect(obj.debugTextItems.somePoint).toBe <span class="hljs-string">'somePoint: x: 1, y: 1'</span>
+
+      it <span class="hljs-string">'allows including details hash to complement value'</span>, <span class="hljs-function">-&gt;</span>
+        obj.debug <span class="hljs-string">'someItem'</span>, <span class="hljs-string">'value'</span>, { <span class="hljs-attribute">someDetail</span>: <span class="hljs-string">'detailValue'</span> }
+        expect(obj.debugTextItems.someItem).toBe <span class="hljs-string">'someItem: value someDetail: detailValue'</span>
+
+    describe <span class="hljs-string">'#_prettyPoint'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'converts a Phaser.Point to hash form'</span>, <span class="hljs-function">-&gt;</span>
+        point = <span class="hljs-keyword">new</span> Phaser.Point <span class="hljs-number">1</span>, <span class="hljs-number">1</span>
+        expect(obj._prettyPoint(point)).toEqual { <span class="hljs-attribute">x</span>: <span class="hljs-number">1</span>, <span class="hljs-attribute">y</span>: <span class="hljs-number">1</span> }
+
+    describe <span class="hljs-string">'#_prettyHash'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'stringifies and simplifies a hash into readable text'</span>, <span class="hljs-function">-&gt;</span>
+        hash = { <span class="hljs-attribute">a</span>: <span class="hljs-number">1</span>, <span class="hljs-attribute">b</span>: { <span class="hljs-attribute">c</span>: <span class="hljs-number">2</span> } }
+        expect(obj._prettyHash(hash)).toBe <span class="hljs-string">'a: 1, b: c: 2'</span>
+
+  describe <span class="hljs-string">'Helpers.autoSetTiles'</span>, <span class="hljs-function">-&gt;</span>
+    it <span class="hljs-string">'sets solid tiles to correct variants based on adjacent tiles'</span>, <span class="hljs-function">-&gt;</span>
+      results = Helpers.autoSetTiles [
+        [<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>]
+        [<span class="hljs-number">1</span>,<span class="hljs-number">1</span>,<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1</span>]
+        [<span class="hljs-number">1</span>,<span class="hljs-number">1</span>,<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1</span>]
+        [<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>]
+      ]
+      expect(results).toEqual [
+        [<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>]
+        [<span class="hljs-number">15</span>,<span class="hljs-number">13</span>,<span class="hljs-number">0</span>,<span class="hljs-number">7</span>,<span class="hljs-number">15</span>]
+        [<span class="hljs-number">12</span>,<span class="hljs-number">10</span>,<span class="hljs-number">0</span>,<span class="hljs-number">4</span>,<span class="hljs-number">12</span>]
+        [<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>]
+      ]</div></div></div></div></body></html>

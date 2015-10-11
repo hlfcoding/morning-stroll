@@ -1,4 +1,10 @@
-<!DOCTYPE html><html lang="en"><head><title>src/state-play</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/state-play"><meta name="groc-project-path" content="src/state-play.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/src/state-play.coffee">src/state-play.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="playstate">PlayState</h1></div></div></div><div class="segment"><div class="code"><div class="wrapper">define [
+<!DOCTYPE html><html lang="en"><head><title>src/state-play</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/state-play"><meta name="groc-project-path" content="src/state-play.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/src/state-play.coffee">src/state-play.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="playstate">PlayState</h1>
+<p>This is the main game class. It coordinates between the main game objects
+(including camera and music) and handles their interactions. It also handles
+ending the game, and any shortkeys. The exact list is long, but start tracing
+from <code>create</code> and <code>update</code> like any other Phaser state, and you should get
+far. Also note any logic that can be easily factored out is factored out of
+this file.</p></div></div><div class="code"><div class="wrapper">define [
   <span class="hljs-string">'dat.gui'</span>
   <span class="hljs-string">'phaser'</span>
   <span class="hljs-string">'underscore'</span>
@@ -14,7 +20,7 @@
 
   {Key, Keyboard, Physics, Point, Rectangle, State, Timer} = Phaser
 
-  {artH, mapH, fontLarge, fontSmall, playerH, playerW, playerYOffset, shakeFallH, deadzoneH} = defines
+  {domStateEvents, artH, mapH, fontLarge, fontSmall, playerH, playerW, playerYOffset, shakeFallH, deadzoneH} = defines
 
   {AnimationMixin, CameraMixin, DebugMixin, DebugDisplayMixin, TextMixin} = Helpers
 
@@ -23,6 +29,11 @@
   <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PlayState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span></span>
 
     <span class="hljs-attribute">init</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">if</span> domStateEvents
+        e = <span class="hljs-built_in">document</span>.createEvent <span class="hljs-string">'CustomEvent'</span>
+        e.initCustomEvent <span class="hljs-string">'state:play'</span>
+        <span class="hljs-property">@game</span>.parent.dispatchEvent e
+
       {<span class="hljs-property">@debugging</span>, <span class="hljs-property">@developing</span>} = defines
       <span class="hljs-property">@detachedCamera</span> = <span class="hljs-literal">off</span>
       <span class="hljs-property">@ended</span> = <span class="hljs-literal">no</span>
@@ -99,9 +110,7 @@
       <span class="hljs-property">@music</span>?.pause()
 
     <span class="hljs-attribute">onFocus</span>: <span class="hljs-function">-&gt;</span>
-      <span class="hljs-property">@music</span>?.resume()
-
-    <span class="hljs-attribute">end</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>First animate player.</p></div></div><div class="code"><div class="wrapper">      animation = <span class="hljs-property">@player</span>.startEnding <span class="hljs-property">@mate</span>
+      <span class="hljs-property">@music</span>?.resume()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="main-own-methods">Main own methods</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">end</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>First animate player.</p></div></div><div class="code"><div class="wrapper">      animation = <span class="hljs-property">@player</span>.startEnding <span class="hljs-property">@mate</span>
       animation.onComplete.addOnce =&gt;</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Then animate mate.</p></div></div><div class="code"><div class="wrapper">        animation = <span class="hljs-property">@mate</span>.play <span class="hljs-string">'end'</span>
         animation.onComplete.addOnce =&gt;</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Then lock them onto their final frames.</p></div></div><div class="code"><div class="wrapper">          <span class="hljs-property">@player</span>.animations.frame = Player.LastFrame
           <span class="hljs-property">@mate</span>.animations.frame = MateLastFrame</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Then render ending display.</p></div></div><div class="code"><div class="wrapper">      _.delay =&gt;
@@ -113,9 +122,7 @@
 <span class="hljs-function">      <span class="hljs-title">_quit</span> = =&gt;</span> <span class="hljs-property">@state</span>.startWithTransition <span class="hljs-literal">null</span>, <span class="hljs-string">'menu'</span>, <span class="hljs-literal">yes</span>
       <span class="hljs-keyword">if</span> <span class="hljs-property">@music</span>.volume <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
         _quit()
-      <span class="hljs-keyword">else</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Fade the music.</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-property">@music</span>.fadeOut <span class="hljs-number">3</span> * Timer.SECOND</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Then go back to menu while clearing world.</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-property">@music</span>.onFadeComplete.addOnce _quit
-
-    <span class="hljs-attribute">_addBackground</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">else</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Fade the music.</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-property">@music</span>.fadeOut <span class="hljs-number">3</span> * Timer.SECOND</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Then go back to menu while clearing world.</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-property">@music</span>.onFadeComplete.addOnce _quit</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="subroutines">Subroutines</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">_addBackground</span>: <span class="hljs-function">-&gt;</span>
       parallaxTolerance = mapH - artH
       <span class="hljs-property">@background</span> = <span class="hljs-keyword">new</span> Background { parallaxTolerance }, <span class="hljs-property">@game</span>
       <span class="hljs-property">@background</span>.addImages _.template(<span class="hljs-string">'bg&lt;%= zIndex %&gt;'</span>), <span class="hljs-number">16</span>

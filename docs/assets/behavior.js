@@ -13,16 +13,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "commentsOnly": true,
           "name": "Markdown"
         },
-        "sourcePath": "/Users/destrado/Projects/morning-stroll/README.md",
-        "projectPath": "README.md",
+        "sourcePath": "/Users/destrado/Projects/morning-stroll/docs/README.md",
+        "projectPath": "docs/README.md",
         "targetPath": "index",
         "pageTitle": "index",
         "firstHeader": {
           "type": "heading",
           "data": {
             "level": 1,
-            "title": "Morning Stroll",
-            "slug": "morning-stroll",
+            "title": "Morning Stroll: Docs",
+            "slug": "morning-stroll-docs",
             "isFileHeader": true
           },
           "depth": 1,
@@ -31,33 +31,14 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "type": "heading",
               "data": {
                 "level": 2,
-                "title": "Development",
-                "slug": "development"
-              },
-              "depth": 2,
-              "children": [
-                {
-                  "type": "heading",
-                  "data": {
-                    "level": 3,
-                    "title": "Sample ST2 Project File",
-                    "slug": "sample-st2-project-file"
-                  },
-                  "depth": 3
-                }
-              ]
-            }, {
-              "type": "heading",
-              "data": {
-                "level": 2,
-                "title": "License",
-                "slug": "license"
+                "title": "Navigation",
+                "slug": "navigation"
               },
               "depth": 2
             }
           ]
         },
-        "title": "Morning Stroll"
+        "title": "Morning Stroll: Docs"
       },
       "depth": 1,
       "outline": [
@@ -65,27 +46,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
           "type": "heading",
           "data": {
             "level": 2,
-            "title": "Development",
-            "slug": "development"
-          },
-          "depth": 2,
-          "children": [
-            {
-              "type": "heading",
-              "data": {
-                "level": 3,
-                "title": "Sample ST2 Project File",
-                "slug": "sample-st2-project-file"
-              },
-              "depth": 3
-            }
-          ]
-        }, {
-          "type": "heading",
-          "data": {
-            "level": 2,
-            "title": "License",
-            "slug": "license"
+            "title": "Navigation",
+            "slug": "navigation"
           },
           "depth": 2
         }
@@ -239,6 +201,14 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "type": "heading",
                   "data": {
                     "level": 2,
+                    "title": "Site",
+                    "slug": "site"
+                  },
+                  "depth": 2
+                }, {
+                  "type": "heading",
+                  "data": {
+                    "level": 2,
                     "title": "Debug",
                     "slug": "debug"
                   },
@@ -272,6 +242,14 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 "level": 2,
                 "title": "Main",
                 "slug": "main"
+              },
+              "depth": 2
+            }, {
+              "type": "heading",
+              "data": {
+                "level": 2,
+                "title": "Site",
+                "slug": "site"
               },
               "depth": 2
             }, {
@@ -316,24 +294,24 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "type": "heading",
                   "data": {
                     "level": 2,
-                    "title": "Animation",
-                    "slug": "animation"
+                    "title": "AnimationMixin",
+                    "slug": "animationmixin"
                   },
                   "depth": 2
                 }, {
                   "type": "heading",
                   "data": {
                     "level": 2,
-                    "title": "Camera",
-                    "slug": "camera"
+                    "title": "CameraMixin",
+                    "slug": "cameramixin"
                   },
                   "depth": 2
                 }, {
                   "type": "heading",
                   "data": {
                     "level": 2,
-                    "title": "Debugging",
-                    "slug": "debugging"
+                    "title": "Debugging Mixins",
+                    "slug": "debugging-mixins"
                   },
                   "depth": 2
                 }, {
@@ -348,8 +326,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "type": "heading",
                   "data": {
                     "level": 2,
-                    "title": "Flixel shims",
-                    "slug": "flixel-shims"
+                    "title": "Flixel Tilemap AUTO Layout Shim",
+                    "slug": "flixel-tilemap-auto-layout-shim"
                   },
                   "depth": 2
                 }, {
@@ -364,16 +342,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                   "type": "heading",
                   "data": {
                     "level": 2,
-                    "title": "Transition",
-                    "slug": "transition"
+                    "title": "StateManagerMixin",
+                    "slug": "statemanagermixin"
                   },
                   "depth": 2
                 }, {
                   "type": "heading",
                   "data": {
                     "level": 2,
-                    "title": "Text",
-                    "slug": "text"
+                    "title": "TextMixin",
+                    "slug": "textmixin"
                   },
                   "depth": 2
                 }, {
@@ -395,24 +373,24 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "type": "heading",
               "data": {
                 "level": 2,
-                "title": "Animation",
-                "slug": "animation"
+                "title": "AnimationMixin",
+                "slug": "animationmixin"
               },
               "depth": 2
             }, {
               "type": "heading",
               "data": {
                 "level": 2,
-                "title": "Camera",
-                "slug": "camera"
+                "title": "CameraMixin",
+                "slug": "cameramixin"
               },
               "depth": 2
             }, {
               "type": "heading",
               "data": {
                 "level": 2,
-                "title": "Debugging",
-                "slug": "debugging"
+                "title": "Debugging Mixins",
+                "slug": "debugging-mixins"
               },
               "depth": 2
             }, {
@@ -427,8 +405,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "type": "heading",
               "data": {
                 "level": 2,
-                "title": "Flixel shims",
-                "slug": "flixel-shims"
+                "title": "Flixel Tilemap AUTO Layout Shim",
+                "slug": "flixel-tilemap-auto-layout-shim"
               },
               "depth": 2
             }, {
@@ -443,16 +421,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "type": "heading",
               "data": {
                 "level": 2,
-                "title": "Transition",
-                "slug": "transition"
+                "title": "StateManagerMixin",
+                "slug": "statemanagermixin"
               },
               "depth": 2
             }, {
               "type": "heading",
               "data": {
                 "level": 2,
-                "title": "Text",
-                "slug": "text"
+                "title": "TextMixin",
+                "slug": "textmixin"
               },
               "depth": 2
             }, {
@@ -483,7 +461,17 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "projectPath": "src/in-state-menu.coffee",
             "targetPath": "src/in-state-menu",
             "pageTitle": "src/in-state-menu",
-            "title": "in-state-menu"
+            "firstHeader": {
+              "type": "heading",
+              "data": {
+                "level": 1,
+                "title": "InStateMenu",
+                "slug": "instatemenu",
+                "isFileHeader": true
+              },
+              "depth": 1
+            },
+            "title": "InStateMenu"
           },
           "depth": 2,
           "outline": []
@@ -767,11 +755,106 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "foldPrefix": "^",
               "name": "CoffeeScript"
             },
+            "sourcePath": "/Users/destrado/Projects/morning-stroll/src/site.coffee",
+            "projectPath": "src/site.coffee",
+            "targetPath": "src/site",
+            "pageTitle": "src/site",
+            "firstHeader": {
+              "type": "heading",
+              "data": {
+                "level": 1,
+                "title": "Site ",
+                "slug": "site-",
+                "isFileHeader": true
+              },
+              "depth": 1,
+              "children": [
+                {
+                  "type": "heading",
+                  "data": {
+                    "level": 2,
+                    "title": "Fiddle",
+                    "slug": "fiddle"
+                  },
+                  "depth": 2
+                }, {
+                  "type": "heading",
+                  "data": {
+                    "level": 2,
+                    "title": "About",
+                    "slug": "about"
+                  },
+                  "depth": 2
+                }, {
+                  "type": "heading",
+                  "data": {
+                    "level": 2,
+                    "title": "Dependencies",
+                    "slug": "dependencies"
+                  },
+                  "depth": 2
+                }
+              ]
+            },
+            "title": "Site "
+          },
+          "depth": 2,
+          "outline": [
+            {
+              "type": "heading",
+              "data": {
+                "level": 2,
+                "title": "Fiddle",
+                "slug": "fiddle"
+              },
+              "depth": 2
+            }, {
+              "type": "heading",
+              "data": {
+                "level": 2,
+                "title": "About",
+                "slug": "about"
+              },
+              "depth": 2
+            }, {
+              "type": "heading",
+              "data": {
+                "level": 2,
+                "title": "Dependencies",
+                "slug": "dependencies"
+              },
+              "depth": 2
+            }
+          ]
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "highlightJS": "coffeescript",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
             "sourcePath": "/Users/destrado/Projects/morning-stroll/src/state-boot.coffee",
             "projectPath": "src/state-boot.coffee",
             "targetPath": "src/state-boot",
             "pageTitle": "src/state-boot",
-            "title": "state-boot"
+            "firstHeader": {
+              "type": "heading",
+              "data": {
+                "level": 1,
+                "title": "BootState",
+                "slug": "bootstate",
+                "isFileHeader": true
+              },
+              "depth": 1
+            },
+            "title": "BootState"
           },
           "depth": 2,
           "outline": []
@@ -793,7 +876,17 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "projectPath": "src/state-menu.coffee",
             "targetPath": "src/state-menu",
             "pageTitle": "src/state-menu",
-            "title": "state-menu"
+            "firstHeader": {
+              "type": "heading",
+              "data": {
+                "level": 1,
+                "title": "MenuState",
+                "slug": "menustate",
+                "isFileHeader": true
+              },
+              "depth": 1
+            },
+            "title": "MenuState"
           },
           "depth": 2,
           "outline": []
@@ -823,12 +916,49 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 "slug": "playstate",
                 "isFileHeader": true
               },
-              "depth": 1
+              "depth": 1,
+              "children": [
+                {
+                  "type": "heading",
+                  "data": {
+                    "level": 2,
+                    "title": "Main own methods",
+                    "slug": "main-own-methods"
+                  },
+                  "depth": 2
+                }, {
+                  "type": "heading",
+                  "data": {
+                    "level": 2,
+                    "title": "Subroutines",
+                    "slug": "subroutines"
+                  },
+                  "depth": 2
+                }
+              ]
             },
             "title": "PlayState"
           },
           "depth": 2,
-          "outline": []
+          "outline": [
+            {
+              "type": "heading",
+              "data": {
+                "level": 2,
+                "title": "Main own methods",
+                "slug": "main-own-methods"
+              },
+              "depth": 2
+            }, {
+              "type": "heading",
+              "data": {
+                "level": 2,
+                "title": "Subroutines",
+                "slug": "subroutines"
+              },
+              "depth": 2
+            }
+          ]
         }, {
           "type": "file",
           "data": {
@@ -847,10 +977,150 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             "projectPath": "src/state-preload.coffee",
             "targetPath": "src/state-preload",
             "pageTitle": "src/state-preload",
-            "title": "state-preload"
+            "firstHeader": {
+              "type": "heading",
+              "data": {
+                "level": 1,
+                "title": "PreloadState",
+                "slug": "preloadstate",
+                "isFileHeader": true
+              },
+              "depth": 1
+            },
+            "title": "PreloadState"
           },
           "depth": 2,
           "outline": []
+        }
+      ]
+    }, {
+      "type": "folder",
+      "data": {
+        "path": "tests",
+        "title": "tests"
+      },
+      "depth": 1,
+      "children": [
+        {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "highlightJS": "coffeescript",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/destrado/Projects/morning-stroll/tests/background.coffee",
+            "projectPath": "tests/background.coffee",
+            "targetPath": "tests/background",
+            "pageTitle": "tests/background",
+            "title": "background"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "highlightJS": "coffeescript",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/destrado/Projects/morning-stroll/tests/fakes.coffee",
+            "projectPath": "tests/fakes.coffee",
+            "targetPath": "tests/fakes",
+            "pageTitle": "tests/fakes",
+            "title": "fakes"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "highlightJS": "coffeescript",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/destrado/Projects/morning-stroll/tests/helpers.coffee",
+            "projectPath": "tests/helpers.coffee",
+            "targetPath": "tests/helpers",
+            "pageTitle": "tests/helpers",
+            "title": "helpers"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "highlightJS": "coffeescript",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/destrado/Projects/morning-stroll/tests/platforms.coffee",
+            "projectPath": "tests/platforms.coffee",
+            "targetPath": "tests/platforms",
+            "pageTitle": "tests/platforms",
+            "title": "platforms"
+          },
+          "depth": 2,
+          "outline": []
+        }, {
+          "type": "file",
+          "data": {
+            "language": {
+              "nameMatchers": [".coffee", "Cakefile"],
+              "pygmentsLexer": "coffee-script",
+              "highlightJS": "coffeescript",
+              "multiLineComment": ["###*", " *", " ###", "###", "#", "###", "###*", "#", "###"],
+              "strictMultiLineEnd": false,
+              "singleLineComment": ["#"],
+              "ignorePrefix": "}",
+              "foldPrefix": "^",
+              "name": "CoffeeScript"
+            },
+            "sourcePath": "/Users/destrado/Projects/morning-stroll/tests/player.coffee",
+            "projectPath": "tests/player.coffee",
+            "targetPath": "tests/player",
+            "pageTitle": "tests/player",
+            "title": "player"
+          },
+          "depth": 2,
+          "outline": [
+            {
+              "type": "heading",
+              "data": {
+                "level": 2,
+                "title": "Supplemental Manual Tests ",
+                "slug": "supplemental-manual-tests-"
+              },
+              "depth": 2
+            }
+          ]
         }
       ]
     }

@@ -1,0 +1,270 @@
+<!DOCTYPE html><html lang="en"><head><title>tests/player</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="tests/player"><meta name="groc-project-path" content="tests/player.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/tests/player.coffee">tests/player.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper">define [
+  <span class="hljs-string">'phaser'</span>
+  <span class="hljs-string">'underscore'</span>
+  <span class="hljs-string">'app/player'</span>
+  <span class="hljs-string">'test/fakes'</span>
+], <span class="hljs-function"><span class="hljs-params">(Phaser, _, Player, fakes)</span> -&gt;</span>
+
+  {Direction} = Player
+
+  describe <span class="hljs-string">'Player'</span>, <span class="hljs-function">-&gt;</span>
+    cursors = <span class="hljs-literal">null</span>
+    game = <span class="hljs-literal">null</span>
+    player = <span class="hljs-literal">null</span>
+
+    beforeEach -&gt;
+      spyOn <span class="hljs-attribute">Player</span>::, <span class="hljs-string">'_initialize'</span>
+      player = <span class="hljs-keyword">new</span> Player()
+      spyOn(player, method).<span class="hljs-keyword">and</span>.callThrough() <span class="hljs-keyword">for</span> method <span class="hljs-keyword">in</span> [
+        <span class="hljs-string">'_beginJump'</span>, <span class="hljs-string">'_buildJump'</span>, <span class="hljs-string">'_endJump'</span>
+        <span class="hljs-string">'_beginRun'</span>, <span class="hljs-string">'_buildRun'</span>, <span class="hljs-string">'_endRun'</span>
+        <span class="hljs-string">'_beginTurn'</span>, <span class="hljs-string">'_endTurn'</span>
+        <span class="hljs-string">'playAnimation'</span>
+      ]
+      _.extend player, fakes.createPlayerProps(player)
+
+      player._initPhysics()
+      player._initState()
+
+      {cursors} = player
+<span class="hljs-function">
+    <span class="hljs-title">endAnimation</span> = -&gt;</span>
+      player.animation.isPlaying = <span class="hljs-literal">no</span>
+      player.animation.isFinished = <span class="hljs-literal">yes</span>
+
+    initialYAcceleration = <span class="hljs-literal">null</span>
+<span class="hljs-function">    <span class="hljs-title">runJumpUpdatesUntil</span> = <span class="hljs-params">(stopAt)</span> -&gt;</span>
+      cursors.up.isDown = <span class="hljs-literal">yes</span>
+      initialYAcceleration = player.acceleration.y
+      player.update()
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">if</span> stopAt <span class="hljs-keyword">is</span> <span class="hljs-string">'rising'</span>
+
+      player.update()
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">if</span> stopAt <span class="hljs-keyword">is</span> <span class="hljs-string">'building'</span>
+
+      cursors.up.isDown = <span class="hljs-literal">no</span>
+      cursors.up.isUp = <span class="hljs-literal">yes</span>
+      player.velocity.y = <span class="hljs-number">1</span>
+      player.update() <span class="hljs-comment"># End jump.</span>
+      player.update() <span class="hljs-comment"># Fall.</span>
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">if</span> stopAt <span class="hljs-keyword">is</span> <span class="hljs-string">'falling'</span>
+
+      spyOn(player.physics, <span class="hljs-string">'onFloor'</span>).<span class="hljs-keyword">and</span>.returnValue <span class="hljs-literal">yes</span>
+      player.update()
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">if</span> stopAt <span class="hljs-keyword">is</span> <span class="hljs-string">'landing'</span>
+<span class="hljs-function">
+    <span class="hljs-title">runRunUpdatesUntil</span> = <span class="hljs-params">(stopAt, options)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> options?.backwards <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> (stopAt <span class="hljs-keyword">in</span> [<span class="hljs-string">'turn'</span>, <span class="hljs-string">'restart'</span>])
+        cursors.left.isDown = <span class="hljs-literal">yes</span>
+      <span class="hljs-keyword">else</span> cursors.right.isDown = <span class="hljs-literal">yes</span>
+
+      player.update()
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">if</span> stopAt <span class="hljs-keyword">is</span> <span class="hljs-string">'start'</span>
+
+      endAnimation()
+      player.update()
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">if</span> stopAt <span class="hljs-keyword">is</span> <span class="hljs-string">'running'</span>
+
+      <span class="hljs-keyword">unless</span> options?.backwards
+        player.velocity.x = <span class="hljs-number">1</span>
+        cursors.right.isDown = <span class="hljs-literal">no</span>
+        cursors.right.isUp = <span class="hljs-literal">yes</span>
+        player.update()
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">if</span> stopAt <span class="hljs-keyword">is</span> <span class="hljs-string">'stop'</span>
+
+        player.velocity.x = <span class="hljs-number">0</span>
+        player.update()
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">if</span> stopAt <span class="hljs-keyword">is</span> <span class="hljs-string">'still'</span>
+
+      cursors.right.isDown = <span class="hljs-literal">no</span>
+      cursors.left.isDown = <span class="hljs-literal">yes</span>
+      player.update()
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">if</span> stopAt <span class="hljs-keyword">is</span> <span class="hljs-string">'turn'</span>
+
+      endAnimation()
+      player.update()
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">if</span> stopAt <span class="hljs-keyword">is</span> <span class="hljs-string">'restart'</span>
+<span class="hljs-function">
+    <span class="hljs-title">testStartAnimation</span> = -&gt;</span>
+      expect(player.nextAction).toBe <span class="hljs-string">'start'</span>
+      expect(player.playAnimation).toHaveBeenCalledWith <span class="hljs-string">'start'</span>, <span class="hljs-literal">undefined</span>
+      expect(player._isAnimationInterruptible()).toBe <span class="hljs-literal">no</span>
+<span class="hljs-function">
+    <span class="hljs-title">testStopAnimation</span> = -&gt;</span>
+      expect(player.nextAction).toBe <span class="hljs-string">'stop'</span>
+      expect(player.playAnimation).toHaveBeenCalledWith <span class="hljs-string">'stop'</span>, <span class="hljs-literal">yes</span>
+      expect(player._isAnimationInterruptible()).toBe <span class="hljs-literal">no</span>
+
+    describe <span class="hljs-string">'when initialized'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'is set to still and facing right'</span>, <span class="hljs-function">-&gt;</span>
+        expect(player.state).toBe <span class="hljs-string">'still'</span>
+        expect(player._isFullyStill()).toBe <span class="hljs-literal">yes</span>
+        expect(player.direction).toBe Direction.Right
+        expect(player.animation).toBeNull()
+
+      it <span class="hljs-string">'has no next state info'</span>, <span class="hljs-function">-&gt;</span>
+        expect(player.nextAction).toBe <span class="hljs-string">'none'</span>
+        expect(player.nextDirection).toBeNull()
+        expect(player.nextState).toBeNull()
+
+    describe <span class="hljs-string">'when x cursor key is down in same direction'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'can get and set the right direction from #_xDirectionInput'</span>, <span class="hljs-function">-&gt;</span>
+        runRunUpdatesUntil <span class="hljs-string">'start'</span>
+
+        expect(player._xDirectionInput()).toBe Direction.Right
+        expect(player.nextDirection).toBe Direction.Right
+
+      describe <span class="hljs-string">'when still'</span>, <span class="hljs-function">-&gt;</span>
+        beforeEach -&gt; runRunUpdatesUntil <span class="hljs-string">'start'</span>
+
+        it <span class="hljs-string">'will begin to run'</span>, <span class="hljs-function">-&gt;</span>
+          expect(player.state).toBe <span class="hljs-string">'running'</span>
+          expect(player._beginRun).toHaveBeenCalled()
+
+        it <span class="hljs-string">'will play start animation'</span>, testStartAnimation
+
+      describe <span class="hljs-string">'when start animation finishes'</span>, <span class="hljs-function">-&gt;</span>
+        beforeEach -&gt; runRunUpdatesUntil <span class="hljs-string">'running'</span>
+
+        it <span class="hljs-string">'will be fully running'</span>, <span class="hljs-function">-&gt;</span>
+          expect(player._isFullyRunning()).toBe <span class="hljs-literal">yes</span>
+          expect(player._buildRun).toHaveBeenCalled()
+
+        it <span class="hljs-string">'will play interruptible run animation in loop'</span>, <span class="hljs-function">-&gt;</span>
+          expect(player.playAnimation).toHaveBeenCalledWith <span class="hljs-string">'run'</span>, <span class="hljs-literal">no</span>
+          expect(player.animation.<span class="hljs-keyword">loop</span>).toBe <span class="hljs-literal">on</span>
+          expect(player._isAnimationInterruptible()).toBe <span class="hljs-literal">yes</span>
+
+        it <span class="hljs-string">'will not run but fall over thin air'</span>, <span class="hljs-function">-&gt;</span>
+          player.velocity.y = <span class="hljs-number">1</span>
+          expect(player._canFall()).toBe <span class="hljs-literal">yes</span>
+          player.update()
+
+          expect(player._canKeepRunning()).toBe <span class="hljs-literal">no</span>
+          expect(player.playAnimation).toHaveBeenCalledWith <span class="hljs-number">31</span>, <span class="hljs-literal">yes</span>
+
+    describe <span class="hljs-string">'when x cursor key was down but is up in same direction'</span>, <span class="hljs-function">-&gt;</span>
+
+      it <span class="hljs-string">'will stop running and cancel turns'</span>, <span class="hljs-function">-&gt;</span>
+        runRunUpdatesUntil <span class="hljs-string">'stop'</span>
+
+        expect(player._endRun).toHaveBeenCalled()
+
+      it <span class="hljs-string">'will play interrupting stop animation'</span>, <span class="hljs-function">-&gt;</span>
+        runRunUpdatesUntil <span class="hljs-string">'stop'</span>
+
+        testStopAnimation()
+
+      it <span class="hljs-string">'will become still'</span>, <span class="hljs-function">-&gt;</span>
+        runRunUpdatesUntil <span class="hljs-string">'still'</span>
+
+        expect(player.state).toBe <span class="hljs-string">'still'</span>
+        expect(player._turnDirection).toBeNull()
+        expect(player._endRun).toHaveBeenCalled()
+
+    describe <span class="hljs-string">'when x cursor key is down in opposite direction'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'can get and set the right direction from #_xDirectionInput'</span>, <span class="hljs-function">-&gt;</span>
+        runRunUpdatesUntil <span class="hljs-string">'start'</span>, <span class="hljs-attribute">backwards</span>: <span class="hljs-literal">yes</span>
+
+        expect(player._xDirectionInput()).toBe Direction.Left
+        expect(player.nextDirection).toBe Direction.Left
+
+      describe <span class="hljs-string">'when still'</span>, <span class="hljs-function">-&gt;</span>
+        beforeEach -&gt; runRunUpdatesUntil <span class="hljs-string">'start'</span>, <span class="hljs-attribute">backwards</span>: <span class="hljs-literal">yes</span>
+
+        it <span class="hljs-string">'will immediately (end) turn and begin to run'</span>, <span class="hljs-function">-&gt;</span>
+          expect(player._beginTurn).toHaveBeenCalled()
+          expect(player._endTurn).toHaveBeenCalled()
+          expect(player.direction).toBe Direction.Left
+          expect(player._beginRun).toHaveBeenCalled()
+
+        it <span class="hljs-string">'will play start animation'</span>, testStartAnimation
+
+      describe <span class="hljs-string">'when running in original direction'</span>, <span class="hljs-function">-&gt;</span>
+        beforeEach -&gt; runRunUpdatesUntil <span class="hljs-string">'turn'</span>, <span class="hljs-attribute">backwards</span>: <span class="hljs-literal">yes</span>
+
+        it <span class="hljs-string">'will begin turn'</span>, <span class="hljs-function">-&gt;</span>
+          expect(player._turnDirection).toBe Direction.Left
+          expect(player._beginTurn).toHaveBeenCalled()
+
+        it <span class="hljs-string">'will play interrupting stop animation'</span>, testStopAnimation
+
+      describe <span class="hljs-string">'when turning to opposite direction'</span>, <span class="hljs-function">-&gt;</span>
+        beforeEach -&gt; runRunUpdatesUntil <span class="hljs-string">'restart'</span>, <span class="hljs-attribute">backwards</span>: <span class="hljs-literal">yes</span>
+
+        it <span class="hljs-string">'will end turn'</span>, <span class="hljs-function">-&gt;</span>
+          expect(player._turnDirection).toBeNull()
+          expect(player._endTurn).toHaveBeenCalled()
+
+        it <span class="hljs-string">'will play start animation'</span>, testStartAnimation
+
+    describe <span class="hljs-string">'when up key is down'</span>, <span class="hljs-function">-&gt;</span>
+      describe <span class="hljs-string">'when still'</span>, <span class="hljs-function">-&gt;</span>
+        beforeEach -&gt; runJumpUpdatesUntil <span class="hljs-string">'rising'</span>
+
+        it <span class="hljs-string">'will only begin to jump'</span>, <span class="hljs-function">-&gt;</span>
+          expect(player.state).toBe <span class="hljs-string">'rising'</span>
+          expect(player._beginJump).toHaveBeenCalled()
+
+          expect(player._buildJump).<span class="hljs-keyword">not</span>.toHaveBeenCalled()
+          expect(player._endJump).<span class="hljs-keyword">not</span>.toHaveBeenCalled()
+
+        it <span class="hljs-string">'will play jump animation'</span>, <span class="hljs-function">-&gt;</span>
+          expect(player.nextAction).toBe <span class="hljs-string">'jump'</span>
+          expect(player.playAnimation).toHaveBeenCalledWith <span class="hljs-string">'jump'</span>, <span class="hljs-literal">undefined</span>
+          expect(player._isAnimationInterruptible()).toBe <span class="hljs-literal">no</span>
+
+        it <span class="hljs-string">'will not run on jump'</span>, <span class="hljs-function">-&gt;</span>
+          expect(player._beginRun).<span class="hljs-keyword">not</span>.toHaveBeenCalled()
+
+        it <span class="hljs-string">'will decrease y acceleration'</span>, <span class="hljs-function">-&gt;</span>
+          expect(player.acceleration.y).toBeLessThan initialYAcceleration
+
+      describe <span class="hljs-string">'when rising'</span>, <span class="hljs-function">-&gt;</span>
+        beforeEach -&gt; runJumpUpdatesUntil <span class="hljs-string">'building'</span>
+
+        it <span class="hljs-string">'will only continue and build jump'</span>, <span class="hljs-function">-&gt;</span>
+          expect(player.state).toBe <span class="hljs-string">'rising'</span>
+          expect(player._isInMidAir()).toBe <span class="hljs-literal">yes</span>
+          expect(player._buildJump).toHaveBeenCalled()
+
+          expect(player._beginJump.calls.count()).toBe <span class="hljs-number">1</span>
+          expect(player._endJump).<span class="hljs-keyword">not</span>.toHaveBeenCalled()
+
+    describe <span class="hljs-string">'when up key is up'</span>, <span class="hljs-function">-&gt;</span>
+      describe <span class="hljs-string">'when done building'</span>, <span class="hljs-function">-&gt;</span>
+        beforeEach -&gt; runJumpUpdatesUntil <span class="hljs-string">'falling'</span>
+
+        it <span class="hljs-string">'will only end the jump and start falling'</span>, <span class="hljs-function">-&gt;</span>
+          expect(player.acceleration.y).toBe initialYAcceleration
+
+          expect(player._beginJump.calls.count()).toBe <span class="hljs-number">1</span>
+          expect(player._buildJump.calls.count()).toBe <span class="hljs-number">1</span>
+
+          expect(player.state).toBe <span class="hljs-string">'falling'</span>
+          expect(player._isInMidAir()).toBe <span class="hljs-literal">yes</span>
+
+        it <span class="hljs-string">'will play fall animation'</span>, <span class="hljs-function">-&gt;</span>
+          expect(player.playAnimation).toHaveBeenCalledWith <span class="hljs-number">31</span>, <span class="hljs-literal">no</span>
+          expect(player._isAnimationInterruptible()).toBe <span class="hljs-literal">no</span>
+
+      describe <span class="hljs-string">'when on floor'</span>, <span class="hljs-function">-&gt;</span>
+        beforeEach -&gt; runJumpUpdatesUntil <span class="hljs-string">'landing'</span>
+
+        it <span class="hljs-string">'will begin to land'</span>, <span class="hljs-function">-&gt;</span>
+          expect(player.state).toBe <span class="hljs-string">'landing'</span>
+          expect(player._isInMidAir()).toBe <span class="hljs-literal">no</span>
+
+        it <span class="hljs-string">'will play land animation'</span>, <span class="hljs-function">-&gt;</span>
+          expect(player.playAnimation).toHaveBeenCalledWith <span class="hljs-string">'land'</span>
+          expect(player._isAnimationInterruptible()).toBe <span class="hljs-literal">no</span>
+
+        it <span class="hljs-string">'will be landed when animation finishes'</span>, <span class="hljs-function">-&gt;</span>
+          endAnimation()
+
+          expect(player._isLanded()).toBe <span class="hljs-literal">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="supplemental-manual-tests-">Supplemental Manual Tests </h2>
+<ul>
+<li>Mash left and right cursor keys in alternating fashion for a bit.
+Stop, then attempt to turn in other direction. Player should visualize
+turn properly, and should not appear to run backwards.</li>
+</ul></div></div></div></div></body></html>

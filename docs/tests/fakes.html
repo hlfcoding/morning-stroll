@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="en"><head><title>tests/fakes</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="tests/fakes"><meta name="groc-project-path" content="tests/fakes.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/tests/fakes.coffee">tests/fakes.coffee</a></div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper">define [
+  <span class="hljs-string">'phaser'</span>
+  <span class="hljs-string">'underscore'</span>
+  <span class="hljs-string">'app/helpers'</span>
+], <span class="hljs-function"><span class="hljs-params">(Phaser, _, Helpers)</span> -&gt;</span>
+
+  {Point} = Phaser
+
+  {PointMixin} = Helpers
+
+  _.extend <span class="hljs-attribute">Point</span>::, PointMixin</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Phaser is written with interwoven dependencies, but does not provide test
+helpers or fake classes. This custom faking isn&#39;t ideal, but a last resort.</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">FakeTimer</span></span>
+    <span class="hljs-attribute">constructor</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@running</span> = <span class="hljs-literal">no</span>
+      <span class="hljs-property">@ms</span> = <span class="hljs-number">0</span>
+      <span class="hljs-property">@_interval</span> = <span class="hljs-literal">null</span>
+
+    <span class="hljs-attribute">start</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@_start</span> = Date.now()
+      <span class="hljs-property">@_interval</span> = setInterval =&gt;
+        <span class="hljs-property">@ms</span> = Date.now() - <span class="hljs-property">@_start</span>
+      , <span class="hljs-number">100</span>
+      <span class="hljs-property">@running</span> = <span class="hljs-literal">yes</span>
+
+    <span class="hljs-attribute">stop</span>: <span class="hljs-function">-&gt;</span>
+      clearInterval <span class="hljs-property">@_interval</span>
+      <span class="hljs-property">@running</span> = <span class="hljs-literal">no</span>
+
+  <span class="hljs-attribute">configurePlatformsWithDefaults</span>: <span class="hljs-function"><span class="hljs-params">(platforms)</span> -&gt;</span>
+    platforms.minLedgeSize = <span class="hljs-number">3</span>
+    platforms.maxLedgeSize = <span class="hljs-number">5</span>
+    platforms.minLedgeSpacing = <span class="hljs-keyword">new</span> Point <span class="hljs-number">4</span>, <span class="hljs-number">2</span>
+    platforms.maxLedgeSpacing = <span class="hljs-keyword">new</span> Point <span class="hljs-number">8</span>, <span class="hljs-number">4</span>
+    platforms.ledgeThickness = <span class="hljs-number">2</span>
+    platforms.tileWidth = platforms.tileHeight = <span class="hljs-number">32</span>
+
+  <span class="hljs-attribute">createBackgroundProps</span>: <span class="hljs-function"><span class="hljs-params">(background)</span> -&gt;</span>
+    <span class="hljs-attribute">layers</span>: [
+      { <span class="hljs-attribute">zIndex</span>: <span class="hljs-number">1</span>, <span class="hljs-attribute">image</span>: { <span class="hljs-attribute">y</span>: <span class="hljs-number">0</span>, <span class="hljs-attribute">height</span>: <span class="hljs-number">1000</span> }, <span class="hljs-attribute">scrollFactor</span>: <span class="hljs-number">1</span> }
+      { <span class="hljs-attribute">zIndex</span>: <span class="hljs-number">2</span>, <span class="hljs-attribute">image</span>: { <span class="hljs-attribute">y</span>: <span class="hljs-number">0</span>, <span class="hljs-attribute">height</span>: <span class="hljs-number">1000</span> }, <span class="hljs-attribute">scrollFactor</span>: <span class="hljs-number">1</span> }
+      { <span class="hljs-attribute">zIndex</span>: <span class="hljs-number">3</span>, <span class="hljs-attribute">image</span>: { <span class="hljs-attribute">y</span>: <span class="hljs-number">0</span>, <span class="hljs-attribute">height</span>: <span class="hljs-number">1000</span> }, <span class="hljs-attribute">scrollFactor</span>: <span class="hljs-number">1</span> }
+    ]
+
+  <span class="hljs-attribute">createPlatformsProps</span>: <span class="hljs-function"><span class="hljs-params">(platform)</span> -&gt;</span>
+    <span class="hljs-attribute">config</span>: { <span class="hljs-attribute">mapH</span>: <span class="hljs-number">3152</span> }
+    <span class="hljs-attribute">game</span>:
+      <span class="hljs-attribute">world</span>:
+        <span class="hljs-attribute">getBounds</span>: <span class="hljs-function">-&gt;</span> { <span class="hljs-attribute">width</span>: <span class="hljs-number">416</span>, <span class="hljs-attribute">height</span>: <span class="hljs-number">2912</span> } <span class="hljs-comment"># <span class="hljs-doctag">FIXME:</span> Link to source.</span>
+
+  <span class="hljs-attribute">createPlayerProps</span>: <span class="hljs-function"><span class="hljs-params">(player)</span> -&gt;</span>
+    <span class="hljs-attribute">sprite</span>:
+      <span class="hljs-attribute">body</span>: 
+        <span class="hljs-attribute">drag</span>: <span class="hljs-keyword">new</span> Point(), <span class="hljs-attribute">setSize</span>: jasmine.createSpy <span class="hljs-string">'setSize'</span>
+        <span class="hljs-attribute">velocity</span>: <span class="hljs-keyword">new</span> Point(), <span class="hljs-attribute">acceleration</span>: <span class="hljs-keyword">new</span> Point()
+        <span class="hljs-attribute">position</span>: <span class="hljs-keyword">new</span> Point(), <span class="hljs-attribute">offset</span>: <span class="hljs-keyword">new</span> Point(), <span class="hljs-attribute">onFloor</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-literal">no</span>
+      <span class="hljs-attribute">game</span>:
+        <span class="hljs-attribute">time</span>: { <span class="hljs-attribute">create</span>: <span class="hljs-function">-&gt;</span> <span class="hljs-keyword">new</span> FakeTimer() }
+      <span class="hljs-attribute">scale</span>: <span class="hljs-keyword">new</span> Point()
+
+    <span class="hljs-attribute">animations</span>:
+      <span class="hljs-attribute">play</span>: jasmine.createSpy(<span class="hljs-string">'play'</span>).<span class="hljs-keyword">and</span>.callFake (name) -&gt;
+        { <span class="hljs-attribute">isFinished</span>: <span class="hljs-literal">no</span>, <span class="hljs-attribute">isPlaying</span>: <span class="hljs-literal">yes</span>, <span class="hljs-attribute">loop</span>: name <span class="hljs-keyword">is</span> <span class="hljs-string">'run'</span>, <span class="hljs-attribute">name</span>: name }
+      <span class="hljs-attribute">frame</span>: <span class="hljs-number">17</span> <span class="hljs-comment"># Initial.</span>
+
+    <span class="hljs-attribute">cameraFocus</span>:
+      <span class="hljs-attribute">position</span>: <span class="hljs-keyword">new</span> Point()
+
+    <span class="hljs-attribute">cursors</span>:
+      _.mapObject { <span class="hljs-attribute">left</span>: {}, <span class="hljs-attribute">right</span>: {}, <span class="hljs-attribute">up</span>: {}, <span class="hljs-attribute">down</span>: {} }, <span class="hljs-function"><span class="hljs-params">(key)</span> -&gt;</span>
+        key.isUp = key.isDown = <span class="hljs-literal">no</span>; key
+
+    <span class="hljs-attribute">gravity</span>: <span class="hljs-keyword">new</span> Point()</div></div></div></div></body></html>

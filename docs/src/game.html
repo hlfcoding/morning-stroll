@@ -1,5 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><title>src/game</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/game"><meta name="groc-project-path" content="src/game.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/src/game.coffee">src/game.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="game">Game</h1>
-<p>Highest-level application script.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="dependencies">Dependencies</h2>
+<p>Highest-level application script. There (rightfully) isn&#39;t much here. See
+<code>PlayState</code> for the main game logic.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="dependencies">Dependencies</h2>
 <p>Configure RequireJS. Dependency references default to the <code>lib</code> directory.
 We&#39;re using CoffeeScript, so our <code>app</code> package code is in the compiled js
 directory <code>release</code>.</p></div></div><div class="code"><div class="wrapper">requirejs.config
@@ -25,7 +26,9 @@ requirejs [
 
   {debugging, gameH, gameW} = defines
 
-  {PointMixin, StateManagerMixin} = Helpers</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="framework-extensions">Framework Extensions</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">  _.extend <span class="hljs-attribute">Point</span>::, PointMixin</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="main">Main</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">  game = <span class="hljs-keyword">new</span> Phaser.Game gameW, gameH, Phaser.AUTO, <span class="hljs-string">'morning-stroll'</span> <span class="hljs-comment"># Renderer, parent element id.</span>
+  {PointMixin, StateManagerMixin} = Helpers</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="framework-extensions">Framework Extensions</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">  _.extend <span class="hljs-attribute">Point</span>::, PointMixin</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="main">Main</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">  game = <span class="hljs-keyword">new</span> Phaser.Game(
+    gameW, gameH, Phaser.AUTO, <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'morning-stroll'</span>)
+  )
 
   _.extend game.state, StateManagerMixin
 
@@ -34,6 +37,11 @@ requirejs [
   game.state.add <span class="hljs-string">'menu'</span>, MenuState
   game.state.add <span class="hljs-string">'play'</span>, PlayState
 
-  game.state.start <span class="hljs-string">'boot'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="debug">Debug</h2>
+  game.state.start <span class="hljs-string">'boot'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="site">Site</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper"><span class="hljs-function">
+  <span class="hljs-title">initSite</span> = -&gt;</span>
+    <span class="hljs-built_in">require</span> [<span class="hljs-string">'app/site'</span>], <span class="hljs-function"><span class="hljs-params">(site)</span> -&gt;</span> site.setGame game
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">document</span>.readyState <span class="hljs-keyword">is</span> <span class="hljs-string">'complete'</span> <span class="hljs-keyword">then</span> initSite()
+  <span class="hljs-keyword">else</span> <span class="hljs-built_in">document</span>.addEventListener <span class="hljs-string">'DOMContentLoaded'</span>, initSite</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="debug">Debug</h2>
 <p>Block of additions for debugging the app. Exposes classes and instances as
 globals.</p></div></div><div class="code"><div class="wrapper">  <span class="hljs-built_in">window</span>.game = game <span class="hljs-keyword">if</span> debugging <span class="hljs-keyword">is</span> <span class="hljs-literal">on</span></div></div></div></div></body></html>
