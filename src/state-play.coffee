@@ -34,7 +34,7 @@ define [
     init: ->
       if domStateEvents
         e = document.createEvent 'CustomEvent'
-        e.initCustomEvent 'state:play'
+        e.initCustomEvent 'state:play', no, no, undefined
         @game.parent.dispatchEvent e
 
       {@debugging, @developing} = defines

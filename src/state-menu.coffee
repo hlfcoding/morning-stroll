@@ -22,7 +22,7 @@ define [
     init: ->
       if domStateEvents
         e = document.createEvent 'CustomEvent'
-        e.initCustomEvent 'state:menu'
+        e.initCustomEvent 'state:menu', no, no, undefined
         @game.parent.dispatchEvent e
 
     create: ->
