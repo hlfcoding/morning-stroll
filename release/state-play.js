@@ -19,7 +19,7 @@ define(['dat.gui', 'phaser', 'underscore', 'app/background', 'app/defines', 'app
       var e;
       if (domStateEvents) {
         e = document.createEvent('CustomEvent');
-        e.initCustomEvent('state:play');
+        e.initCustomEvent('state:play', false, false, void 0);
         this.game.parent.dispatchEvent(e);
       }
       this.debugging = defines.debugging, this.developing = defines.developing;

@@ -18,7 +18,7 @@ define(['phaser', 'app/defines', 'app/helpers'], function(Phaser, defines, Helpe
       var e;
       if (domStateEvents) {
         e = document.createEvent('CustomEvent');
-        e.initCustomEvent('state:menu');
+        e.initCustomEvent('state:menu', false, false, void 0);
         return this.game.parent.dispatchEvent(e);
       }
     };
