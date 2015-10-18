@@ -116,7 +116,7 @@ define [
 
       @game.onBlur.remove @onBlur, @
       @game.onFocus.remove @onFocus, @
-      @onHit.remove @quit, @
+      @onHit.removeAll @
 
       key.onDown.removeAll @ for key in [@loudKey, @muteKey, @quietKey, @quitKey]
 
