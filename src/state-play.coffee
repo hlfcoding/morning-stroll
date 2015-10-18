@@ -148,6 +148,7 @@ define [
 
     quit: (trigger) ->
       return no unless @ended or trigger instanceof Key
+      @inStateMenu.toggle off
       _quit = => @state.startWithTransition null, 'menu', yes
       if @music.volume is 0
         _quit()
