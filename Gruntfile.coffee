@@ -49,7 +49,7 @@ module.exports = (grunt) ->
     clean:
       docs: ['docs/*', '!docs/README.md']
       js: { src: ['release/*'], filter: 'isFile' }
-      lib: ['lib/*']
+      lib: ['lib/*', '!lib/modernizr.js']
       site: ['site/*']
       tests: ['tests/js/*']
 
