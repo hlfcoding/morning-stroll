@@ -1,9 +1,4 @@
-define [
-  'phaser'
-  'underscore'
-  'app/background'
-  'test/fakes'
-], (Phaser, _, Background, fakes) ->
+define ['background', 'test/fakes'], (Background, fakes) ->
 
   describe 'Background', ->
     game = null

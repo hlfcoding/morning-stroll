@@ -1,9 +1,4 @@
-define [
-  'phaser'
-  'underscore'
-  'app/player'
-  'test/fakes'
-], (Phaser, _, Player, fakes) ->
+define ['player', 'test/fakes'], (Player, fakes) ->
 
   {Direction} = Player
 

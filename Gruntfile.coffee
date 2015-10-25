@@ -116,7 +116,9 @@ module.exports = (grunt) ->
           templateOptions:
             requireConfigFile: 'release/game.js'
             requireConfig:
-              paths: { test: '../tests/js' }
+              paths:
+                test: '../tests/js'
+          vendor: [ 'site/lib/{dat.gui,phaser,underscore}.js' ]
 
     processhtml:
       site:

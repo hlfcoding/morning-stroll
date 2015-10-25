@@ -1,8 +1,4 @@
-define [
-  'phaser'
-  'underscore'
-  'app/helpers'
-], (Phaser, _, Helpers) ->
+define ['helpers'], (Helpers) ->
 
   {AnimationMixin, CameraMixin, DebugMixin} = Helpers
 
