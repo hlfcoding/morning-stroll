@@ -2,12 +2,7 @@
 <p>Player configures and controls a sprite, tracks and updates state given user
 interaction. This builds off the stock Flixel / Phaser player, but tries to
 make the movement more natural, which requires more animations, logic, and
-physics. Start reading from <code>update</code>.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>See</strong>: <a href="../tests/player.html">tests</a>.</p></div></div><div class="code"><div class="wrapper">define [
-  <span class="hljs-string">'phaser'</span>
-  <span class="hljs-string">'underscore'</span>
-  <span class="hljs-string">'app/defines'</span>
-  <span class="hljs-string">'app/helpers'</span>
-], <span class="hljs-function"><span class="hljs-params">(Phaser, _, defines, Helpers)</span> -&gt;</span>
+physics. Start reading from <code>update</code>.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>See</strong>: <a href="../tests/player.html">tests</a>.</p></div></div><div class="code"><div class="wrapper">define [<span class="hljs-string">'defines'</span>, <span class="hljs-string">'helpers'</span>], <span class="hljs-function"><span class="hljs-params">(defines, Helpers)</span> -&gt;</span>
 
   <span class="hljs-string">'use strict'</span>
 
@@ -31,6 +26,7 @@ physics. Start reading from <code>update</code>.</p></div></div></div><div class
       <span class="hljs-property">@sprite</span>.anchor = <span class="hljs-keyword">new</span> Point <span class="hljs-number">0.5</span>, <span class="hljs-number">0.5</span>
 
       <span class="hljs-property">@cameraFocus</span> = game.add.sprite x, y
+      <span class="hljs-property">@cameraFocus</span>.visible = <span class="hljs-literal">off</span>
 
       <span class="hljs-property">@animations</span> = <span class="hljs-property">@sprite</span>.animations
       <span class="hljs-property">@_initAnimations</span>()
