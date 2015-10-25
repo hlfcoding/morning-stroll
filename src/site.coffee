@@ -3,30 +3,25 @@
 # This module is actually just a DOM-ready script for various bits of site
 # functionality supporting the actual game.
 
-define [
-  'app/defines'
-], (defines) ->
+define ['defines'], (defines) ->
 
   'use strict'
-
-  # We'll need a reference to the main game object, specifically to check state.
-  _game = null
-
-  # Add a class for use in styling.
-  document.body.className = 'ready'
 
   # Use Modernizr to do browser feature detection. Except if a browser feature
   # does not exist, the related feature just gets disabled. Not worth it to
   # write fallback behavior mostly just for IE9.
   {classlist, csstransitions, history, prefixedCSS} = Modernizr
 
+  Site = {}
+
   # Fiddle
   # ------
   # This feature allows the player to configure game variables to experiment and
   # do more complex play-testing.
+  Site.initFiddle = (game) ->
 
-  # The History API will be required. Start off with fiddle flag off.
-  if history
+    # The History API will be required. Start off with fiddle flag off.
+    return unless history
     window.history.replaceState { fiddle: off }, document.title
 
     # The fiddle button just allows access to global developing flag, which gets
@@ -67,7 +62,8 @@ define [
   # -----
   # This feature is just the other half of fancily presenting the about-content
   # via some set flipping-card styling. `classList` and css transitions are required.
-  if classlist and csstransitions
+  Site.initAbout = ->
+    return unless (classlist and csstransitions)
 
     # There are two classes that need to be added to the main `frame` element:
     # `flipping`, `flipped`. The latter is what drives the main flipping
@@ -97,8 +93,4 @@ define [
         toggleAbout.removeAttribute 'disabled'
       , flipDuration
 
-  # Dependencies
-  # ------------
-
-  site =
-    setGame: (game) -> _game = game
+  Site

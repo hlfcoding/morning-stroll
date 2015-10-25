@@ -7,12 +7,7 @@
 
 # __See__: [tests](../tests/platforms.html).
 
-define [
-  'phaser'
-  'underscore'
-  'app/defines'
-  'app/helpers'
-], (Phaser, _, defines, Helpers) ->
+define ['defines', 'helpers'], (defines, Helpers) ->
 
   'use strict'
 

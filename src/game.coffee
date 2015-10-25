@@ -5,26 +5,12 @@
 
 # Dependencies
 # ------------
-# Configure RequireJS. Dependency references default to the `lib` directory.
-# We're using CoffeeScript, so our `app` package code is in the compiled js
-# directory `release`.
+# Configure RequireJS. We're using CoffeeScript, so our `app` package code is in
+# the compiled js directory `release`.
+requirejs.config { baseUrl: './release' }
 
-requirejs.config
-  baseUrl: 'lib'
-  paths: { app: '../release' }
-  shim:
-    'dat.gui': { exports: 'dat' }
-    phaser: { exports: 'Phaser' }
-
-requirejs [
-  'phaser'
-  'app/defines'
-  'app/helpers'
-  'app/state-boot'
-  'app/state-menu'
-  'app/state-preload'
-  'app/state-play'
-], (Phaser, defines, Helpers, BootState, MenuState, PreloadState, PlayState) ->
+define ['defines', 'helpers', 'site', 'state-boot', 'state-menu', 'state-preload', 'state-play'],
+(defines, Helpers, Site, BootState, MenuState, PreloadState, PlayState) ->
 
   'use strict'
 
@@ -58,11 +44,11 @@ requirejs [
   # Site
   # ----
 
-  initSite = ->
-    require ['app/site'], (site) -> site.setGame game
+  # Add a class for use in styling.
+  document.body.className = 'ready'
 
-  if document.readyState is 'complete' then initSite()
-  else document.addEventListener 'DOMContentLoaded', initSite
+  Site.initFiddle game
+  Site.initAbout()
 
   # Debug
   # -----

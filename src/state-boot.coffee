@@ -4,9 +4,7 @@
 # following `PreloadState`. Some system settings are also done here. Potentially
 # more when the game becomes responsive.
 
-define [
-  'phaser'
-], (Phaser) ->
+define [], () ->
 
   'use strict'
 

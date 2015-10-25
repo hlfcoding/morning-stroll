@@ -53,6 +53,12 @@ module.exports = (grunt) ->
       site: ['site/*']
       tests: ['tests/js/*']
 
+      'site-post': [
+        'site/release/*{,.map}.js'
+        'site/lib/{almond,require}.js'
+        '!site/**/*.min.js'
+      ]
+
     copy:
       site:
         expand: yes
@@ -112,9 +118,31 @@ module.exports = (grunt) ->
             requireConfig:
               paths: { test: '../tests/js' }
 
+    processhtml:
+      site:
+        files:
+          'site/index.html': 'index.html'
+
+    requirejs:
+      compile:
+        options:
+          # Special Almond configuration.
+          baseUrl: './site/release'
+          mainConfigFile: 'site/release/game.js'
+          include: [ 'game' ]
+          insertRequire: [ 'game' ]
+          name: '../lib/almond'
+          out: 'site/release/game.min.js'
+          # Optimization.
+          preserveLicenseComments: off
+
     sass:
       site:
         files: { 'release/site/styles.css': 'src/site/styles.scss' }
+
+    uglify:
+      lib:
+        files: { 'site/lib/all.min.js': 'site/lib/{dat.gui,phaser,underscore}.js' }
 
     watch:
       src:
@@ -132,7 +160,10 @@ module.exports = (grunt) ->
   grunt.registerTask 'docs', ['clean:docs', 'groc:docs', 'watch:docs']
   grunt.registerTask 'install', ['bower:lib', 'sass:site', 'autoprefixer:site', 'coffee:src']
   grunt.registerTask 'lib', ['clean:lib', 'bower:lib']
-  grunt.registerTask 'publish', ['clean:site', 'copy:site', 'gh-pages:site']
+  grunt.registerTask 'publish', [
+    'clean:site', 'copy:site', 'requirejs:compile', 'uglify:lib'
+    'processhtml:site', 'clean:site-post', 'gh-pages:site'
+  ]
   grunt.registerTask 'site', ['sass:site', 'autoprefixer:site', 'watch:site']
   grunt.registerTask 'test', ['clean:tests', 'coffee:tests', 'connect:tests', 'jasmine:tests']
 

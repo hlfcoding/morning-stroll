@@ -7,11 +7,7 @@
 
 # __See__: [tests](../tests/background.html).
 
-define [
-  'underscore'
-  'app/defines'
-  'app/helpers'
-], (_, defines, Helpers) ->
+define ['defines', 'helpers'], (defines, Helpers) ->
 
   'use strict'
 

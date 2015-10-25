@@ -7,11 +7,7 @@
 
 # __See__: [tests](../tests/helpers.html).
 
-define [
-  'dat.gui'
-  'phaser'
-  'underscore'
-], (dat, Phaser, _) ->
+define [], () ->
 
   'use strict'
 

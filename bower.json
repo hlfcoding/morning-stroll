@@ -4,12 +4,16 @@
   "main": "index.html",
   "private": true,
   "dependencies": {
+    "almond": "~0.3.1",
     "dat-gui": "~0.5.1",
     "phaser": "~2.4.4",
     "requirejs": "~2.1.20",
     "underscore": "~1.8.3"
   },
   "exportsOverride": {
+    "almond": {
+      "js": "almond.js"
+    },
     "dat-gui": {
       "js": "build/dat.gui.js"
     },

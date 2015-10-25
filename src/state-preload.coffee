@@ -4,11 +4,7 @@
 # subsequent states and renders a progress-bar. Not all assets are easy to load,
 # so there's additional complexity to handle. Read on.
 
-define [
-  'phaser'
-  'underscore'
-  'app/defines'
-], (Phaser, _, defines) ->
+define ['defines'], (defines) ->
 
   'use strict'
 

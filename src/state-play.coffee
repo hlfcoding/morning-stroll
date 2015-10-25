@@ -7,17 +7,8 @@
 # far. Also note any logic that can be easily factored out is factored out of
 # this file.
 
-define [
-  'dat.gui'
-  'phaser'
-  'underscore'
-  'app/background'
-  'app/defines'
-  'app/helpers'
-  'app/in-state-menu'
-  'app/platforms'
-  'app/player'
-], (dat, Phaser, _, Background, defines, Helpers, InStateMenu, Platforms, Player) ->
+define ['background', 'defines', 'helpers', 'in-state-menu', 'platforms', 'player'],
+(Background, defines, Helpers, InStateMenu, Platforms, Player) ->
 
   'use strict'
 

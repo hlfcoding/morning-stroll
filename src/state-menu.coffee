@@ -3,11 +3,7 @@
 # This state is mostly static presentation, so I'm going to be lazy with docs
 # and tests. It has a start button that goes to `PlayState`.
 
-define [
-  'phaser'
-  'app/defines'
-  'app/helpers'
-], (Phaser, defines, Helpers) ->
+define ['defines', 'helpers'], (defines, Helpers) ->
 
   'use strict'
 
