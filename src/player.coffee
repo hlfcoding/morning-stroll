@@ -46,6 +46,7 @@ define [
       @sprite.anchor = new Point 0.5, 0.5
 
       @cameraFocus = game.add.sprite x, y
+      @cameraFocus.visible = off
 
       @animations = @sprite.animations
       @_initAnimations()
