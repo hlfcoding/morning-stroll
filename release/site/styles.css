@@ -1,15 +1,20 @@
 .frame {
-  perspective: 1000px; }
+  -webkit-perspective: 1000px;
+          perspective: 1000px; }
   .flipped.frame .framed {
-    transform: rotateY(-180deg); }
+    -webkit-transform: rotateY(-180deg);
+            transform: rotateY(-180deg); }
 
 .frame .framed {
   position: relative;
+  transition: -webkit-transform 1s cubic-bezier(0.8, 0, 0.2, 1) 0.2s;
   transition: transform 1s cubic-bezier(0.8, 0, 0.2, 1) 0.2s;
-  transform-style: preserve-3d; }
+  -webkit-transform-style: preserve-3d;
+          transform-style: preserve-3d; }
 
 .frame .game, .frame .about {
-  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
   position: absolute;
   top: 0;
   left: 0;
@@ -64,7 +69,9 @@ body {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%); }
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%); }
   .frame:not(.flipping) {
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 0 2px 2px rgba(0, 0, 0, 0.2); }
@@ -84,10 +91,12 @@ body {
     width: inherit;
     height: inherit; }
   .frame .game {
-    transform: rotateY(0deg);
+    -webkit-transform: rotateY(0deg);
+            transform: rotateY(0deg);
     z-index: 1; }
   .frame .about {
-    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+            transform: rotateY(180deg);
     background: #222;
     padding: 3rem;
     box-sizing: border-box;
