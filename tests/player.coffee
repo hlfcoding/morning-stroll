@@ -139,7 +139,6 @@ define ['player', 'test/fakes'], (Player, fakes) ->
           expect(player.playAnimation).toHaveBeenCalledWith 31, yes
 
     describe 'when x cursor key was down but is up in same direction', ->
-
       it 'will stop running and cancel turns', ->
         runRunUpdatesUntil 'stop'
 
