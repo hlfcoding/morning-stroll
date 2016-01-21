@@ -39,8 +39,8 @@ define ['background', 'defines', 'helpers', 'in-state-menu', 'platforms', 'playe
 
       _.extend @camera, CameraMixin
 
-      @game.onBlur.add @onBlur, @
-      @game.onFocus.add @onFocus, @
+      @game.onBlur.add @onBlur
+      @game.onFocus.add @onFocus
 
       @_initDebugMixin
       @_initDebugDisplayMixin @game
@@ -105,18 +105,18 @@ define ['background', 'defines', 'helpers', 'in-state-menu', 'platforms', 'playe
       # Null references to disposable objects we don't own.
       gameObject.destroy() for gameObject in [@background, @inStateMenu, @music, @platforms, @player]
 
-      @game.onBlur.remove @onBlur, @
-      @game.onFocus.remove @onFocus, @
+      @game.onBlur.remove @onBlur
+      @game.onFocus.remove @onFocus
       @onHit.removeAll @
 
       key.onDown.removeAll @ for key in [@loudKey, @muteKey, @quietKey, @quitKey]
 
       @gui?.destroy()
 
-    onBlur: ->
+    onBlur: =>
       @music?.pause()
 
-    onFocus: ->
+    onFocus: =>
       @music?.resume()
 
     # Main own methods
