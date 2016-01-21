@@ -22,7 +22,8 @@ define ['defines'], (defines) ->
       # One area of additional complexity is Google webfont loading, given that
       # the font needs to be loaded before any Phaser text using it renders.
       window.WebFontConfig =
-        active: => @time.events.add Timer.SECOND, @menu
+        active: @_onWebFontLoadComplete
+        inactive: @_onWebFontLoadComplete
         google: { families: [ 'Enriqueta:400:latin' ] }
 
     preload: ->
@@ -61,5 +62,8 @@ define ['defines'], (defines) ->
       # convenience.
       state = if developing then 'play' else 'menu'
       @state.start state
+
+    _onWebFontLoadComplete: =>
+      @time.events.add Timer.SECOND, @menu
 
   PreloadState
