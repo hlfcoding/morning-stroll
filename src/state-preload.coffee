@@ -30,7 +30,7 @@ define ['defines'], (defines) ->
       @progressThumb = @add.sprite x, y, 'progress-bar-fg'
       @load.setPreloadSprite @progressThumb
 
-      @load.script 'webfont', '//ajax.googleapis.com/ajax/libs/webfont/1/webfont.js'
+      @load.script 'webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.5/webfont.js'
       @load.audio 'bgm', ['assets/morning-stroll.mp3'], yes
 
       @load.spritesheet 'button', 'assets/button.png', buttonW, buttonH
