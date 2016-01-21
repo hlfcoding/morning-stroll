@@ -201,7 +201,7 @@ define ['background', 'defines', 'helpers', 'in-state-menu', 'platforms', 'playe
       @endingPoint = @platforms.ledges[-1...][0].createMidpoint @platforms
       @startingPoint = new Point playerW, (@world.height - playerH + playerYOffset)
       # Use for debugging ending.
-      # @startingPoint = @platforms.ledges[-2...-1][0].createMidpoint @platforms
+      #@startingPoint = @platforms.ledges[-2...-1][0].createMidpoint @platforms
 
     _addPlayer: ->
       origin = @startingPoint
