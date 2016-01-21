@@ -11,10 +11,11 @@ so there&#39;s additional complexity to handle. Read on.</p></div></div><div cla
 
   <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PreloadState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span></span>
 
-    <span class="hljs-attribute">init</span>: <span class="hljs-function">-&gt;</span>
-      _.bindAll @, <span class="hljs-string">'menu'</span>, <span class="hljs-string">'update'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>One area of additional complexity is Google webfont loading, given that
+    <span class="hljs-attribute">init</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Given the above two cases of deferred state change, we need to guard the
+state change to wait until both conditions are satisfied.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@menu</span> = _.after(<span class="hljs-number">2</span>, <span class="hljs-property">@menu</span>).bind(@)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>One area of additional complexity is Google webfont loading, given that
 the font needs to be loaded before any Phaser text using it renders.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-built_in">window</span>.WebFontConfig =
-        <span class="hljs-attribute">active</span>: <span class="hljs-function">=&gt;</span> <span class="hljs-property">@time</span>.events.add Timer.SECOND, <span class="hljs-property">@menu</span>
+        <span class="hljs-attribute">active</span>: <span class="hljs-property">@_onWebFontLoadComplete</span>
+        <span class="hljs-attribute">inactive</span>: <span class="hljs-property">@_onWebFontLoadComplete</span>
         <span class="hljs-attribute">google</span>: { <span class="hljs-attribute">families</span>: [ <span class="hljs-string">'Enriqueta:400:latin'</span> ] }
 
     <span class="hljs-attribute">preload</span>: <span class="hljs-function">-&gt;</span>
@@ -24,7 +25,7 @@ the font needs to be loaded before any Phaser text using it renders.</p></div></
       <span class="hljs-property">@progressThumb</span> = <span class="hljs-property">@add</span>.sprite x, y, <span class="hljs-string">'progress-bar-fg'</span>
       <span class="hljs-property">@load</span>.setPreloadSprite <span class="hljs-property">@progressThumb</span>
 
-      <span class="hljs-property">@load</span>.script <span class="hljs-string">'webfont'</span>, <span class="hljs-string">'//ajax.googleapis.com/ajax/libs/webfont/1/webfont.js'</span>
+      <span class="hljs-property">@load</span>.script <span class="hljs-string">'webfont'</span>, <span class="hljs-string">'//ajax.googleapis.com/ajax/libs/webfont/1.5/webfont.js'</span>
       <span class="hljs-property">@load</span>.audio <span class="hljs-string">'bgm'</span>, [<span class="hljs-string">'assets/morning-stroll.mp3'</span>], <span class="hljs-literal">yes</span>
 
       <span class="hljs-property">@load</span>.spritesheet <span class="hljs-string">'button'</span>, <span class="hljs-string">'assets/button.png'</span>, buttonW, buttonH
@@ -39,13 +40,17 @@ the font needs to be loaded before any Phaser text using it renders.</p></div></
 
     <span class="hljs-attribute">create</span>: <span class="hljs-function">-&gt;</span>
       <span class="hljs-property">@progressThumb</span>.cropEnabled = <span class="hljs-literal">off</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Another is waiting (polling) for audio to decode before proceeding to next
-state in <code>update</code>. Note the use of <code>_.once</code> due to the update loop.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-attribute">update</span>: <span class="hljs-function">-&gt;</span>
+state in <code>update</code>. Note the use of <code>_.once</code> due to the update loop.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-attribute">update</span>: <span class="hljs-function">=&gt;</span>
       <span class="hljs-property">@_onceMenu</span> ?= _.once <span class="hljs-property">@menu</span>
 
       <span class="hljs-keyword">if</span> <span class="hljs-property">@cache</span>.isSoundDecoded(<span class="hljs-string">'bgm'</span>) <span class="hljs-keyword">then</span> <span class="hljs-property">@_onceMenu</span>()
-      <span class="hljs-keyword">else</span> <span class="hljs-property">@time</span>.events.add Timer.HALF, <span class="hljs-property">@update</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Given the above two cases of deferred state change, we need to guard the
-state change to wait until both conditions are satisfied.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-attribute">menu</span>: _.after <span class="hljs-number">2</span>, <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Also, if <code>developing</code> is on, this state goes to <code>PlayState</code> directly for
+      <span class="hljs-keyword">else</span> <span class="hljs-property">@time</span>.events.add Timer.HALF, <span class="hljs-property">@update</span>
+
+    <span class="hljs-attribute">menu</span>: <span class="hljs-function">=&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>If <code>developing</code> is on, this state goes to <code>PlayState</code> directly for
 convenience.</p></div></div><div class="code"><div class="wrapper">      state = <span class="hljs-keyword">if</span> developing <span class="hljs-keyword">then</span> <span class="hljs-string">'play'</span> <span class="hljs-keyword">else</span> <span class="hljs-string">'menu'</span>
       <span class="hljs-property">@state</span>.start state
+
+    <span class="hljs-attribute">_onWebFontLoadComplete</span>: <span class="hljs-function">=&gt;</span>
+      <span class="hljs-property">@time</span>.events.add Timer.SECOND, <span class="hljs-property">@menu</span>
 
   PreloadState</div></div></div></div></body></html>

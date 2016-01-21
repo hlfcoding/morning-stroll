@@ -36,8 +36,8 @@ this file.</p></div></div><div class="code"><div class="wrapper">define [<span c
 
       _.extend <span class="hljs-property">@camera</span>, CameraMixin
 
-      <span class="hljs-property">@game</span>.onBlur.add <span class="hljs-property">@onBlur</span>, @
-      <span class="hljs-property">@game</span>.onFocus.add <span class="hljs-property">@onFocus</span>, @
+      <span class="hljs-property">@game</span>.onBlur.add <span class="hljs-property">@onBlur</span>
+      <span class="hljs-property">@game</span>.onFocus.add <span class="hljs-property">@onFocus</span>
 
       <span class="hljs-property">@_initDebugMixin</span>
       <span class="hljs-property">@_initDebugDisplayMixin</span> <span class="hljs-property">@game</span>
@@ -89,18 +89,18 @@ this file.</p></div></div><div class="code"><div class="wrapper">define [<span c
 
     <span class="hljs-attribute">shutdown</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Null references to disposable objects we don&#39;t own.</p></div></div><div class="code"><div class="wrapper">      gameObject.destroy() <span class="hljs-keyword">for</span> gameObject <span class="hljs-keyword">in</span> [<span class="hljs-property">@background</span>, <span class="hljs-property">@inStateMenu</span>, <span class="hljs-property">@music</span>, <span class="hljs-property">@platforms</span>, <span class="hljs-property">@player</span>]
 
-      <span class="hljs-property">@game</span>.onBlur.remove <span class="hljs-property">@onBlur</span>, @
-      <span class="hljs-property">@game</span>.onFocus.remove <span class="hljs-property">@onFocus</span>, @
+      <span class="hljs-property">@game</span>.onBlur.remove <span class="hljs-property">@onBlur</span>
+      <span class="hljs-property">@game</span>.onFocus.remove <span class="hljs-property">@onFocus</span>
       <span class="hljs-property">@onHit</span>.removeAll @
 
       key.onDown.removeAll @ <span class="hljs-keyword">for</span> key <span class="hljs-keyword">in</span> [<span class="hljs-property">@loudKey</span>, <span class="hljs-property">@muteKey</span>, <span class="hljs-property">@quietKey</span>, <span class="hljs-property">@quitKey</span>]
 
       <span class="hljs-property">@gui</span>?.destroy()
 
-    <span class="hljs-attribute">onBlur</span>: <span class="hljs-function">-&gt;</span>
+    <span class="hljs-attribute">onBlur</span>: <span class="hljs-function">=&gt;</span>
       <span class="hljs-property">@music</span>?.pause()
 
-    <span class="hljs-attribute">onFocus</span>: <span class="hljs-function">-&gt;</span>
+    <span class="hljs-attribute">onFocus</span>: <span class="hljs-function">=&gt;</span>
       <span class="hljs-property">@music</span>?.resume()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="main-own-methods">Main own methods</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">end</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>First animate player.</p></div></div><div class="code"><div class="wrapper">      animation = <span class="hljs-property">@player</span>.startEnding <span class="hljs-property">@mate</span>
       animation.onComplete.addOnce =&gt;</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Then animate mate.</p></div></div><div class="code"><div class="wrapper">        animation = <span class="hljs-property">@mate</span>.play <span class="hljs-string">'end'</span>
         animation.onComplete.addOnce =&gt;</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Then lock them onto their final frames.</p></div></div><div class="code"><div class="wrapper">          <span class="hljs-property">@player</span>.animations.frame = Player.LastFrame
@@ -161,8 +161,9 @@ this file.</p></div></div><div class="code"><div class="wrapper">define [<span c
       , <span class="hljs-property">@game</span>, <span class="hljs-property">@gui</span>?.addOpenFolder <span class="hljs-string">'platforms'</span>
 
       <span class="hljs-property">@endingPoint</span> = <span class="hljs-property">@platforms</span>.ledges[-<span class="hljs-number">1.</span>..][<span class="hljs-number">0</span>].createMidpoint <span class="hljs-property">@platforms</span>
-      <span class="hljs-property">@startingPoint</span> = <span class="hljs-keyword">new</span> Point playerW, (<span class="hljs-property">@world</span>.height - playerH + playerYOffset)</div></div></div><div class="segment"><div class="comments doc-section"><div class="wrapper"><p><span class='doc-section-header'> startingPoint = @platforms.ledges[-2...-1][0].createMidpoint @platforms</span></p>
-<p>Use for debugging ending.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-attribute">_addPlayer</span>: <span class="hljs-function">-&gt;</span>
+      <span class="hljs-property">@startingPoint</span> = <span class="hljs-keyword">new</span> Point playerW, (<span class="hljs-property">@world</span>.height - playerH + playerYOffset)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Use for debugging ending.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-comment">#@startingPoint = @platforms.ledges[-2...-1][0].createMidpoint @platforms</span>
+
+    <span class="hljs-attribute">_addPlayer</span>: <span class="hljs-function">-&gt;</span>
       origin = <span class="hljs-property">@startingPoint</span>
       <span class="hljs-property">@player</span> = <span class="hljs-keyword">new</span> Player { origin }, <span class="hljs-property">@game</span>, <span class="hljs-property">@cursors</span>, <span class="hljs-property">@gui</span>?.addOpenFolder <span class="hljs-string">'player'</span>
 
