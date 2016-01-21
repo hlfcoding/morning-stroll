@@ -1,6 +1,6 @@
 {
   "name": "morning-stroll",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "index.html",
   "private": true,
   "dependencies": {
