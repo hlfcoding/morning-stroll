@@ -1,4 +1,4 @@
-# Morning Stroll
+# Morning Stroll [![Code Climate](https://codeclimate.com/github/hlfcoding/morning-stroll/badges/gpa.svg)](https://codeclimate.com/github/hlfcoding/morning-stroll)
 
 ## Development [![devDependency Status](https://img.shields.io/david/dev/hlfcoding/morning-stroll.svg)](https://david-dm.org/hlfcoding/morning-stroll#info=devDependencies)
 
@@ -47,4 +47,4 @@ $ grunt
 
 ## License
 
-Copyright (c) 2012-2015 Yinglei Yang, Peng Wang
+Copyright (c) 2012-2016 Yinglei Yang, Peng Wang
