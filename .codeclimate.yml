@@ -1,0 +1,13 @@
+---
+engines:
+  coffeelint:
+    enabled: true
+  fixme:
+    enabled: true
+  scss-lint:
+    enabled: true
+ratings:
+  paths:
+  - "**.scss"
+  - "**.coffee"
+exclude_paths: []
