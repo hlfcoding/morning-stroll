@@ -17,7 +17,8 @@ define ['defines', 'helpers'], (defines, Helpers) ->
   class InStateMenu
 
     constructor: (@textItems, game, options = {}) ->
-      {@baseTextStyle, @pauseHandler, @layout, @toggleKeyCode} = _.defaults options,
+      {@baseTextStyle, @pauseHandler, @layout, @toggleKeyCode} =
+      _.defaults options,
         baseTextStyle: { fill: '#fff', font: 'Enriqueta' }
         layout: { y: 120, baseline: 40 }
         pauseHandler: (paused) -> game.paused = paused

@@ -57,7 +57,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
     makeMap: (game) ->
       @_generateTiles() unless @tiles.length
 
-      tilesCSV = (rowCSV = row.join ',' for row in @tiles).join "\n"
+      tilesCSV = (rowCSV = (row.join ',' for row in @tiles)).join "\n"
       game.load.tilemap 'platforms', null, tilesCSV
 
       @tilemap = game.add.tilemap 'platforms', @tileWidth, @tileHeight
@@ -100,7 +100,10 @@ define ['defines', 'helpers'], (defines, Helpers) ->
         rowTiles: null
         rowType: null # empty, ledge, solid
 
-      numRowsLedge = (@maxLedgeSpacing.y + @minLedgeSpacing.y) / 2 + (@ledgeThickness - 1)
+      numRowsLedge = (
+        (@maxLedgeSpacing.y + @minLedgeSpacing.y) / 2 +
+        (@ledgeThickness - 1)
+      )
       vars.numLedgeRows = Math.round vars.numRows / numRowsLedge
 
       vars
@@ -157,7 +160,8 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       ledge.spacing = Math.round ledge.spacing / easiness
       ledge.size = Math.round ledge.size * easiness
       # Normalize.
-      ledge.spacing = Phaser.Math.clamp ledge.spacing, @minLedgeSpacing.y, @maxLedgeSpacing.y
+      ledge.spacing = Phaser.Math.clamp ledge.spacing,
+        @minLedgeSpacing.y, @maxLedgeSpacing.y
       ledge.size = Phaser.Math.clamp ledge.size, @minLedgeSize, @maxLedgeSize
       # Update.
       switch ledge.facing
@@ -208,8 +212,11 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       # Prepare for partial plot. This just does a simple random, anything
       # more complicated is delegated to _addLedgeDifficulty.
       vars.iLedgeRow++
-      vars.rowSize = @minLedgeSize + parseInt(Math.random() * vars.rangeLedgeSize)
-      vars.rowSpacing = @minLedgeSpacing.y + parseInt(Math.random() * vars.rangeRowSpacing) # Prepare for next ledge.
+      vars.rowSize = @minLedgeSize +
+        parseInt(Math.random() * vars.rangeLedgeSize)
+      # Prepare for next ledge.
+      vars.rowSpacing = @minLedgeSpacing.y +
+        parseInt(Math.random() * vars.rangeRowSpacing)
       vars.rowType = 'ledge'
 
       vars.prevFacing = vars.facing

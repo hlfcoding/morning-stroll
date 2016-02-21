@@ -9,8 +9,10 @@
 # the compiled js directory `release`.
 requirejs.config { baseUrl: './release' }
 
-define ['defines', 'helpers', 'site', 'state-boot', 'state-menu', 'state-preload', 'state-play'],
-(defines, Helpers, Site, BootState, MenuState, PreloadState, PlayState) ->
+define [
+  'defines', 'helpers', 'site', 'state-boot', 'state-menu', 'state-preload',
+  'state-play'
+], (defines, Helpers, Site, BootState, MenuState, PreloadState, PlayState) ->
 
   'use strict'
 

@@ -49,7 +49,7 @@ define ['helpers'], (Helpers) ->
 
   createPlayerProps: (player) ->
     sprite:
-      body: 
+      body:
         drag: new Point(), setSize: jasmine.createSpy 'setSize'
         velocity: new Point(), acceleration: new Point()
         position: new Point(), offset: new Point(), onFloor: -> no

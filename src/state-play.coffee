@@ -7,16 +7,20 @@
 # far. Also note any logic that can be easily factored out is factored out of
 # this file.
 
-define ['background', 'defines', 'helpers', 'in-state-menu', 'platforms', 'player'],
-(Background, defines, Helpers, InStateMenu, Platforms, Player) ->
+define [
+  'background', 'defines', 'helpers', 'in-state-menu', 'platforms', 'player'
+], (Background, defines, Helpers, InStateMenu, Platforms, Player) ->
 
   'use strict'
 
   {Key, Keyboard, Physics, Point, Rectangle, State, Timer} = Phaser
 
-  {domStateEvents, artH, mapH, fontLarge, fontSmall, playerH, playerW, playerYOffset, shakeFallH, deadzoneH} = defines
+  {domStateEvents, fontLarge, fontSmall} = defines
+  {artH, mapH, deadzoneH, shakeFallH} = defines
+  {playerH, playerW, playerYOffset} = defines
 
-  {AnimationMixin, CameraMixin, DebugMixin, DebugDisplayMixin, TextMixin} = Helpers
+  {AnimationMixin, CameraMixin, TextMixin} = Helpers
+  {DebugMixin, DebugDisplayMixin} = Helpers
 
   MateLastFrame = 14
 

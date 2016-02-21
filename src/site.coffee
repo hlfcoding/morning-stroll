@@ -1,4 +1,4 @@
-# Site 
+# Site
 # ====
 # This module is actually just a DOM-ready script for various bits of site
 # functionality supporting the actual game.
@@ -73,7 +73,7 @@ define ['defines'], (defines) ->
     # Being able to toggle `flipping` means knowing the transition durations,
     # which requires using `getComputedStyle` and a Modernizr vendor-prefix
     # helper.
-    style = window.getComputedStyle document.querySelector('#framed') 
+    style = window.getComputedStyle document.querySelector('#framed')
     flipDuration = (
       parseFloat(style[prefixedCSS('transition-duration')]) +
       parseFloat(style[prefixedCSS('transition-delay')])

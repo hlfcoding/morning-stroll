@@ -220,18 +220,25 @@ define ['defines', 'helpers'], (defines, Helpers) ->
     # Computed
     # --------
 
-    _isAnimationInterruptible: -> @animation?.isFinished or not @animation? or @animation?.loop
-    _isFullyFalling: -> @state is 'falling' and @velocity.y is @maxVelocity.y
-    _isFullyRunning: -> @state is 'running' and @animation?.name is 'run'
-    _isFullyStill: -> @state is 'still' and (@animations.frame is 17 and not @animation?)
-    _isInMidAir: -> @state in ['rising', 'falling']
-    _isLanded: -> @animation?.name is 'land' and @animation.isFinished
+    _isAnimationInterruptible: ->
+      @animation?.isFinished or not @animation? or @animation?.loop
+    _isFullyFalling: ->
+      @state is 'falling' and @velocity.y is @maxVelocity.y
+    _isFullyRunning: ->
+      @state is 'running' and @animation?.name is 'run'
+    _isFullyStill: ->
+      @state is 'still' and (@animations.frame is 17 and not @animation?)
+    _isInMidAir: ->
+      @state in ['rising', 'falling']
+    _isLanded: ->
+      @animation?.name is 'land' and @animation.isFinished
 
     _xDirectionInput: ->
       if @cursors?.left.isDown then Direction.Left
       else if @cursors?.right.isDown then Direction.Right
 
-    _xOffset: (direction = @direction) -> direction * 10
+    _xOffset: (direction = @direction) ->
+      direction * 10
 
     # Jump
     # ----
@@ -262,8 +269,8 @@ define ['defines', 'helpers'], (defines, Helpers) ->
 
     _buildJump: ->
       # Speed up by persisting the jump acceleration but with quadratic decay.
-      # The longer the hold, the higher the final jump, but power decays quickly.
-      # Also note that negative is up, positive is down.
+      # The longer the hold, the higher the final jump, but power decays
+      # quickly. Also note that negative is up, positive is down.
       kEasing = (1000 - @jumpMaxDuration) + (@jumpMaxDuration - @_jumpTimer.ms)
       kEasing = Math.pow kEasing / 1000, 2
       @acceleration.y *= kEasing
@@ -348,7 +355,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       kEasing /= 3 if @_isFullyFalling()
       step = @physics.position.clone()
         .subtractPoint @cameraFocus.position
-        .divide kEasing, kEasing        
+        .divide kEasing, kEasing
       @cameraFocus.position.addPoint step
 
   _.extend Player::, AnimationMixin, DebugMixin

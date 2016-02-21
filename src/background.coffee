@@ -26,7 +26,8 @@ define ['defines', 'helpers'], (defines, Helpers) ->
         # - clip - Images are only partial, and clip the transparent leftovers.
         layoutMode: 'full' # TODO: Support 'clip'.
 
-      {@layoutMode, @parallaxBuffer, @parallaxFactor, @parallaxTolerance} = config
+      {@layoutMode} = config
+      {@parallaxBuffer, @parallaxFactor, @parallaxTolerance} = config
 
       @_topZIndex = 1
 

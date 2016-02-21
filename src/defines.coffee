@@ -6,7 +6,7 @@ define [], () ->
 
   'use strict'
 
-  defines = 
+  defines =
 
     # Turn off here to disable entirely (@release).
     # Off by default for performance.

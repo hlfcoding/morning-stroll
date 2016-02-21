@@ -160,8 +160,9 @@ define [], () ->
   kPhaserLineRatio = 1.8
 
   # Renders to game's `Phaser.Utils.Debug` display, which isn't the easiest to
-  # extend correctly and requires manual layout bookkeeping. Sets and works with
-  # `debugFontSize`. Requires game object. Sets some internal layout properties.
+  # extend correctly and requires manual layout bookkeeping. Sets and works
+  # with `debugFontSize`. Requires game object. Sets some internal layout
+  # properties.
   DebugDisplayMixin =
 
     # Only do the minimal setup here, so it can always run.
@@ -251,7 +252,7 @@ define [], () ->
   # ----------
   # Basic Phaser class extension for less code.
 
-  PointMixin = 
+  PointMixin =
     addPoint: (point) -> @add point.x, point.y
     dividePoint: (point) -> @divide point.x, point.y
     multiplyPoint: (point) -> @multiply point.x, point.y
@@ -259,8 +260,10 @@ define [], () ->
 
   # StateManagerMixin
   # -----------------
-  # Adds transitioning that's heavily inspired by aaccurso/phaser-state-transition-plugin
-  # Given its complexity, coupling, and fragility, this one is manually tested. 
+  # Adds transitioning that's heavily inspired by aaccurso/phaser-state-
+  # transition-plugin.
+  # Given its complexity, coupling, and fragility, this one is manually
+  # tested. 
 
   # As far as what it does, it wraps the state's methods with logic to
   # screenshot the current viewport (with some weird offsetting logic). The
