@@ -108,7 +108,8 @@ define ['helpers'], (Helpers) ->
         expect(console.trace).not.toHaveBeenCalled()
         expect(obj.debugTextItems).toEqual {}
 
-      it 'calls console.trace with namespaced label instead if tracing flag is on', ->
+      it 'calls console.trace with namespaced label instead if tracing flag is
+      on', ->
         obj.tracing = on
         obj.debugNamespace = 'obj'
 
