@@ -1,6 +1,6 @@
 $fill: #222;
 $stroke: #fff;
-$frame-duration: 0.2s;
+$frame-duration: .2s;
 
 %flipper-wrap {
   perspective: 1000px;
@@ -10,24 +10,29 @@ $frame-duration: 0.2s;
 }
 
 %flipper {
-  $easing: cubic-bezier(0.8, 0, 0.2, 1);
+  $easing: cubic-bezier(.8, 0, .2, 1);
   position: relative;
-  transition: transform 1s $easing $frame-duration;
   transform-style: preserve-3d;
+  transition: transform 1s $easing $frame-duration;
 }
 
 %flipper-face {
   backface-visibility: hidden;
-  position: absolute; top: 0; left: 0;
-  width: 100%; height: 100%;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 %motif {
   $size: 32px;
   background: url(assets/paw-tile.png) center no-repeat;
   content: '';
+  display: block;
+  height: $size;
   margin: 1rem auto;
-  width: $size; height: $size; display: block;
+  width: $size;
 }
 
 %prose {
@@ -44,9 +49,10 @@ $frame-duration: 0.2s;
     white-space: nowrap;
   }
 
-  a, & { color: rgba($stroke, 0.7); }
+  &,
+  a { color: rgba($stroke, .7); }
   a {
-    transition: color 0.2s ease-in-out;
+    transition: color .2s ease-in-out;
     &:hover { color: $stroke; }
   }
 
@@ -57,39 +63,48 @@ $frame-duration: 0.2s;
 }
 
 body {
+  $shadow-color: rgba(#000, .4);
   background: $fill url(assets/paw-tile.png) center;
-  box-shadow: inset 0 0 200px rgba(#000, 0.4);
-
+  bottom: 0;
+  box-shadow: inset 0 0 200px $shadow-color;
+  left: 0;
   margin: 0;
-  position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 .frame {
   background: $fill;
-
+  height: 600px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
   transition: {
-    property: border, box-shadow;
     duration: $frame-duration;
+    property: border, box-shadow;
     timing-function: ease-in;
   }
+  width: 416px;
+
   &:not(.flipping) {
-    border: 1px solid rgba(#fff, 0.1);
+    $tint-color: rgba(#fff, .1);
+    $shadow-color: rgba(#000, .2);
+    border: 1px solid $tint-color;
     box-shadow: (
-      0 0 0 1px rgba(#000, 0.2),
-      0 0 2px 2px rgba(#000, 0.2)
+      0 0 0 1px $shadow-color,
+      0 0 2px 2px $shadow-color
     );
   }
 
-  width: 416px; height: 600px;
-
-  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-
   aside {
-    position: absolute;
-    top: 520px; right: -100px; width: 60px;
-
-    color: rgba($stroke, 0.3);
+    color: rgba($stroke, .3);
     font: { family: Enriqueta, serif; size: 12px; }
+    position: absolute;
+    right: -100px;
+    top: 520px;
+    width: 60px;
 
     button {
       margin-bottom: 2em;
@@ -101,51 +116,61 @@ body {
   }
 
   @extend %flipper-wrap;
+
   .framed {
     @extend %flipper;
-    width: inherit; height: inherit;
+    height: inherit;
+    width: inherit;
   }
+
   .game {
     @extend %flipper-face;
     transform: rotateY(0deg);
     z-index: 1;
   }
+
   .about {
     @extend %flipper-face;
-    transform: rotateY(180deg);
-
     @extend %prose;
     background: $fill;
-    padding: 3rem; box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 3rem;
     text-align: justify;
+    transform: rotateY(180deg);
   }
 }
 
 button {
+  $shadow-color: rgba(#000, .4);
+  $tint-color: rgba(#fff, .1);
   background: transparent;
-  border: 1px solid rgba(#000, 0.4);
+  border: 1px solid $shadow-color;
   border-radius: 5px;
   box-shadow: (
-    inset 0 0 0 1px rgba(#fff, 0.1),
-    0 0 0 1px rgba(#fff, 0.1)
+    inset 0 0 0 1px $tint-color,
+    0 0 0 1px $tint-color
   );
   color: inherit;
   cursor: pointer;
   font: inherit;
   outline: none;
-  padding: 0.4em 1em 0.5em;
+  padding: .4em 1em .5em;
+
   body.ready & {
-    transition: all 0.2s ease-in-out;
+    transition: all .2s ease-in-out;
   }
+
   &:hover {
     background: $fill;
-    color: rgba($stroke, 0.8);
+    color: rgba($stroke, .8);
   }
+
   &:active {
     background: lighten($fill, 10%);
   }
+
   &:disabled {
-    opacity: 0.5;
+    opacity: .5;
   }
 }
 
