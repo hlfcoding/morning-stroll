@@ -58,7 +58,7 @@ define [
       @quitKey = @_addKey Keyboard.Q, @quit
       # Quit on click at end.
       @onHit = @input[if @game.device.touch then 'onTap' else 'onUp']
-      @onHit.add (trigger) => 
+      @onHit.add (trigger) =>
         unless @quit trigger
           @inStateMenu.toggle()
       , @
@@ -66,9 +66,11 @@ define [
       if @developing
         @gui = new dat.GUI()
         @gui.add(@, 'debugging').listen().onFinishChange =>
-          @background.debugging = @platforms.debugging = @player.debugging = @debugging
+          @background.debugging = @platforms.debugging = @player.debugging =
+            @debugging
           @debugDisplay.reset() unless @debugging
-        @gui.add(@, 'detachedCamera').onFinishChange => @_toggleCameraAttachment()
+        @gui.add(@, 'detachedCamera').onFinishChange =>
+          @_toggleCameraAttachment()
         @gui.addOpenFolder('gravity').addRange @physics.arcade.gravity, 'y'
 
       # First:
@@ -107,13 +109,17 @@ define [
 
     shutdown: ->
       # Null references to disposable objects we don't own.
-      gameObject.destroy() for gameObject in [@background, @inStateMenu, @music, @platforms, @player]
+      gameObject.destroy() for gameObject in [
+        @background, @inStateMenu, @music, @platforms, @player
+      ]
 
       @game.onBlur.remove @onBlur
       @game.onFocus.remove @onFocus
       @onHit.removeAll @
 
-      key.onDown.removeAll @ for key in [@loudKey, @muteKey, @quietKey, @quitKey]
+      key.onDown.removeAll @ for key in [
+        @loudKey, @muteKey, @quietKey, @quitKey
+      ]
 
       @gui?.destroy()
 
@@ -197,19 +203,23 @@ define [
       @quietKey = @_addKey Keyboard.UNDERSCORE, => @userVolume -= increment
 
     _addPlatforms: ->
-      @platforms = new Platforms 
+      @platforms = new Platforms
         mapH: mapH
         tileImageKey: 'balcony'
       , @game, @gui?.addOpenFolder 'platforms'
 
       @endingPoint = @platforms.ledges[-1...][0].createMidpoint @platforms
-      @startingPoint = new Point playerW, (@world.height - playerH + playerYOffset)
+      @startingPoint = new Point(
+        playerW, (@world.height - playerH + playerYOffset)
+      )
       # Use for debugging ending.
       #@startingPoint = @platforms.ledges[-2...-1][0].createMidpoint @platforms
 
     _addPlayer: ->
       origin = @startingPoint
-      @player = new Player { origin }, @game, @cursors, @gui?.addOpenFolder 'player'
+      @player = new Player(
+        { origin }, @game, @cursors, @gui?.addOpenFolder 'player'
+      )
 
     _addText: (text, style) ->
       _.defaults style, { fill: '#fff', font: 'Enriqueta' }
@@ -244,7 +254,10 @@ define [
           @ended = yes
 
     _shakeOnPlayerFall: ->
-      return no unless @player.nextState is 'landing' and @player.distanceFallen() > shakeFallH
+      return no unless (
+        @player.nextState is 'landing' and
+        @player.distanceFallen() > shakeFallH
+      )
       @camera.shake()
 
     _toggleCameraAttachment: (attached) ->
@@ -270,6 +283,8 @@ define [
       volume = @math.clamp volume, 0.2, 0.8
       @music.fadeTo Timer.SECOND, volume
 
-  _.extend PlayState::, AnimationMixin, DebugMixin, DebugDisplayMixin, TextMixin
+  _.extend( PlayState::,
+    AnimationMixin, DebugMixin, DebugDisplayMixin, TextMixin
+  )
 
   PlayState

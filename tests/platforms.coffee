@@ -110,12 +110,15 @@ define ['platforms', 'test/fakes'], (Platforms, fakes) ->
 
         expect(platforms.ledges[0] instanceof Platforms.Ledge).toBe yes
 
-      it 'sets row tiles so only those within start and end indexes are solid', ->
+      it 'sets row tiles so only those within start and end indexes are solid'
+      , ->
         vars.rowType = 'ledge'
         platforms._addRow vars
 
-        expect(platforms.tiles[0][..vars.iColEnd]).not.toContain Platforms.Tile.Empty
-        expect(platforms.tiles[0][vars.iColEnd + 1...]).not.toContain Platforms.Tile.Solid
+        expect platforms.tiles[0][..vars.iColEnd]
+          .not.toContain Platforms.Tile.Empty
+        expect platforms.tiles[0][vars.iColEnd + 1...]
+          .not.toContain Platforms.Tile.Solid
 
     describe '#_setupEmptyRow', ->
       vars = null
@@ -142,13 +145,15 @@ define ['platforms', 'test/fakes'], (Platforms, fakes) ->
           rangeLedgeSize: 2
           rangeRowSpacing: 2
 
-      it 'resets column indexes for upcoming ledge facing left, with variance', ->
+      it 'resets column indexes for upcoming ledge facing left,
+      with variance', ->
         platforms._setupLedgeRow vars
 
         expect(vars.iColStart).toBe 0
         expect(vars.iColEnd >= platforms.minLedgeSize - 1).toBe yes
 
-      it 'resets column indexes for upcoming ledge facing right, with variance', ->
+      it 'resets column indexes for upcoming ledge facing right,
+      with variance', ->
         vars.facing = 'right'
         platforms._setupLedgeRow vars
 
@@ -193,17 +198,17 @@ define ['platforms', 'test/fakes'], (Platforms, fakes) ->
         spyOn(platforms, '_setupEachRow').and.callThrough()
         platforms._generateTiles()
 
-        expect(platforms._setupEachRow.calls.count()).toBe platforms.tiles.length
+        expect platforms._setupEachRow.calls.count()
+          .toBe platforms.tiles.length
 
-      it 'calls #_setupLedgeRow for each ledge and #_setupEmptyRow for the rest', ->
+      it 'calls #_setupLedgeRow for each ledge and #_setupEmptyRow for the
+      rest', ->
         spyOn(platforms, '_setupLedgeRow').and.callThrough()
         spyOn(platforms, '_setupEmptyRow').and.callThrough()
         platforms._generateTiles()
 
         # FIXME: Not sure why rounding is needed.
-        expect(platforms._setupLedgeRow.calls.count()).toBe(
-          Math.round(platforms.ledges.length / platforms.ledgeThickness)
-        )
-        expect(platforms._setupEmptyRow.calls.count()).toBe(
-          platforms.tiles.length - platforms.ledges.length
-        )
+        expect platforms._setupLedgeRow.calls.count()
+          .toBe Math.round(platforms.ledges.length / platforms.ledgeThickness)
+        expect platforms._setupEmptyRow.calls.count()
+          .toBe platforms.tiles.length - platforms.ledges.length

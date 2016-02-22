@@ -1,8 +1,8 @@
 # PreloadState
 # ============
 # This is the main state before `PlayState`. It loads all assets used by
-# subsequent states and renders a progress-bar. Not all assets are easy to load,
-# so there's additional complexity to handle. Read on.
+# subsequent states and renders a progress-bar. Not all assets are easy to
+# load, so there's additional complexity to handle. Read on.
 
 define ['defines'], (defines) ->
 
@@ -10,13 +10,14 @@ define ['defines'], (defines) ->
 
   {State, Timer} = Phaser
 
-  {buttonH, buttonW, developing, playerH, playerW, progressH, progressW} = defines
+  {developing} = defines
+  {buttonH, buttonW, playerH, playerW, progressH, progressW} = defines
 
   class PreloadState extends State
 
     init: ->
-      # Given the above two cases of deferred state change, we need to guard the
-      # state change to wait until both conditions are satisfied.
+      # Given the above two cases of deferred state change, we need to guard
+      # the state change to wait until both conditions are satisfied.
       @menu = _.after(2, @menu).bind(@)
 
       # One area of additional complexity is Google webfont loading, given that
@@ -33,7 +34,9 @@ define ['defines'], (defines) ->
       @progressThumb = @add.sprite x, y, 'progress-bar-fg'
       @load.setPreloadSprite @progressThumb
 
-      @load.script 'webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.5/webfont.js'
+      remoteUrl = '//ajax.googleapis.com/ajax/libs/webfont/1.5/webfont.js'
+      @load.script 'webfont', remoteUrl
+        
       @load.audio 'bgm', ['assets/morning-stroll.mp3'], yes
 
       @load.spritesheet 'button', 'assets/button.png', buttonW, buttonH
@@ -49,8 +52,8 @@ define ['defines'], (defines) ->
     create: ->
       @progressThumb.cropEnabled = off
 
-    # Another is waiting (polling) for audio to decode before proceeding to next
-    # state in `update`. Note the use of `_.once` due to the update loop.
+    # Another is waiting (polling) for audio to decode before proceeding to
+    # next state in `update`. Note the use of `_.once` due to the update loop.
     update: =>
       @_onceMenu ?= _.once @menu
 

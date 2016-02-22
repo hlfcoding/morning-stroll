@@ -1,9 +1,9 @@
 # Helpers
 # =======
-# Misc. utilities and bits of custom functionality not specific to the game. For
-# now it's all in this one file, but eventually may become a separate module.
-# Ideally this file should be short because we shouldn't need to patch or extend
-# vendor code.
+# Misc. utilities and bits of custom functionality not specific to the game. 
+# For now it's all in this one file, but eventually may become a separate
+# module. Ideally this file should be short because we shouldn't need to patch
+# or extend vendor code.
 
 # __See__: [tests](../tests/helpers.html).
 
@@ -20,8 +20,8 @@ define [], () ->
 
   # AnimationMixin
   # --------------
-  # Requires DebugMixin. Some higher-level operations over Phaser animation API.
-  # Apply this to any object that has an `animations` (`AnimationManager`)
+  # Requires DebugMixin. Some higher-level operations over Phaser animation
+  # API. Apply this to any object that has an `animations` (`AnimationManager`)
   # property. It will set a current `animation` property. An `add`
   # (`GameObjectFactory`) property is also required.
 
@@ -135,7 +135,9 @@ define [], () ->
         if details? then console.trace label, value, details
         else console.trace label, value
       else
-        if _.isArray(value) and (_.isArray(value[0]) or _.isPlainObject(value[0]))
+        if (_.isArray(value) and 
+          (_.isArray(value[0]) or _.isPlainObject(value[0]))
+        )
           label = "#{@debugNamespace}:#{label}"
           console.groupCollapsed label
           console.table? value
@@ -263,7 +265,7 @@ define [], () ->
   # Adds transitioning that's heavily inspired by aaccurso/phaser-state-
   # transition-plugin.
   # Given its complexity, coupling, and fragility, this one is manually
-  # tested. 
+  # tested.
 
   # As far as what it does, it wraps the state's methods with logic to
   # screenshot the current viewport (with some weird offsetting logic). The
@@ -283,7 +285,9 @@ define [], () ->
 
       @game.camera.unfollow() # Prevent flickering.
       @game.paused = yes
-      texture = new RenderTexture @game, @game.width, @game.height, "transition-to-#{stateName}"
+      texture = new RenderTexture(
+        @game, @game.width, @game.height, "transition-to-#{stateName}"
+      )
       texture.renderXY @game.world, -@game.camera.x, -@game.camera.y
       @game.paused = no
 

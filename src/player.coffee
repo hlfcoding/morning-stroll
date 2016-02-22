@@ -249,7 +249,8 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @nextAction isnt 'jump' and @cursors?.up.isDown and @_jumpTimer.running
     _canEndJump: ->
       @nextAction isnt 'jump' and @_jumpTimer.running and
-      (@cursors?.up.isUp or @_jumpTimer.ms >= @jumpMaxDuration) # Release to cancel early.
+      # Release to cancel early.
+      (@cursors?.up.isUp or @_jumpTimer.ms >= @jumpMaxDuration)
 
     _canFall: ->
       @velocity.y > 0 and (@state isnt 'rising' or
@@ -295,13 +296,14 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       not (@_canLand() or @_isInMidAir())
 
     _beginRun: ->
-      @nextAction = 'start' 
+      @nextAction = 'start'
       @nextState = 'running'
 
     _buildRun: ->
       @acceleration.x =
         # No force, just air friction.
-        if @_isInMidAir() then @runAcceleration * @airFrictionRatio * -@nextDirection
+        if @_isInMidAir()
+          @runAcceleration * @airFrictionRatio * -@nextDirection
         # Otherwise, just step on the pedal.
         else @runAcceleration * @nextDirection
 

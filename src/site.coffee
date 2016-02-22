@@ -16,29 +16,31 @@ define ['defines'], (defines) ->
 
   # Fiddle
   # ------
-  # This feature allows the player to configure game variables to experiment and
-  # do more complex play-testing.
+  # This feature allows the player to configure game variables to experiment
+  # and do more complex play-testing.
   Site.initFiddle = (game) ->
 
     # The History API will be required. Start off with fiddle flag off.
     return unless history
     window.history.replaceState { fiddle: off }, document.title
 
-    # The fiddle button just allows access to global developing flag, which gets
+    # The fiddle button just allows access to global developing flag, which is
     # used throughout the game code. State is visually represented by the url
     # updating and the button disabling (it's styled to become invisible).
-    # Note that because there's no server code, going directly to the `/fiddle`-
-    # appended url won't work.
+    # Note that because there's no server code, going directly to the
+    # `/fiddle`-appended url won't work.
     fiddle = document.querySelector '#fiddle'
     fiddle.addEventListener 'click', ->
       defines.developing = on
-      window.history.pushState { fiddle: on }, "#{document.title} (fiddling)", 'fiddle'
+      window.history.pushState(
+        { fiddle: on }, "#{document.title} (fiddling)", 'fiddle'
+      )
       fiddle.setAttribute 'disabled', ''
 
     # With url integration, hitting the back button will turn off fiddling,
-    # since the button gets disabled. But if the game is already being played, a
-    # reload will be needed to reset game state so re-initialization can occur
-    # with the updated developing flag.
+    # since the button gets disabled. But if the game is already being played,
+    # a reload will be needed to reset game state so re-initialization can
+    # occur with the updated developing flag.
     window.addEventListener 'popstate', (e) ->
       if _game.state.current is 'play'
         window.location.reload()
@@ -61,7 +63,8 @@ define ['defines'], (defines) ->
   # About
   # -----
   # This feature is just the other half of fancily presenting the about-content
-  # via some set flipping-card styling. `classList` and css transitions are required.
+  # via some set flipping-card styling. `classList` and css transitions are
+  # required.
   Site.initAbout = ->
     return unless (classlist and csstransitions)
 
@@ -80,8 +83,8 @@ define ['defines'], (defines) ->
     ) * 1000
     frame = document.querySelector '#frame'
 
-    # The about button simply (optimistically) toggles `flipped`. When flipping,
-    # the button disables itself.
+    # The about button simply (optimistically) toggles `flipped`. When
+    # flipping, the button disables itself.
     toggleAbout = document.querySelector '#toggle-about'
     toggleAbout.addEventListener 'click', ->
       frame.classList.toggle 'flipped'

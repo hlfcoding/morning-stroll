@@ -258,9 +258,9 @@ define ['player', 'test/fakes'], (Player, fakes) ->
 
           expect(player._isLanded()).toBe yes
 
-    # Supplemental Manual Tests 
+    # Supplemental Manual Tests
     # -------------------------
-    # 
+    #
     # - Mash left and right cursor keys in alternating fashion for a bit.
     #   Stop, then attempt to turn in other direction. Player should visualize
     #   turn properly, and should not appear to run backwards.
