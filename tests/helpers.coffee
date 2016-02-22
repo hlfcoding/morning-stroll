@@ -13,7 +13,8 @@ define ['helpers'], (Helpers) ->
         obj.animations = { play: (name) -> { name } } # Fake.
         obj.animation = { isPlaying: no } # Fake.
 
-      it 'plays if allowed to interrupt or current animation isn\'t playing', ->
+      it 'plays if allowed to interrupt or current animation isn\'t playing',
+      ->
         expect(obj.playAnimation('foo')).not.toBe no
 
         obj.animation = { isPlaying: yes }
@@ -78,13 +79,16 @@ define ['helpers'], (Helpers) ->
         expect(obj.tracing).toBeDefined()
         expect(completedInit).toBe no
 
-      it 'creates #debugTextItems key-value store for info for Phaser.Utils.Debug', ->
+      it 'creates #debugTextItems key-value store for info for
+      Phaser.Utils.Debug', ->
         obj._initDebugMixin()
         expect(obj.debugTextItems).toEqual {}
 
       it 'sets up gui (folder) if provided one', ->
         gui = { add: -> }
-        spyOn(gui, 'add').and.returnValue jasmine.createSpyObj('control', ['listen', 'onFinishChange'])
+        spyOn(gui, 'add').and.returnValue(
+          jasmine.createSpyObj 'control', ['listen', 'onFinishChange']
+        )
 
         completedInit = obj._initDebugMixin gui
         expect(obj.gui).toBe gui
@@ -114,7 +118,8 @@ define ['helpers'], (Helpers) ->
 
       it 'calls console.table instead for values that are 2D arrays', ->
         # Since they are too big to render on game screen.
-        if console.table? then spyOn(console, 'table') else console.table = jasmine.createSpy('table')
+        if console.table? then spyOn(console, 'table')
+        else console.table = jasmine.createSpy('table')
         spyOn console, 'groupCollapsed'
         spyOn console, 'groupEnd'
         obj.debugNamespace = 'obj'
@@ -135,7 +140,8 @@ define ['helpers'], (Helpers) ->
 
       it 'allows including details hash to complement value', ->
         obj.debug 'someItem', 'value', { someDetail: 'detailValue' }
-        expect(obj.debugTextItems.someItem).toBe 'someItem: value someDetail: detailValue'
+        expect obj.debugTextItems.someItem
+          .toBe 'someItem: value someDetail: detailValue'
 
     describe '#_prettyPoint', ->
       it 'converts a Phaser.Point to hash form', ->

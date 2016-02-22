@@ -1,6 +1,6 @@
 # Helpers
 # =======
-# Misc. utilities and bits of custom functionality not specific to the game. 
+# Misc. utilities and bits of custom functionality not specific to the game.
 # For now it's all in this one file, but eventually may become a separate
 # module. Ideally this file should be short because we shouldn't need to patch
 # or extend vendor code.
@@ -135,7 +135,7 @@ define [], () ->
         if details? then console.trace label, value, details
         else console.trace label, value
       else
-        if (_.isArray(value) and 
+        if (_.isArray(value) and
           (_.isArray(value[0]) or _.isPlainObject(value[0]))
         )
           label = "#{@debugNamespace}:#{label}"
