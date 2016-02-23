@@ -6,6 +6,9 @@ engines:
     enabled: true
   scss-lint:
     enabled: true
+    checks:
+      QualifyingElement:
+        enabled: false
 ratings:
   paths:
   - "**.scss"
