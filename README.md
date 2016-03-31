@@ -20,4 +20,4 @@ $ grunt
 
 ## License
 
-Copyright (c) 2012-2016 Yinglei Yang, Peng Wang
+Copyright (c) 2012-present Yinglei Yang, Peng Wang
