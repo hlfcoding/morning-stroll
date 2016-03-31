@@ -1,3 +1,4 @@
+*.sublime-workspace
 node_modules
 release/**/*.js*
 release/**/*.css*

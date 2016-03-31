@@ -1,0 +1,23 @@
+{
+  "folders":
+  [
+    {
+      "path": ".",
+      "file_exclude_patterns":
+      [
+        "*.sublime-workspace",
+        "assets/*",
+        "docs/*/*",
+        "lib/*",
+        "release/*",
+        "tests/js/*"
+      ],
+      "folder_exclude_patterns":
+      [
+        ".grunt",
+        "node_modules",
+        "morning-stroll/site"
+      ]
+    }
+  ]
+}

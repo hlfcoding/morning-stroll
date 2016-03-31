@@ -18,33 +18,6 @@ $ grunt test
 $ grunt
 ```
 
-### Sample ST2 Project File
-
-```json
-{
-  "folders":
-  [
-    {
-      "path": "morning-stroll",
-      "file_exclude_patterns":
-      [
-        "assets/*",
-        "docs/*/*",
-        "lib/*",
-        "release/*",
-        "tests/js/*"
-      ],
-      "folder_exclude_patterns":
-      [
-        ".grunt",
-        "node_modules",
-        "morning-stroll/site"
-      ]
-    }
-  ]
-}
-```
-
 ## License
 
 Copyright (c) 2012-2016 Yinglei Yang, Peng Wang
