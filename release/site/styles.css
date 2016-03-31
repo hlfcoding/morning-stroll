@@ -7,27 +7,27 @@
 
 .frame .framed {
   position: relative;
-  transition: -webkit-transform 1s cubic-bezier(0.8, 0, 0.2, 1) 0.2s;
-  transition: transform 1s cubic-bezier(0.8, 0, 0.2, 1) 0.2s;
   -webkit-transform-style: preserve-3d;
-          transform-style: preserve-3d; }
+          transform-style: preserve-3d;
+  transition: -webkit-transform 1s cubic-bezier(0.8, 0, 0.2, 1) 0.2s;
+  transition: transform 1s cubic-bezier(0.8, 0, 0.2, 1) 0.2s; }
 
 .frame .game, .frame .about {
   -webkit-backface-visibility: hidden;
           backface-visibility: hidden;
+  height: 100%;
+  left: 0;
   position: absolute;
   top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%; }
+  width: 100%; }
 
 .frame .about header::after, .frame .about footer::before {
-  background: url(assets/paw-tile.png) center no-repeat;
+  background: url("assets/paw-tile.png") center no-repeat;
   content: '';
-  margin: 1rem auto;
-  width: 32px;
+  display: block;
   height: 32px;
-  display: block; }
+  margin: 1rem auto;
+  width: 32px; }
 
 .frame .about {
   font-family: Enriqueta, serif;
@@ -40,67 +40,68 @@
     font-weight: 500;
     line-height: 1;
     white-space: nowrap; }
-  .frame .about a, .frame .about {
+  .frame .about,
+  .frame .about a {
     color: rgba(255, 255, 255, 0.7); }
   .frame .about a {
-    transition: color 0.2s ease-in-out; }
+    transition: color .2s ease-in-out; }
     .frame .about a:hover {
       color: #fff; }
   .frame .about footer {
     text-align: center; }
 
 body {
-  background: #222 url(assets/paw-tile.png) center;
+  background: #222 url("assets/paw-tile.png") center;
+  bottom: 0;
   box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.4);
+  left: 0;
   margin: 0;
   position: absolute;
-  left: 0;
   right: 0;
-  top: 0;
-  bottom: 0; }
+  top: 0; }
 
 .frame {
   background: #222;
-  transition-property: border, box-shadow;
-  transition-duration: 0.2s;
-  transition-timing-function: ease-in;
-  width: 416px;
   height: 600px;
-  position: absolute;
   left: 50%;
+  position: absolute;
   top: 50%;
   -webkit-transform: translate(-50%, -50%);
       -ms-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%); }
+          transform: translate(-50%, -50%);
+  transition-duration: 0.2s;
+  transition-property: border, box-shadow;
+  transition-timing-function: ease-in;
+  width: 416px; }
   .frame:not(.flipping) {
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 0 2px 2px rgba(0, 0, 0, 0.2); }
   .frame aside {
-    position: absolute;
-    top: 520px;
-    right: -100px;
-    width: 60px;
     color: rgba(255, 255, 255, 0.3);
     font-family: Enriqueta, serif;
-    font-size: 12px; }
+    font-size: 12px;
+    position: absolute;
+    right: -100px;
+    top: 520px;
+    width: 60px; }
     .frame aside button {
       margin-bottom: 2em; }
   .frame button.fiddle:disabled {
     visibility: hidden; }
   .frame .framed {
-    width: inherit;
-    height: inherit; }
+    height: inherit;
+    width: inherit; }
   .frame .game {
     -webkit-transform: rotateY(0deg);
             transform: rotateY(0deg);
     z-index: 1; }
   .frame .about {
-    -webkit-transform: rotateY(180deg);
-            transform: rotateY(180deg);
     background: #222;
-    padding: 3rem;
     box-sizing: border-box;
-    text-align: justify; }
+    padding: 3rem;
+    text-align: justify;
+    -webkit-transform: rotateY(180deg);
+            transform: rotateY(180deg); }
 
 button {
   background: transparent;
@@ -111,16 +112,16 @@ button {
   cursor: pointer;
   font: inherit;
   outline: none;
-  padding: 0.4em 1em 0.5em; }
+  padding: .4em 1em .5em; }
   body.ready button {
-    transition: all 0.2s ease-in-out; }
+    transition: all .2s ease-in-out; }
   button:hover {
     background: #222;
     color: rgba(255, 255, 255, 0.8); }
   button:active {
     background: #3c3c3c; }
   button:disabled {
-    opacity: 0.5; }
+    opacity: .5; }
 
 html.no-csstransitions button.toggle-about {
   display: none; }
