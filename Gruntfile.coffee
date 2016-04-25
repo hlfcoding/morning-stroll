@@ -78,7 +78,6 @@ module.exports = (grunt) ->
     coffee:
       options:
         bare: yes
-        sourceMap: yes
       src:
         expand: yes
         src: src.coffee
