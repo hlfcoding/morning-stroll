@@ -8,10 +8,8 @@
 ## Development [![devDependency Status](https://img.shields.io/david/dev/hlfcoding/morning-stroll.svg)](https://david-dm.org/hlfcoding/morning-stroll#info=devDependencies)
 
 ```bash
-$ npm install
-
 # to install
-$ grunt install
+$ npm install
 
 # to read some docs
 $ grunt docs
