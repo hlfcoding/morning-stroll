@@ -118,7 +118,7 @@ module.exports = (grunt) ->
             requireConfig:
               paths:
                 test: '../tests/js'
-          vendor: [ 'site/lib/{dat.gui,phaser,underscore}.js' ]
+          vendor: [ 'lib/{dat.gui,phaser,underscore}.js' ]
 
     processhtml:
       site:
