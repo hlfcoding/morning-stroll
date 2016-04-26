@@ -48,6 +48,7 @@ define [
 
       @_initDebugMixin
       @_initDebugDisplayMixin @game
+      return
 
     create: ->
       @physics.startSystem Physics.ARCADE
@@ -61,6 +62,7 @@ define [
       @onHit.add (trigger) =>
         unless @quit trigger
           @inStateMenu.toggle()
+        return
       , @
 
       if @developing
@@ -69,8 +71,10 @@ define [
           @background.debugging = @platforms.debugging = @player.debugging =
             @debugging
           @debugDisplay.reset() unless @debugging
+          return
         @gui.add(@, 'detachedCamera').onFinishChange =>
           @_toggleCameraAttachment()
+          return
         @gui.addOpenFolder('gravity').addRange @physics.arcade.gravity, 'y'
 
       # First:
@@ -84,6 +88,7 @@ define [
       @_addInStateMenu()
 
       @_toggleCameraAttachment on
+      return
 
     update: ->
       @physics.arcade.collide @player.sprite, @platforms.layer
@@ -102,10 +107,12 @@ define [
       @camera.updatePositionWithCursors @cursors if @detachedCamera
 
       @end() if @_isPlayerReadyToEnd()
+      return
 
     render: ->
       @_renderDebugDisplay() if @debugging
       @_renderDebugOverlays() if @debugging
+      return
 
     shutdown: ->
       # Null references to disposable objects we don't own.
@@ -122,12 +129,15 @@ define [
       ]
 
       @gui?.destroy()
+      return
 
     onBlur: =>
       @music?.pause()
+      return
 
     onFocus: =>
       @music?.resume()
+      return
 
     # Main own methods
     # ----------------
@@ -145,12 +155,16 @@ define [
       # Then render ending display.
       _.delay =>
         @_renderEndingDisplay()
+        return
       , 5 * Timer.SECOND
+      return
 
     quit: (trigger) ->
       return no unless @ended or trigger instanceof Key
       @inStateMenu.toggle off
-      _quit = => @state.startWithTransition null, 'menu', yes
+      _quit = =>
+        @state.startWithTransition null, 'menu', yes
+        return
       if @music.volume is 0
         _quit()
       else
@@ -158,6 +172,7 @@ define [
         @music.fadeOut 3 * Timer.SECOND
         # Then go back to menu while clearing world.
         @music.onFadeComplete.addOnce _quit
+      return
 
     # Subroutines
     # -----------
@@ -167,6 +182,7 @@ define [
       @background = new Background { parallaxTolerance }, @game
       @background.addImages _.template('bg<%= zIndex %>'), 16
       @background.layout()
+      return
 
     _addInStateMenu: ->
       @inStateMenu = new InStateMenu [
@@ -175,7 +191,10 @@ define [
         ['Press 0, -, + for volume', { fontSize: fontSmall }]
         ['Press Q to quit', { fontSize: fontSmall }]
       ], @game,
-        pauseHandler: (paused) => @player.control = not paused
+        pauseHandler: (paused) =>
+          @player.control = not paused
+          return
+      return
 
     _addKey: (keyCode, callback) ->
       key = @input.keyboard.addKey keyCode
@@ -190,6 +209,7 @@ define [
       @mate = @add.sprite x, y, 'mate', 1
       @mate.anchor = new Point 0.5, 0.5
       @mate.animations.add 'end', [4..MateLastFrame], 12
+      return
 
     _addMusic: ->
       @userVolume = 1
@@ -198,9 +218,10 @@ define [
       @music.play()
       @gui?.add(@music, 'mute').listen()
       increment = 0.1
-      @loudKey = @_addKey Keyboard.EQUALS, => @userVolume += increment
-      @muteKey = @_addKey Keyboard.ZERO, => @music.mute = not @music.mute
-      @quietKey = @_addKey Keyboard.UNDERSCORE, => @userVolume -= increment
+      @loudKey = @_addKey Keyboard.EQUALS, => @userVolume += increment; return
+      @muteKey = @_addKey Keyboard.ZERO, => @music.mute = not @music.mute; return
+      @quietKey = @_addKey Keyboard.UNDERSCORE, => @userVolume -= increment; return
+      return
 
     _addPlatforms: ->
       @platforms = new Platforms
@@ -214,17 +235,20 @@ define [
       )
       # Use for debugging ending.
       #@startingPoint = @platforms.ledges[-2...-1][0].createMidpoint @platforms
+      return
 
     _addPlayer: ->
       origin = @startingPoint
       @player = new Player(
         { origin }, @game, @cursors, @gui?.addOpenFolder 'player'
       )
+      return
 
     _addText: (text, style) ->
       _.defaults style, { fill: '#fff', font: 'Enriqueta' }
       text = @addCenteredText text, @textLayout, style
       tween = @fadeTo text, Timer.SECOND, 1
+      return
 
     _isPlayerReadyToEnd: ->
       (@player.state is 'still' and @player.control is on and
@@ -236,6 +260,7 @@ define [
       if @player.debugging
         @renderDebugDisplayItems (layoutX, layoutY) =>
           @debugDisplay.bodyInfo @player.sprite, layoutX, layoutY
+          return
         , 6
         @renderDebugDisplayItems @player.debugTextItems
 
@@ -244,6 +269,7 @@ define [
         @debugDisplay.body @player.sprite
         @debugDisplay.spriteBounds @player.sprite
         @debugDisplay.spriteBounds @player.cameraFocus
+      return
 
     _renderEndingDisplay: ->
       @textLayout = { y: 120, baseline: 40 }
@@ -252,6 +278,8 @@ define [
         .onComplete.addOnce =>
           @_addText 'Click to play again', { fontSize: fontSmall }
           @ended = yes
+          return
+      return
 
     _shakeOnPlayerFall: ->
       return no unless (
@@ -259,6 +287,7 @@ define [
         @player.distanceFallen() > shakeFallH
       )
       @camera.shake()
+      return
 
     _toggleCameraAttachment: (attached) ->
       attached ?= not @detachedCamera
@@ -273,6 +302,7 @@ define [
       else
         @camera.unfollow()
         @player.cursors = null
+      return
 
     _updateVolumeOnPlayerLand: ->
       return no unless @player.nextState is 'landing'
@@ -282,6 +312,7 @@ define [
       volume *= @math.clamp @userVolume, 0, 2 # Factor in user controls.
       volume = @math.clamp volume, 0.2, 0.8
       @music.fadeTo Timer.SECOND, volume
+      return
 
   _.extend( PlayState::,
     AnimationMixin, DebugMixin, DebugDisplayMixin, TextMixin
