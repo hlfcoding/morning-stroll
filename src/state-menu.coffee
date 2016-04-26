@@ -20,6 +20,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
         e = document.createEvent 'CustomEvent'
         e.initCustomEvent 'state:menu', no, no, undefined
         @game.parent.dispatchEvent e
+      return
 
     create: ->
       @add.image 0, 0, 'bg-start'
@@ -34,11 +35,13 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @add.button buttonX, buttonY, 'button', @play, @, 1, 0, 2
       # Note the text isn't actually 'in' the button.
       @_addText 'start', { fontSize: fontSmall }
+      return
 
     update: ->
 
     play: ->
       @state.startWithTransition null, 'play'
+      return
 
     _addText: (text, style) ->
       _.defaults style, { fill: '#fff', font: 'Enriqueta' }

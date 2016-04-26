@@ -26,6 +26,7 @@ define ['defines'], (defines) ->
         active: @_onWebFontLoadComplete
         inactive: @_onWebFontLoadComplete
         google: { families: [ 'Enriqueta:400:latin' ] }
+      return
 
     preload: ->
       x = @world.centerX - (progressW / 2)
@@ -48,9 +49,11 @@ define ['defines'], (defines) ->
         @load.image "bg#{zIndex}", "assets/bg-_#{id}_#{zIndex}.png"
       @load.spritesheet 'mate', 'assets/mate.png', playerW, playerH
       @load.spritesheet 'player', 'assets/player.png', playerW, playerH
+      return
 
     create: ->
       @progressThumb.cropEnabled = off
+      return
 
     # Another is waiting (polling) for audio to decode before proceeding to
     # next state in `update`. Note the use of `_.once` due to the update loop.
@@ -59,14 +62,17 @@ define ['defines'], (defines) ->
 
       if @cache.isSoundDecoded('bgm') then @_onceMenu()
       else @time.events.add Timer.HALF, @update
+      return
 
     menu: =>
       # If `developing` is on, this state goes to `PlayState` directly for
       # convenience.
       state = if developing then 'play' else 'menu'
       @state.start state
+      return
 
     _onWebFontLoadComplete: =>
       @time.events.add Timer.SECOND, @menu
+      return
 
   PreloadState
