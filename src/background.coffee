@@ -40,12 +40,14 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @group.visible = no
 
       @_initDebugging()
+      return
 
     _initDebugging: () ->
       @debugNamespace = 'background'
 
       {@debugging} = defines
       @_initDebugMixin()
+      return
 
     destroy: ->
       # Null references to disposable objects we don't own.
@@ -60,6 +62,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
         image = @add.image 0, 0, name, @group
         image.autoCull = on
         @layers.push { image, zIndex }
+      return
 
     layout: ->
       # Set vertical scroll factor and offset.
@@ -74,6 +77,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
         layer.scrollResistance = Math.max 0, (1 - factor)
 
       @debug 'layers', @layers
+      return
 
     update: ->
       for {image, zIndex, scrollFactor, scrollResistance} in @layers
@@ -85,6 +89,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
           image.y += @parallaxTolerance
           unless zIndex is @_topZIndex # Or nearest.
             image.y -= @parallaxTolerance * scrollFactor ** (1 / 3)
+      return
 
   _.extend Background::, DebugMixin
 

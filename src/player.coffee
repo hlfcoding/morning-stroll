@@ -53,6 +53,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @_initState()
 
       @_initDebugging gui
+      return
 
     destroy: ->
       # Null references to disposable objects we don't own.
@@ -60,6 +61,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @physics = null
       @velocity = null
       @acceleration = null
+      return
 
     # Public
     # ------
@@ -77,6 +79,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @physics.moves = no
       @_visualizeTurn Direction.Right
       animation = @playAnimation 'end'
+      return
 
     update: ->
       return unless @control is on
@@ -109,6 +112,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @_changeAnimation()
       @_changeState()
       @_updateCameraFocus()
+      return
 
     # Initialization
     # --------------
@@ -122,6 +126,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @animations.add 'land', [32,33,18,17], 24
       @animations.add 'end', [34...53], 12
       @_nextActionOnComplete = null
+      return
 
     _initDebugging: (gui) ->
       @debugNamespace = 'player'
@@ -143,6 +148,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
         'airFrictionRatio'
         'runAcceleration'
       ]
+      return
 
     _initPhysics: ->
       @physics = @sprite.body
@@ -168,6 +174,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @maxVelocity = new Point 200, 800 # Run and terminal velocities.
 
       @_jumpTimer = @sprite.game.time.create() # This also acts like a flag.
+      return
 
     _initState: ->
       # Readonly.
@@ -184,6 +191,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @_fallingPoint = null
       @_keepCameraFocusUpdated = on
       @_turnDirection = null
+      return
 
     # Change
     # ------
@@ -201,6 +209,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
         when 'still' then @playAnimation 17, @animation?.loop
         when 'falling' then @playAnimation 31, @animation?.loop
         when 'landing' then @playAnimation 'land'
+      return
 
     _changeState: ->
       return if @nextState is @state
@@ -216,6 +225,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
         @_fallingPoint = null
 
       @state = @nextState
+      return
 
     # Computed
     # --------
@@ -267,6 +277,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       ratio = Math.abs(@velocity.x / @maxVelocity.x)
       kVelocity = (1 - @jumpVelocityFactor) + @jumpVelocityFactor * ratio
       @acceleration.y = @jumpAcceleration * kVelocity
+      return
 
     _buildJump: ->
       # Speed up by persisting the jump acceleration but with quadratic decay.
@@ -276,11 +287,13 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       kEasing = Math.pow kEasing / 1000, 2
       @acceleration.y *= kEasing
       @debug 'jump:build', kEasing
+      return
 
     _endJump: ->
       @debug 'jump:end', @_jumpTimer.ms, { position: @physics.position }
       @acceleration.y = @gravity.y # Reset.
       @_jumpTimer.stop()
+      return
 
     # Run
     # ---
@@ -298,6 +311,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
     _beginRun: ->
       @nextAction = 'start'
       @nextState = 'running'
+      return
 
     _buildRun: ->
       @acceleration.x =
@@ -306,6 +320,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
           @runAcceleration * @airFrictionRatio * -@nextDirection
         # Otherwise, just step on the pedal.
         else @runAcceleration * @nextDirection
+      return
 
     _endRun: ->
       # Without user input, there's no force, so stop, then stay still.
@@ -314,6 +329,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
         return
       @nextState = 'still'
       @_turnDirection = null # In case of being blocked.
+      return
 
     # Turn
     # ----
@@ -330,6 +346,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @_turnDirection = @nextDirection
       @debug 'turn:start', @velocity.x
       @debug 'facing', @nextDirection
+      return
 
     _endTurn: ->
       # Turn after stopping.
@@ -338,10 +355,12 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @direction = @_turnDirection
       @_turnDirection = null
       @debug 'turn:end', @velocity.x
+      return
 
     _visualizeTurn: (direction = @_turnDirection) ->
       @sprite.scale.x = direction
       @physics.offset.set @_xOffset(direction), @_yOffset
+      return
 
     # Update
     # ------
@@ -359,6 +378,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
         .subtractPoint @cameraFocus.position
         .divide kEasing, kEasing
       @cameraFocus.position.addPoint step
+      return
 
   _.extend Player::, AnimationMixin, DebugMixin
 

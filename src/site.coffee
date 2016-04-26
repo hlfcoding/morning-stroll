@@ -36,6 +36,7 @@ define ['defines'], (defines) ->
         { fiddle: on }, "#{document.title} (fiddling)", 'fiddle'
       )
       fiddle.setAttribute 'disabled', ''
+      return
 
     # With url integration, hitting the back button will turn off fiddling,
     # since the button gets disabled. But if the game is already being played,
@@ -47,18 +48,21 @@ define ['defines'], (defines) ->
       else if e.state.fiddle is off
         defines.developing = off
         fiddle.removeAttribute 'disabled'
+      return
 
     # When the game's play state starts, the button becomes pointless (given
     # this necessary reload) and should hide even if fiddling is off.
     gameParent = document.querySelector '#morning-stroll'
     gameParent.addEventListener 'state:play', ->
       fiddle.setAttribute 'disabled', ''
+      return
 
     # Lastly, whenever going (returning) to the menu state, history and button
     # states should return to initial values: button visible, fiddling off.
     gameParent.addEventListener 'state:menu', ->
       fiddle.removeAttribute 'disabled'
       window.history.back() if window.history.state.fiddle is on
+      return
 
   # About
   # -----
@@ -94,6 +98,9 @@ define ['defines'], (defines) ->
       setTimeout ->
         frame.classList.remove 'flipping'
         toggleAbout.removeAttribute 'disabled'
+        return
       , flipDuration
+      return
+    return
 
   Site

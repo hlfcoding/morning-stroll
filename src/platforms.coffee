@@ -40,6 +40,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @_initDebugging gui
 
       @makeMap game
+      return
 
     _initDebugging: (gui) ->
       @debugNamespace = 'platforms'
@@ -66,6 +67,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
 
       @layer = @tilemap.createLayer 0
       @layer.resizeWorld()
+      return
 
     # Internal
     # --------
@@ -153,6 +155,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @tiles = autoSetTiles @tiles
 
       @debug 'tiles', @tiles
+      return
 
     _addLedgeDifficulty: (ledge, vars) ->
       easiness = Math.pow (vars.numLedgeRows / ledge.index), 0.3
@@ -167,6 +170,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       switch ledge.facing
         when 'left' then ledge.end = ledge.size - 1
         when 'right' then ledge.start = ledge.end + 1 - ledge.size
+      return
 
     _addRow: (vars) ->
       if vars.rowType is 'ledge'
@@ -201,12 +205,14 @@ define ['defines', 'helpers'], (defines, Helpers) ->
 
       # Add tiles.
       @tiles.push vars.rowTiles
+      return
 
     _setupEmptyRow: (vars) ->
       # Prepare for empty plot.
       vars.iColStart = 0
       vars.iColEnd = 0
       vars.rowType = 'empty'
+      return
 
     _setupLedgeRow: (vars) ->
       # Prepare for partial plot. This just does a simple random, anything
@@ -229,10 +235,12 @@ define ['defines', 'helpers'], (defines, Helpers) ->
           vars.iColStart = vars.numCols - vars.rowSize
           vars.iColEnd = vars.numCols - 1
           vars.facing = 'left' # Prepare for next ledge.
+      return
 
     _setupEachRow: (vars) ->
       # Reset on each row.
       vars.rowTiles = [] if vars.iLedgeLayer is 0
+      return
 
   class Ledge
 
@@ -244,6 +252,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @start = -1
       @end = -1
       @facing = 'left'
+      return
 
     createMidpoint: (platforms) ->
       point = new Point()

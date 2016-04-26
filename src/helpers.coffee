@@ -61,6 +61,7 @@ define [], () ->
       else if cursors.down.isDown then @y += velocity
       else if cursors.left.isDown then @x -= velocity
       else if cursors.right.isDown then @x += velocity
+      return
 
     # The rest is a shim of Flixel camera shake that's heavily inspired by
     # dmaslov/phaser-screen-shake
@@ -76,6 +77,7 @@ define [], () ->
         shakeY: on
 
       @_shake._counter = @_shake.count
+      return
 
     updateShake: ->
       return no unless @_shake?
@@ -94,6 +96,7 @@ define [], () ->
       @setPosition x, y
 
       @_shake._counter-- if _counter > 0
+      return
 
   # Debugging Mixins
   # ----------------
@@ -145,6 +148,7 @@ define [], () ->
         else
           details = if details? then @_prettyHash(details) else ''
           @debugTextItems[label] = "#{label}: #{value} #{details}".trim()
+      return
 
     _prettyPoint: (point) ->
       _.chain point
@@ -176,10 +180,12 @@ define [], () ->
 
       @debugDisplay = game.debug
       @debugDisplay.font = "#{@debugFontSize}px Menlo"
+      return
 
     resetDebugDisplayLayout: ->
       @_layoutX = @_debugGutter + kPhaserLayoutX
       @_layoutY = @_debugGutter
+      return
 
     renderDebugDisplayItems: (items, lines) ->
       if _.isFunction(items) and lines?
@@ -189,6 +195,7 @@ define [], () ->
       else for own label, text of items
         @debugDisplay.text text, @_layoutX, @_layoutY, null, @debugDisplay.font
         @_layoutY += @_debugLine
+      return
 
   # Developing
   # ----------
@@ -301,10 +308,12 @@ define [], () ->
         texture = interstitial = null
         state.init = init
         state.create = create
+        return
 
       state.init = =>
         init?.apply state, arguments
         @game.add.existing interstitial
+        return
 
       state.create = =>
         create?.apply state, arguments
@@ -312,10 +321,12 @@ define [], () ->
         @game.add.tween interstitial
           .to properties, duration, easing, yes
           .onComplete.addOnce destroy
+        return
 
       _.delay destroy, 2 * duration # In case of failure.
 
       @start.apply @, startArgs
+      return
 
   # TextMixin
   # ---------

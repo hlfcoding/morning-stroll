@@ -46,20 +46,24 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @toggle off
 
       @_initDebugging()
+      return
 
     _initDebugging: ->
       @debugNamespace = 'in-state-menu'
       @tracing = on
       completedInit = @_initDebugMixin()
+      return
 
     destroy: ->
       @group.destroy() # Because we added it to the stage.
       @toggleKey.onDown.removeAll @
+      return
 
     toggle: (toggled) ->
       toggled = not @group.visible unless _.isBoolean(toggled)
       @group.visible = toggled
       @pauseHandler toggled
+      return
 
     _addText: (text, style) ->
       _.defaults style, @baseTextStyle
