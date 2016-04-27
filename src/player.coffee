@@ -76,7 +76,6 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @physics.moves = no
       @_visualizeTurn Direction.Right
       animation = @playAnimation 'end'
-      return
 
     update: ->
       return unless @control is on

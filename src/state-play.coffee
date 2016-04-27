@@ -174,7 +174,7 @@ define [
         @music.fadeOut 3 * Timer.SECOND
         # Then go back to menu while clearing world.
         @music.onFadeComplete.addOnce _quit
-      return
+      yes
 
     # Subroutines
     # -----------
@@ -250,7 +250,6 @@ define [
       _.defaults style, { fill: '#fff', font: 'Enriqueta' }
       text = @addCenteredText text, @textLayout, style
       tween = @fadeTo text, Timer.SECOND, 1
-      return
 
     # photonstorm/phaser@aee0212
     _fixCamera: _.once ->
