@@ -59,8 +59,7 @@ define [
       # Quit on Q
       @quitKey = @_addKey Keyboard.Q, @quit
       # Quit on click at end.
-      @onHit = @input[if @game.device.touch then 'onTap' else 'onUp']
-      @onHit.add (trigger) =>
+      @input.onTap.add (trigger) =>
         unless @quit trigger
           @inStateMenu.toggle()
         return
@@ -125,7 +124,7 @@ define [
 
       @game.onBlur.remove @onBlur
       @game.onFocus.remove @onFocus
-      @onHit.removeAll @
+      @input.onTap.removeAll @
 
       key.onDown.removeAll @ for key in [
         @loudKey, @muteKey, @quietKey, @quitKey
