@@ -88,7 +88,14 @@ define [
       # Last:
       @_addInStateMenu()
 
+      @camera.deadzone = new Rectangle(
+        0, (@game.height - deadzoneH) / 2,
+        @game.width, deadzoneH
+      )
       @_toggleCameraAttachment on
+      # Set after initial follow.
+      _.defer => @camera.lerp.set(0.1); return
+
       return
 
     update: ->
@@ -273,7 +280,6 @@ define [
       if @player.debugging
         @debugDisplay.body @player.sprite
         @debugDisplay.spriteBounds @player.sprite
-        @debugDisplay.spriteBounds @player.cameraFocus
       return
 
     _renderEndingDisplay: ->
@@ -298,13 +304,8 @@ define [
     _toggleCameraAttachment: (attached) ->
       attached ?= not @detachedCamera
       if attached
-        @camera.follow @player.cameraFocus
+        @camera.follow @player.sprite
         @player.cursors ?= @cursors
-
-        @camera.deadzone ?= new Rectangle(
-          0, (@game.height - deadzoneH) / 2,
-          @game.width, deadzoneH
-        )
       else
         @camera.unfollow()
         @player.cursors = null

@@ -40,9 +40,6 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @sprite = game.add.sprite x, y, 'player', 17
       @sprite.anchor = new Point 0.5, 0.5
 
-      @cameraFocus = game.add.sprite x, y
-      @cameraFocus.visible = off
-
       @animations = @sprite.animations
       @_initAnimations()
 
@@ -111,7 +108,6 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       # Last, if needed.
       @_changeAnimation()
       @_changeState()
-      @_updateCameraFocus()
       return
 
     # Initialization
@@ -169,7 +165,6 @@ define ['defines', 'helpers'], (defines, Helpers) ->
 
       @airFrictionRatio = 1 / 20
       @runAcceleration = 300
-      @cameraFocusFollowResistance = 30
 
       @maxVelocity = new Point 200, 800 # Run and terminal velocities.
 
@@ -360,24 +355,6 @@ define ['defines', 'helpers'], (defines, Helpers) ->
     _visualizeTurn: (direction = @_turnDirection) ->
       @sprite.scale.x = direction
       @physics.offset.set @_xOffset(direction), @_yOffset
-      return
-
-    # Update
-    # ------
-
-    _updateCameraFocus: ->
-      @_keepCameraFocusUpdated = off if @nextAction is 'jump'
-      unless @_keepCameraFocusUpdated
-        @_keepCameraFocusUpdated = on if @nextState is 'falling'
-        return no
-
-      # Follow with easing.
-      kEasing = @cameraFocusFollowResistance
-      kEasing /= 3 if @_isFullyFalling()
-      step = @physics.position.clone()
-        .subtractPoint @cameraFocus.position
-        .divide kEasing, kEasing
-      @cameraFocus.position.addPoint step
       return
 
   _.extend Player::, AnimationMixin, DebugMixin
