@@ -42,6 +42,7 @@ define [
       @textLayout = null
 
       _.extend @camera, CameraMixin
+      @_fixCamera()
 
       @game.onBlur.add @onBlur
       @game.onFocus.add @onFocus
@@ -248,6 +249,15 @@ define [
       _.defaults style, { fill: '#fff', font: 'Enriqueta' }
       text = @addCenteredText text, @textLayout, style
       tween = @fadeTo text, Timer.SECOND, 1
+      return
+
+    # photonstorm/phaser@aee0212
+    _fixCamera: _.once ->
+      @camera.flawedUpdateTarget = @camera.updateTarget
+      @camera.updateTarget = =>
+        @camera.target.world.copyFrom @camera.target.position
+        @camera.flawedUpdateTarget()
+        return
       return
 
     _isPlayerReadyToEnd: ->
