@@ -19,12 +19,17 @@ define ['helpers'], (Helpers) ->
       @_start = Date.now()
       @_interval = setInterval =>
         @ms = Date.now() - @_start
+        return
       , 100
       @running = yes
+      return
 
     stop: ->
       clearInterval @_interval
       @running = no
+      return
+
+  # Start helpers.
 
   configurePlatformsWithDefaults: (platforms) ->
     platforms.minLedgeSize = 3
@@ -33,6 +38,7 @@ define ['helpers'], (Helpers) ->
     platforms.maxLedgeSpacing = new Point 8, 4
     platforms.ledgeThickness = 2
     platforms.tileWidth = platforms.tileHeight = 32
+    return
 
   createBackgroundProps: (background) ->
     layers: [

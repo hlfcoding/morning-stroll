@@ -15,11 +15,13 @@ define ['background', 'test/fakes'], (Background, fakes) ->
         bg.layout()
         newFactors = _.pluck bg.layers, 'scrollFactor'
         expect(newFactors).not.toEqual oldFactors
+        return
 
       it 'decreases scroll-factor with z-index', ->
         bg.layout()
         expect bg.layers[0].scrollFactor
           .toBeLessThan _.last(bg.layers).scrollFactor
+        return
 
       it 'updates y offset for all but nearest layer', ->
         oldOffsets = _.chain(bg.layers).pluck('image').pluck('y')
@@ -28,3 +30,7 @@ define ['background', 'test/fakes'], (Background, fakes) ->
         expect _.difference(newOffsets, oldOffsets).length
           .toBe bg.layers.length - 1
         expect(newOffsets[0]).toBe oldOffsets[0]
+        return
+      return
+    return
+  return
