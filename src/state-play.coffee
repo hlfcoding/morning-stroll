@@ -13,7 +13,7 @@ define [
 
   'use strict'
 
-  {Key, Keyboard, Physics, Point, Rectangle, State, Timer} = Phaser
+  {Camera, Key, Keyboard, Physics, Point, Rectangle, State, Timer} = Phaser
 
   {domStateEvents, fontLarge, fontSmall} = defines
   {artH, mapH, deadzoneH, shakeFallH} = defines
@@ -98,12 +98,7 @@ define [
       @player.update()
 
       @_updateVolumeOnPlayerLand()
-
-      @camera.updateShake()
-      if @_shakeOnPlayerFall()
-        @camera.unfollow()
-      else unless @detachedCamera or @camera.target? or @camera.isShaking()
-        @camera.follow @player.cameraFocus
+      @_shakeOnPlayerFall()
 
       @camera.updatePositionWithCursors @cursors if @detachedCamera
 
@@ -296,7 +291,8 @@ define [
         @player.nextState is 'landing' and
         @player.distanceFallen() > shakeFallH
       )
-      @camera.shake()
+      force = no
+      @camera.shake 0.02, 0.1 * Timer.SECOND, force, Camera.SHAKE_VERTICAL
       return
 
     _toggleCameraAttachment: (attached) ->

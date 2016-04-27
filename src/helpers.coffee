@@ -63,41 +63,6 @@ define [], () ->
       else if cursors.right.isDown then @x += velocity
       return
 
-    # The rest is a shim of Flixel camera shake that's heavily inspired by
-    # dmaslov/phaser-screen-shake
-
-    isShaking: -> @_shake._counter > 0
-
-    shake: (config = {}) ->
-      @_shake = _.defaults config,
-        _counter: -1
-        count: 4
-        sensitivity: 4
-        shakeX: on
-        shakeY: on
-
-      @_shake._counter = @_shake.count
-      return
-
-    updateShake: ->
-      return no unless @_shake?
-
-      {_counter, sensitivity, shakeX, shakeY} = @_shake
-
-      return no if _counter is 0
-
-      # TODO: Directions should not always match.
-      direction = if _counter % 2 is 0 then -1 else 1
-      offset = _counter * sensitivity * direction
-
-      {x, y} = @
-      x += offset if shakeX
-      y += offset if shakeY
-      @setPosition x, y
-
-      @_shake._counter-- if _counter > 0
-      return
-
   # Debugging Mixins
   # ----------------
   # Allows any object to debug to console or display with fancy and readable

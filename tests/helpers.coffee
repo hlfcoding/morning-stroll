@@ -38,54 +38,6 @@ define ['helpers'], (Helpers) ->
       return
     return
 
-  describe 'Helpers.CameraMixin', ->
-    beforeEach ->
-      _.extend obj, CameraMixin
-      return
-
-    describe '#shake with #updateShake', ->
-      originalX = 1
-      originalY = 1
-
-      beforeEach ->
-        obj.setPosition = (x, y) -> @x = x; @y = y # Fake.
-        obj.setPosition originalX, originalY
-        obj.shake()
-        return
-
-      it 'resets shake counter to count', ->
-        expect(obj._shake._counter).toBe obj._shake.count
-        expect(obj.isShaking()).toBe yes
-        return
-
-      it 'shakes only until counter runs out', ->
-        obj._shake._counter = 0
-        expect(obj.isShaking()).toBe no
-        expect(obj.updateShake()).toBe no
-        expect(obj.x).toBe originalX
-        expect(obj.y).toBe originalY
-        return
-
-      it 'updates camera x and y on successful shake', ->
-        expect(obj.updateShake()).not.toBe no
-        expect(obj.x).not.toBe originalX
-        expect(obj.y).not.toBe originalY
-        expect(obj._shake._counter).toBe obj._shake.count - 1
-        return
-
-      it 'alterates direction for each shake', ->
-        obj.updateShake()
-        {x, y} = obj
-        expect(x).toBeLessThan originalX
-        expect(y).toBeLessThan originalY
-
-        obj.updateShake()
-        expect(obj.x).toBeGreaterThan x
-        expect(obj.y).toBeGreaterThan y
-        return
-      return
-    return
-
   describe 'Helpers.DebugMixin', ->
     beforeEach ->
       _.extend obj, DebugMixin
