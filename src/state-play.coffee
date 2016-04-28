@@ -93,7 +93,7 @@ define [
       )
       @_toggleCameraAttachment on
       # Set after initial follow.
-      _.defer => @camera.lerp.set(0.1); return
+      _.defer => @camera.lerp.set(0.05); return
 
       return
 
