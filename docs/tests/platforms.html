@@ -110,12 +110,15 @@
 
         expect(platforms.ledges[<span class="hljs-number">0</span>] <span class="hljs-keyword">instanceof</span> Platforms.Ledge).toBe <span class="hljs-literal">yes</span>
 
-      it <span class="hljs-string">'sets row tiles so only those within start and end indexes are solid'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'sets row tiles so only those within start and end indexes are solid'</span>
+      , <span class="hljs-function">-&gt;</span>
         vars.rowType = <span class="hljs-string">'ledge'</span>
         platforms._addRow vars
 
-        expect(platforms.tiles[<span class="hljs-number">0</span>][..vars.iColEnd]).<span class="hljs-keyword">not</span>.toContain Platforms.Tile.Empty
-        expect(platforms.tiles[<span class="hljs-number">0</span>][vars.iColEnd + <span class="hljs-number">1.</span>..]).<span class="hljs-keyword">not</span>.toContain Platforms.Tile.Solid
+        expect platforms.tiles[<span class="hljs-number">0</span>][..vars.iColEnd]
+          .<span class="hljs-keyword">not</span>.toContain Platforms.Tile.Empty
+        expect platforms.tiles[<span class="hljs-number">0</span>][vars.iColEnd + <span class="hljs-number">1.</span>..]
+          .<span class="hljs-keyword">not</span>.toContain Platforms.Tile.Solid
 
     describe <span class="hljs-string">'#_setupEmptyRow'</span>, <span class="hljs-function">-&gt;</span>
       vars = <span class="hljs-literal">null</span>
@@ -142,13 +145,15 @@
           <span class="hljs-attribute">rangeLedgeSize</span>: <span class="hljs-number">2</span>
           <span class="hljs-attribute">rangeRowSpacing</span>: <span class="hljs-number">2</span>
 
-      it <span class="hljs-string">'resets column indexes for upcoming ledge facing left, with variance'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'resets column indexes for upcoming ledge facing left,
+      with variance'</span>, <span class="hljs-function">-&gt;</span>
         platforms._setupLedgeRow vars
 
         expect(vars.iColStart).toBe <span class="hljs-number">0</span>
         expect(vars.iColEnd &gt;= platforms.minLedgeSize - <span class="hljs-number">1</span>).toBe <span class="hljs-literal">yes</span>
 
-      it <span class="hljs-string">'resets column indexes for upcoming ledge facing right, with variance'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'resets column indexes for upcoming ledge facing right,
+      with variance'</span>, <span class="hljs-function">-&gt;</span>
         vars.facing = <span class="hljs-string">'right'</span>
         platforms._setupLedgeRow vars
 
@@ -193,14 +198,14 @@
         spyOn(platforms, <span class="hljs-string">'_setupEachRow'</span>).<span class="hljs-keyword">and</span>.callThrough()
         platforms._generateTiles()
 
-        expect(platforms._setupEachRow.calls.count()).toBe platforms.tiles.length
+        expect platforms._setupEachRow.calls.count()
+          .toBe platforms.tiles.length
 
-      it <span class="hljs-string">'calls #_setupLedgeRow for each ledge and #_setupEmptyRow for the rest'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'calls #_setupLedgeRow for each ledge and #_setupEmptyRow for the
+      rest'</span>, <span class="hljs-function">-&gt;</span>
         spyOn(platforms, <span class="hljs-string">'_setupLedgeRow'</span>).<span class="hljs-keyword">and</span>.callThrough()
         spyOn(platforms, <span class="hljs-string">'_setupEmptyRow'</span>).<span class="hljs-keyword">and</span>.callThrough()
-        platforms._generateTiles()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>FIXME: Not sure why rounding is needed.</p></div></div><div class="code"><div class="wrapper">        expect(platforms._setupLedgeRow.calls.count()).toBe(
-          Math.round(platforms.ledges.length / platforms.ledgeThickness)
-        )
-        expect(platforms._setupEmptyRow.calls.count()).toBe(
-          platforms.tiles.length - platforms.ledges.length
-        )</div></div></div></div></body></html>
+        platforms._generateTiles()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>FIXME: Not sure why rounding is needed.</p></div></div><div class="code"><div class="wrapper">        expect platforms._setupLedgeRow.calls.count()
+          .toBe Math.round(platforms.ledges.length / platforms.ledgeThickness)
+        expect platforms._setupEmptyRow.calls.count()
+          .toBe platforms.tiles.length - platforms.ledges.length</div></div></div></div></body></html>

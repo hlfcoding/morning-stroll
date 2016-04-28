@@ -4,16 +4,20 @@
 ending the game, and any shortkeys. The exact list is long, but start tracing
 from <code>create</code> and <code>update</code> like any other Phaser state, and you should get
 far. Also note any logic that can be easily factored out is factored out of
-this file.</p></div></div><div class="code"><div class="wrapper">define [<span class="hljs-string">'background'</span>, <span class="hljs-string">'defines'</span>, <span class="hljs-string">'helpers'</span>, <span class="hljs-string">'in-state-menu'</span>, <span class="hljs-string">'platforms'</span>, <span class="hljs-string">'player'</span>],
-<span class="hljs-function"><span class="hljs-params">(Background, defines, Helpers, InStateMenu, Platforms, Player)</span> -&gt;</span>
+this file.</p></div></div><div class="code"><div class="wrapper">define [
+  <span class="hljs-string">'background'</span>, <span class="hljs-string">'defines'</span>, <span class="hljs-string">'helpers'</span>, <span class="hljs-string">'in-state-menu'</span>, <span class="hljs-string">'platforms'</span>, <span class="hljs-string">'player'</span>
+], <span class="hljs-function"><span class="hljs-params">(Background, defines, Helpers, InStateMenu, Platforms, Player)</span> -&gt;</span>
 
   <span class="hljs-string">'use strict'</span>
 
   {Key, Keyboard, Physics, Point, Rectangle, State, Timer} = Phaser
 
-  {domStateEvents, artH, mapH, fontLarge, fontSmall, playerH, playerW, playerYOffset, shakeFallH, deadzoneH} = defines
+  {domStateEvents, fontLarge, fontSmall} = defines
+  {artH, mapH, deadzoneH, shakeFallH} = defines
+  {playerH, playerW, playerYOffset} = defines
 
-  {AnimationMixin, CameraMixin, DebugMixin, DebugDisplayMixin, TextMixin} = Helpers
+  {AnimationMixin, CameraMixin, TextMixin} = Helpers
+  {DebugMixin, DebugDisplayMixin} = Helpers
 
   MateLastFrame = <span class="hljs-number">14</span>
 
@@ -47,7 +51,7 @@ this file.</p></div></div><div class="code"><div class="wrapper">define [<span c
       <span class="hljs-property">@physics</span>.arcade.gravity.y = <span class="hljs-number">500</span>
 
       <span class="hljs-property">@cursors</span> = <span class="hljs-property">@input</span>.keyboard.createCursorKeys()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Quit on Q</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@quitKey</span> = <span class="hljs-property">@_addKey</span> Keyboard.Q, <span class="hljs-property">@quit</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Quit on click at end.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@onHit</span> = <span class="hljs-property">@input</span>[<span class="hljs-keyword">if</span> <span class="hljs-property">@game</span>.device.touch <span class="hljs-keyword">then</span> <span class="hljs-string">'onTap'</span> <span class="hljs-keyword">else</span> <span class="hljs-string">'onUp'</span>]
-      <span class="hljs-property">@onHit</span>.add (trigger) =&gt; 
+      <span class="hljs-property">@onHit</span>.add (trigger) =&gt;
         <span class="hljs-keyword">unless</span> <span class="hljs-property">@quit</span> trigger
           <span class="hljs-property">@inStateMenu</span>.toggle()
       , @
@@ -55,9 +59,11 @@ this file.</p></div></div><div class="code"><div class="wrapper">define [<span c
       <span class="hljs-keyword">if</span> <span class="hljs-property">@developing</span>
         <span class="hljs-property">@gui</span> = <span class="hljs-keyword">new</span> dat.GUI()
         <span class="hljs-property">@gui</span>.add(@, <span class="hljs-string">'debugging'</span>).listen().onFinishChange =&gt;
-          <span class="hljs-property">@background</span>.debugging = <span class="hljs-property">@platforms</span>.debugging = <span class="hljs-property">@player</span>.debugging = <span class="hljs-property">@debugging</span>
+          <span class="hljs-property">@background</span>.debugging = <span class="hljs-property">@platforms</span>.debugging = <span class="hljs-property">@player</span>.debugging =
+            <span class="hljs-property">@debugging</span>
           <span class="hljs-property">@debugDisplay</span>.reset() <span class="hljs-keyword">unless</span> <span class="hljs-property">@debugging</span>
-        <span class="hljs-property">@gui</span>.add(@, <span class="hljs-string">'detachedCamera'</span>).onFinishChange =&gt; <span class="hljs-property">@_toggleCameraAttachment</span>()
+        <span class="hljs-property">@gui</span>.add(@, <span class="hljs-string">'detachedCamera'</span>).onFinishChange =&gt;
+          <span class="hljs-property">@_toggleCameraAttachment</span>()
         <span class="hljs-property">@gui</span>.addOpenFolder(<span class="hljs-string">'gravity'</span>).addRange <span class="hljs-property">@physics</span>.arcade.gravity, <span class="hljs-string">'y'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>First:</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@_addMusic</span>()
       <span class="hljs-property">@_addBackground</span>()
       <span class="hljs-property">@_addPlatforms</span>()</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Then:</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@_addPlayer</span>()
@@ -87,13 +93,17 @@ this file.</p></div></div><div class="code"><div class="wrapper">define [<span c
       <span class="hljs-property">@_renderDebugDisplay</span>() <span class="hljs-keyword">if</span> <span class="hljs-property">@debugging</span>
       <span class="hljs-property">@_renderDebugOverlays</span>() <span class="hljs-keyword">if</span> <span class="hljs-property">@debugging</span>
 
-    <span class="hljs-attribute">shutdown</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Null references to disposable objects we don&#39;t own.</p></div></div><div class="code"><div class="wrapper">      gameObject.destroy() <span class="hljs-keyword">for</span> gameObject <span class="hljs-keyword">in</span> [<span class="hljs-property">@background</span>, <span class="hljs-property">@inStateMenu</span>, <span class="hljs-property">@music</span>, <span class="hljs-property">@platforms</span>, <span class="hljs-property">@player</span>]
+    <span class="hljs-attribute">shutdown</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Null references to disposable objects we don&#39;t own.</p></div></div><div class="code"><div class="wrapper">      gameObject.destroy() <span class="hljs-keyword">for</span> gameObject <span class="hljs-keyword">in</span> [
+        <span class="hljs-property">@background</span>, <span class="hljs-property">@inStateMenu</span>, <span class="hljs-property">@music</span>, <span class="hljs-property">@platforms</span>, <span class="hljs-property">@player</span>
+      ]
 
       <span class="hljs-property">@game</span>.onBlur.remove <span class="hljs-property">@onBlur</span>
       <span class="hljs-property">@game</span>.onFocus.remove <span class="hljs-property">@onFocus</span>
       <span class="hljs-property">@onHit</span>.removeAll @
 
-      key.onDown.removeAll @ <span class="hljs-keyword">for</span> key <span class="hljs-keyword">in</span> [<span class="hljs-property">@loudKey</span>, <span class="hljs-property">@muteKey</span>, <span class="hljs-property">@quietKey</span>, <span class="hljs-property">@quitKey</span>]
+      key.onDown.removeAll @ <span class="hljs-keyword">for</span> key <span class="hljs-keyword">in</span> [
+        <span class="hljs-property">@loudKey</span>, <span class="hljs-property">@muteKey</span>, <span class="hljs-property">@quietKey</span>, <span class="hljs-property">@quitKey</span>
+      ]
 
       <span class="hljs-property">@gui</span>?.destroy()
 
@@ -155,17 +165,21 @@ this file.</p></div></div><div class="code"><div class="wrapper">define [<span c
       <span class="hljs-property">@quietKey</span> = <span class="hljs-property">@_addKey</span> Keyboard.UNDERSCORE, <span class="hljs-function">=&gt;</span> <span class="hljs-property">@userVolume</span> -= increment
 
     <span class="hljs-attribute">_addPlatforms</span>: <span class="hljs-function">-&gt;</span>
-      <span class="hljs-property">@platforms</span> = <span class="hljs-keyword">new</span> Platforms 
+      <span class="hljs-property">@platforms</span> = <span class="hljs-keyword">new</span> Platforms
         <span class="hljs-attribute">mapH</span>: mapH
         <span class="hljs-attribute">tileImageKey</span>: <span class="hljs-string">'balcony'</span>
       , <span class="hljs-property">@game</span>, <span class="hljs-property">@gui</span>?.addOpenFolder <span class="hljs-string">'platforms'</span>
 
       <span class="hljs-property">@endingPoint</span> = <span class="hljs-property">@platforms</span>.ledges[-<span class="hljs-number">1.</span>..][<span class="hljs-number">0</span>].createMidpoint <span class="hljs-property">@platforms</span>
-      <span class="hljs-property">@startingPoint</span> = <span class="hljs-keyword">new</span> Point playerW, (<span class="hljs-property">@world</span>.height - playerH + playerYOffset)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Use for debugging ending.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-comment">#@startingPoint = @platforms.ledges[-2...-1][0].createMidpoint @platforms</span>
+      <span class="hljs-property">@startingPoint</span> = <span class="hljs-keyword">new</span> Point(
+        playerW, (<span class="hljs-property">@world</span>.height - playerH + playerYOffset)
+      )</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Use for debugging ending.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-comment">#@startingPoint = @platforms.ledges[-2...-1][0].createMidpoint @platforms</span>
 
     <span class="hljs-attribute">_addPlayer</span>: <span class="hljs-function">-&gt;</span>
       origin = <span class="hljs-property">@startingPoint</span>
-      <span class="hljs-property">@player</span> = <span class="hljs-keyword">new</span> Player { origin }, <span class="hljs-property">@game</span>, <span class="hljs-property">@cursors</span>, <span class="hljs-property">@gui</span>?.addOpenFolder <span class="hljs-string">'player'</span>
+      <span class="hljs-property">@player</span> = <span class="hljs-keyword">new</span> Player(
+        { origin }, <span class="hljs-property">@game</span>, <span class="hljs-property">@cursors</span>, <span class="hljs-property">@gui</span>?.addOpenFolder <span class="hljs-string">'player'</span>
+      )
 
     <span class="hljs-attribute">_addText</span>: <span class="hljs-function"><span class="hljs-params">(text, style)</span> -&gt;</span>
       _.defaults style, { <span class="hljs-attribute">fill</span>: <span class="hljs-string">'#fff'</span>, <span class="hljs-attribute">font</span>: <span class="hljs-string">'Enriqueta'</span> }
@@ -200,7 +214,10 @@ this file.</p></div></div><div class="code"><div class="wrapper">define [<span c
           <span class="hljs-property">@ended</span> = <span class="hljs-literal">yes</span>
 
     <span class="hljs-attribute">_shakeOnPlayerFall</span>: <span class="hljs-function">-&gt;</span>
-      <span class="hljs-keyword">return</span> <span class="hljs-literal">no</span> <span class="hljs-keyword">unless</span> <span class="hljs-property">@player</span>.nextState <span class="hljs-keyword">is</span> <span class="hljs-string">'landing'</span> <span class="hljs-keyword">and</span> <span class="hljs-property">@player</span>.distanceFallen() &gt; shakeFallH
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">no</span> <span class="hljs-keyword">unless</span> (
+        <span class="hljs-property">@player</span>.nextState <span class="hljs-keyword">is</span> <span class="hljs-string">'landing'</span> <span class="hljs-keyword">and</span>
+        <span class="hljs-property">@player</span>.distanceFallen() &gt; shakeFallH
+      )
       <span class="hljs-property">@camera</span>.shake()
 
     <span class="hljs-attribute">_toggleCameraAttachment</span>: <span class="hljs-function"><span class="hljs-params">(attached)</span> -&gt;</span>
@@ -224,6 +241,8 @@ this file.</p></div></div><div class="code"><div class="wrapper">define [<span c
       volume = <span class="hljs-property">@math</span>.clamp volume, <span class="hljs-number">0.2</span>, <span class="hljs-number">0.8</span>
       <span class="hljs-property">@music</span>.fadeTo Timer.SECOND, volume
 
-  _.extend <span class="hljs-attribute">PlayState</span>::, AnimationMixin, DebugMixin, DebugDisplayMixin, TextMixin
+  _.extend( <span class="hljs-attribute">PlayState</span>::,
+    AnimationMixin, DebugMixin, DebugDisplayMixin, TextMixin
+  )
 
   PlayState</div></div></div></div></body></html>

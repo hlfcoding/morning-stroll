@@ -18,11 +18,13 @@
 
       it <span class="hljs-string">'decreases scroll-factor with z-index'</span>, <span class="hljs-function">-&gt;</span>
         bg.layout()
-        expect(bg.layers[<span class="hljs-number">0</span>].scrollFactor).toBeLessThan _.last(bg.layers).scrollFactor
+        expect bg.layers[<span class="hljs-number">0</span>].scrollFactor
+          .toBeLessThan _.last(bg.layers).scrollFactor
 
       it <span class="hljs-string">'updates y offset for all but nearest layer'</span>, <span class="hljs-function">-&gt;</span>
         oldOffsets = _.chain(bg.layers).pluck(<span class="hljs-string">'image'</span>).pluck(<span class="hljs-string">'y'</span>)
         bg.layout()
         newOffsets = _.chain(bg.layers).pluck(<span class="hljs-string">'image'</span>).pluck(<span class="hljs-string">'y'</span>)
-        expect(_.difference(newOffsets, oldOffsets).length).toBe (bg.layers.length - <span class="hljs-number">1</span>)
+        expect _.difference(newOffsets, oldOffsets).length
+          .toBe bg.layers.length - <span class="hljs-number">1</span>
         expect(newOffsets[<span class="hljs-number">0</span>]).toBe oldOffsets[<span class="hljs-number">0</span>]</div></div></div></div></body></html>

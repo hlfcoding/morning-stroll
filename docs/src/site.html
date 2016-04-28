@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><title>src/site</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/site"><meta name="groc-project-path" content="src/site.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/src/site.coffee">src/site.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="site-">Site </h1>
+<!DOCTYPE html><html lang="en"><head><title>src/site</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/site"><meta name="groc-project-path" content="src/site.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/src/site.coffee">src/site.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="site">Site</h1>
 <p>This module is actually just a DOM-ready script for various bits of site
 functionality supporting the actual game.</p></div></div><div class="code"><div class="wrapper">define [<span class="hljs-string">'defines'</span>], <span class="hljs-function"><span class="hljs-params">(defines)</span> -&gt;</span>
 
@@ -7,20 +7,22 @@ does not exist, the related feature just gets disabled. Not worth it to
 write fallback behavior mostly just for IE9.</p></div></div><div class="code"><div class="wrapper">  {classlist, csstransitions, history, prefixedCSS} = Modernizr
 
   Site = {}</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="fiddle">Fiddle</h2>
-<p>This feature allows the player to configure game variables to experiment and
-do more complex play-testing.</p></div></div><div class="code"><div class="wrapper">  Site.initFiddle = <span class="hljs-function"><span class="hljs-params">(game)</span> -&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The History API will be required. Start off with fiddle flag off.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">unless</span> history
-    <span class="hljs-built_in">window</span>.history.replaceState { <span class="hljs-attribute">fiddle</span>: <span class="hljs-literal">off</span> }, <span class="hljs-built_in">document</span>.title</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The fiddle button just allows access to global developing flag, which gets
+<p>This feature allows the player to configure game variables to experiment
+and do more complex play-testing.</p></div></div><div class="code"><div class="wrapper">  Site.initFiddle = <span class="hljs-function"><span class="hljs-params">(game)</span> -&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The History API will be required. Start off with fiddle flag off.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">unless</span> history
+    <span class="hljs-built_in">window</span>.history.replaceState { <span class="hljs-attribute">fiddle</span>: <span class="hljs-literal">off</span> }, <span class="hljs-built_in">document</span>.title</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The fiddle button just allows access to global developing flag, which is
 used throughout the game code. State is visually represented by the url
 updating and the button disabling (it&#39;s styled to become invisible).
-Note that because there&#39;s no server code, going directly to the <code>/fiddle</code>-
-appended url won&#39;t work.</p></div></div><div class="code"><div class="wrapper">    fiddle = <span class="hljs-built_in">document</span>.querySelector <span class="hljs-string">'#fiddle'</span>
+Note that because there&#39;s no server code, going directly to the
+<code>/fiddle</code>-appended url won&#39;t work.</p></div></div><div class="code"><div class="wrapper">    fiddle = <span class="hljs-built_in">document</span>.querySelector <span class="hljs-string">'#fiddle'</span>
     fiddle.addEventListener <span class="hljs-string">'click'</span>, <span class="hljs-function">-&gt;</span>
       defines.developing = <span class="hljs-literal">on</span>
-      <span class="hljs-built_in">window</span>.history.pushState { <span class="hljs-attribute">fiddle</span>: <span class="hljs-literal">on</span> }, <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-built_in">document</span>.title}</span> (fiddling)"</span>, <span class="hljs-string">'fiddle'</span>
+      <span class="hljs-built_in">window</span>.history.pushState(
+        { <span class="hljs-attribute">fiddle</span>: <span class="hljs-literal">on</span> }, <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-built_in">document</span>.title}</span> (fiddling)"</span>, <span class="hljs-string">'fiddle'</span>
+      )
       fiddle.setAttribute <span class="hljs-string">'disabled'</span>, <span class="hljs-string">''</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>With url integration, hitting the back button will turn off fiddling,
-since the button gets disabled. But if the game is already being played, a
-reload will be needed to reset game state so re-initialization can occur
-with the updated developing flag.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-built_in">window</span>.addEventListener <span class="hljs-string">'popstate'</span>, <span class="hljs-function"><span class="hljs-params">(e)</span> -&gt;</span>
+since the button gets disabled. But if the game is already being played,
+a reload will be needed to reset game state so re-initialization can
+occur with the updated developing flag.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-built_in">window</span>.addEventListener <span class="hljs-string">'popstate'</span>, <span class="hljs-function"><span class="hljs-params">(e)</span> -&gt;</span>
       <span class="hljs-keyword">if</span> _game.state.current <span class="hljs-keyword">is</span> <span class="hljs-string">'play'</span>
         <span class="hljs-built_in">window</span>.location.reload()
       <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> e.state.fiddle <span class="hljs-keyword">is</span> <span class="hljs-literal">off</span>
@@ -33,19 +35,20 @@ states should return to initial values: button visible, fiddling off.</p></div><
       fiddle.removeAttribute <span class="hljs-string">'disabled'</span>
       <span class="hljs-built_in">window</span>.history.back() <span class="hljs-keyword">if</span> <span class="hljs-built_in">window</span>.history.state.fiddle <span class="hljs-keyword">is</span> <span class="hljs-literal">on</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="about">About</h2>
 <p>This feature is just the other half of fancily presenting the about-content
-via some set flipping-card styling. <code>classList</code> and css transitions are required.</p></div></div><div class="code"><div class="wrapper">  Site.initAbout = <span class="hljs-function">-&gt;</span>
+via some set flipping-card styling. <code>classList</code> and css transitions are
+required.</p></div></div><div class="code"><div class="wrapper">  Site.initAbout = <span class="hljs-function">-&gt;</span>
     <span class="hljs-keyword">return</span> <span class="hljs-keyword">unless</span> (classlist <span class="hljs-keyword">and</span> csstransitions)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>There are two classes that need to be added to the main <code>frame</code> element:
 <code>flipping</code>, <code>flipped</code>. The latter is what drives the main flipping
 transition. The former is needed for some ancillary transition for when
 the flipping stops.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Being able to toggle <code>flipping</code> means knowing the transition durations,
 which requires using <code>getComputedStyle</code> and a Modernizr vendor-prefix
-helper.</p></div></div><div class="code"><div class="wrapper">    style = <span class="hljs-built_in">window</span>.getComputedStyle <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'#framed'</span>) 
+helper.</p></div></div><div class="code"><div class="wrapper">    style = <span class="hljs-built_in">window</span>.getComputedStyle <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'#framed'</span>)
     flipDuration = (
       parseFloat(style[prefixedCSS(<span class="hljs-string">'transition-duration'</span>)]) +
       parseFloat(style[prefixedCSS(<span class="hljs-string">'transition-delay'</span>)])
     ) * <span class="hljs-number">1000</span>
-    frame = <span class="hljs-built_in">document</span>.querySelector <span class="hljs-string">'#frame'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The about button simply (optimistically) toggles <code>flipped</code>. When flipping,
-the button disables itself.</p></div></div><div class="code"><div class="wrapper">    toggleAbout = <span class="hljs-built_in">document</span>.querySelector <span class="hljs-string">'#toggle-about'</span>
+    frame = <span class="hljs-built_in">document</span>.querySelector <span class="hljs-string">'#frame'</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>The about button simply (optimistically) toggles <code>flipped</code>. When
+flipping, the button disables itself.</p></div></div><div class="code"><div class="wrapper">    toggleAbout = <span class="hljs-built_in">document</span>.querySelector <span class="hljs-string">'#toggle-about'</span>
     toggleAbout.addEventListener <span class="hljs-string">'click'</span>, <span class="hljs-function">-&gt;</span>
       frame.classList.toggle <span class="hljs-string">'flipped'</span>
 

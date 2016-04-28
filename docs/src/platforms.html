@@ -46,7 +46,7 @@ from the numerous knobs, including a difficulty dynamic.</p></div></div></div><d
     <span class="hljs-attribute">destroy</span>: <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Null references to disposable objects we don&#39;t own.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="public">Public</h2></div></div></div><div class="segment"><div class="code"><div class="wrapper">    <span class="hljs-attribute">makeMap</span>: <span class="hljs-function"><span class="hljs-params">(game)</span> -&gt;</span>
       <span class="hljs-property">@_generateTiles</span>() <span class="hljs-keyword">unless</span> <span class="hljs-property">@tiles</span>.length
 
-      tilesCSV = (rowCSV = row.join <span class="hljs-string">','</span> <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> <span class="hljs-property">@tiles</span>).join <span class="hljs-string">"\n"</span>
+      tilesCSV = (rowCSV = (row.join <span class="hljs-string">','</span> <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> <span class="hljs-property">@tiles</span>)).join <span class="hljs-string">"\n"</span>
       game.load.tilemap <span class="hljs-string">'platforms'</span>, <span class="hljs-literal">null</span>, tilesCSV
 
       <span class="hljs-property">@tilemap</span> = game.add.tilemap <span class="hljs-string">'platforms'</span>, <span class="hljs-property">@tileWidth</span>, <span class="hljs-property">@tileHeight</span>
@@ -84,7 +84,10 @@ from the numerous knobs, including a difficulty dynamic.</p></div></div></div><d
         <span class="hljs-attribute">rowTiles</span>: <span class="hljs-literal">null</span>
         <span class="hljs-attribute">rowType</span>: <span class="hljs-literal">null</span> <span class="hljs-comment"># empty, ledge, solid</span>
 
-      numRowsLedge = (<span class="hljs-property">@maxLedgeSpacing</span>.y + <span class="hljs-property">@minLedgeSpacing</span>.y) / <span class="hljs-number">2</span> + (<span class="hljs-property">@ledgeThickness</span> - <span class="hljs-number">1</span>)
+      numRowsLedge = (
+        (<span class="hljs-property">@maxLedgeSpacing</span>.y + <span class="hljs-property">@minLedgeSpacing</span>.y) / <span class="hljs-number">2</span> +
+        (<span class="hljs-property">@ledgeThickness</span> - <span class="hljs-number">1</span>)
+      )
       vars.numLedgeRows = Math.round vars.numRows / numRowsLedge
 
       vars
@@ -135,7 +138,8 @@ from the numerous knobs, including a difficulty dynamic.</p></div></div></div><d
 
     <span class="hljs-attribute">_addLedgeDifficulty</span>: <span class="hljs-function"><span class="hljs-params">(ledge, vars)</span> -&gt;</span>
       easiness = Math.pow (vars.numLedgeRows / ledge.index), <span class="hljs-number">0.3</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Amplify.</p></div></div><div class="code"><div class="wrapper">      ledge.spacing = Math.round ledge.spacing / easiness
-      ledge.size = Math.round ledge.size * easiness</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Normalize.</p></div></div><div class="code"><div class="wrapper">      ledge.spacing = Phaser.Math.clamp ledge.spacing, <span class="hljs-property">@minLedgeSpacing</span>.y, <span class="hljs-property">@maxLedgeSpacing</span>.y
+      ledge.size = Math.round ledge.size * easiness</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Normalize.</p></div></div><div class="code"><div class="wrapper">      ledge.spacing = Phaser.Math.clamp ledge.spacing,
+        <span class="hljs-property">@minLedgeSpacing</span>.y, <span class="hljs-property">@maxLedgeSpacing</span>.y
       ledge.size = Phaser.Math.clamp ledge.size, <span class="hljs-property">@minLedgeSize</span>, <span class="hljs-property">@maxLedgeSize</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Update.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-keyword">switch</span> ledge.facing
         <span class="hljs-keyword">when</span> <span class="hljs-string">'left'</span> <span class="hljs-keyword">then</span> ledge.end = ledge.size - <span class="hljs-number">1</span>
         <span class="hljs-keyword">when</span> <span class="hljs-string">'right'</span> <span class="hljs-keyword">then</span> ledge.start = ledge.end + <span class="hljs-number">1</span> - ledge.size
@@ -168,8 +172,9 @@ from the numerous knobs, including a difficulty dynamic.</p></div></div></div><d
 
     <span class="hljs-attribute">_setupLedgeRow</span>: <span class="hljs-function"><span class="hljs-params">(vars)</span> -&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Prepare for partial plot. This just does a simple random, anything
 more complicated is delegated to _addLedgeDifficulty.</p></div></div><div class="code"><div class="wrapper">      vars.iLedgeRow++
-      vars.rowSize = <span class="hljs-property">@minLedgeSize</span> + parseInt(Math.random() * vars.rangeLedgeSize)
-      vars.rowSpacing = <span class="hljs-property">@minLedgeSpacing</span>.y + parseInt(Math.random() * vars.rangeRowSpacing) <span class="hljs-comment"># Prepare for next ledge.</span>
+      vars.rowSize = <span class="hljs-property">@minLedgeSize</span> +
+        parseInt(Math.random() * vars.rangeLedgeSize)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Prepare for next ledge.</p></div></div><div class="code"><div class="wrapper">      vars.rowSpacing = <span class="hljs-property">@minLedgeSpacing</span>.y +
+        parseInt(Math.random() * vars.rangeRowSpacing)
       vars.rowType = <span class="hljs-string">'ledge'</span>
 
       vars.prevFacing = vars.facing
@@ -200,7 +205,8 @@ more complicated is delegated to _addLedgeDifficulty.</p></div></div><div class=
       point = <span class="hljs-keyword">new</span> Point()
       point.x = (<span class="hljs-property">@size</span> / <span class="hljs-number">2</span>) * platforms.tileWidth
       point.x = platforms.tilemap.widthInPixels - point.x <span class="hljs-keyword">if</span> <span class="hljs-property">@facing</span> <span class="hljs-keyword">is</span> <span class="hljs-string">'right'</span>
-      point.y = ((platforms.tiles.length - <span class="hljs-number">1</span>) - <span class="hljs-property">@rowIndex</span>) * platforms.tileHeight
+      point.y = ((platforms.tiles.length - <span class="hljs-number">1</span>) - <span class="hljs-property">@rowIndex</span>) *
+        platforms.tileHeight
       point
 
   _.extend <span class="hljs-attribute">Platforms</span>::, DebugMixin

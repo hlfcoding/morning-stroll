@@ -763,8 +763,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "type": "heading",
               "data": {
                 "level": 1,
-                "title": "Site ",
-                "slug": "site-",
+                "title": "Site",
+                "slug": "site",
                 "isFileHeader": true
               },
               "depth": 1,
@@ -788,7 +788,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 }
               ]
             },
-            "title": "Site "
+            "title": "Site"
           },
           "depth": 2,
           "outline": [
@@ -1099,8 +1099,8 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
               "type": "heading",
               "data": {
                 "level": 2,
-                "title": "Supplemental Manual Tests ",
-                "slug": "supplemental-manual-tests-"
+                "title": "Supplemental Manual Tests",
+                "slug": "supplemental-manual-tests"
               },
               "depth": 2
             }

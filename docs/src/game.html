@@ -4,8 +4,10 @@
 <p>Configure RequireJS. We&#39;re using CoffeeScript, so our <code>app</code> package code is in
 the compiled js directory <code>release</code>.</p></div></div><div class="code"><div class="wrapper">requirejs.config { <span class="hljs-attribute">baseUrl</span>: <span class="hljs-string">'./release'</span> }
 
-define [<span class="hljs-string">'defines'</span>, <span class="hljs-string">'helpers'</span>, <span class="hljs-string">'site'</span>, <span class="hljs-string">'state-boot'</span>, <span class="hljs-string">'state-menu'</span>, <span class="hljs-string">'state-preload'</span>, <span class="hljs-string">'state-play'</span>],
-<span class="hljs-function"><span class="hljs-params">(defines, Helpers, Site, BootState, MenuState, PreloadState, PlayState)</span> -&gt;</span>
+define [
+  <span class="hljs-string">'defines'</span>, <span class="hljs-string">'helpers'</span>, <span class="hljs-string">'site'</span>, <span class="hljs-string">'state-boot'</span>, <span class="hljs-string">'state-menu'</span>, <span class="hljs-string">'state-preload'</span>,
+  <span class="hljs-string">'state-play'</span>
+], <span class="hljs-function"><span class="hljs-params">(defines, Helpers, Site, BootState, MenuState, PreloadState, PlayState)</span> -&gt;</span>
 
   <span class="hljs-string">'use strict'</span>
 

@@ -13,7 +13,8 @@
         obj.animations = { <span class="hljs-attribute">play</span>: <span class="hljs-function"><span class="hljs-params">(name)</span> -&gt;</span> { name } } <span class="hljs-comment"># Fake.</span>
         obj.animation = { <span class="hljs-attribute">isPlaying</span>: <span class="hljs-literal">no</span> } <span class="hljs-comment"># Fake.</span>
 
-      it <span class="hljs-string">'plays if allowed to interrupt or current animation isn\'t playing'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'plays if allowed to interrupt or current animation isn\'t playing'</span>,
+      <span class="hljs-function">-&gt;</span>
         expect(obj.playAnimation(<span class="hljs-string">'foo'</span>)).<span class="hljs-keyword">not</span>.toBe <span class="hljs-literal">no</span>
 
         obj.animation = { <span class="hljs-attribute">isPlaying</span>: <span class="hljs-literal">yes</span> }
@@ -78,13 +79,16 @@
         expect(obj.tracing).toBeDefined()
         expect(completedInit).toBe <span class="hljs-literal">no</span>
 
-      it <span class="hljs-string">'creates #debugTextItems key-value store for info for Phaser.Utils.Debug'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'creates #debugTextItems key-value store for info for
+      Phaser.Utils.Debug'</span>, <span class="hljs-function">-&gt;</span>
         obj._initDebugMixin()
         expect(obj.debugTextItems).toEqual {}
 
       it <span class="hljs-string">'sets up gui (folder) if provided one'</span>, <span class="hljs-function">-&gt;</span>
         gui = { <span class="hljs-attribute">add</span>: <span class="hljs-function">-&gt;</span> }
-        spyOn(gui, <span class="hljs-string">'add'</span>).<span class="hljs-keyword">and</span>.returnValue jasmine.createSpyObj(<span class="hljs-string">'control'</span>, [<span class="hljs-string">'listen'</span>, <span class="hljs-string">'onFinishChange'</span>])
+        spyOn(gui, <span class="hljs-string">'add'</span>).<span class="hljs-keyword">and</span>.returnValue(
+          jasmine.createSpyObj <span class="hljs-string">'control'</span>, [<span class="hljs-string">'listen'</span>, <span class="hljs-string">'onFinishChange'</span>]
+        )
 
         completedInit = obj._initDebugMixin gui
         expect(obj.gui).toBe gui
@@ -104,7 +108,8 @@
         expect(<span class="hljs-built_in">console</span>.trace).<span class="hljs-keyword">not</span>.toHaveBeenCalled()
         expect(obj.debugTextItems).toEqual {}
 
-      it <span class="hljs-string">'calls console.trace with namespaced label instead if tracing flag is on'</span>, <span class="hljs-function">-&gt;</span>
+      it <span class="hljs-string">'calls console.trace with namespaced label instead if tracing flag is
+      on'</span>, <span class="hljs-function">-&gt;</span>
         obj.tracing = <span class="hljs-literal">on</span>
         obj.debugNamespace = <span class="hljs-string">'obj'</span>
 
@@ -112,7 +117,8 @@
         expect(<span class="hljs-built_in">console</span>.trace).toHaveBeenCalledWith <span class="hljs-string">'obj:someItem'</span>, <span class="hljs-string">'value'</span>
         expect(obj.debugTextItems).toEqual {}
 
-      it <span class="hljs-string">'calls console.table instead for values that are 2D arrays'</span>, <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Since they are too big to render on game screen.</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-keyword">if</span> <span class="hljs-built_in">console</span>.table? <span class="hljs-keyword">then</span> spyOn(<span class="hljs-built_in">console</span>, <span class="hljs-string">'table'</span>) <span class="hljs-keyword">else</span> <span class="hljs-built_in">console</span>.table = jasmine.createSpy(<span class="hljs-string">'table'</span>)
+      it <span class="hljs-string">'calls console.table instead for values that are 2D arrays'</span>, <span class="hljs-function">-&gt;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Since they are too big to render on game screen.</p></div></div><div class="code"><div class="wrapper">        <span class="hljs-keyword">if</span> <span class="hljs-built_in">console</span>.table? <span class="hljs-keyword">then</span> spyOn(<span class="hljs-built_in">console</span>, <span class="hljs-string">'table'</span>)
+        <span class="hljs-keyword">else</span> <span class="hljs-built_in">console</span>.table = jasmine.createSpy(<span class="hljs-string">'table'</span>)
         spyOn <span class="hljs-built_in">console</span>, <span class="hljs-string">'groupCollapsed'</span>
         spyOn <span class="hljs-built_in">console</span>, <span class="hljs-string">'groupEnd'</span>
         obj.debugNamespace = <span class="hljs-string">'obj'</span>
@@ -133,7 +139,8 @@
 
       it <span class="hljs-string">'allows including details hash to complement value'</span>, <span class="hljs-function">-&gt;</span>
         obj.debug <span class="hljs-string">'someItem'</span>, <span class="hljs-string">'value'</span>, { <span class="hljs-attribute">someDetail</span>: <span class="hljs-string">'detailValue'</span> }
-        expect(obj.debugTextItems.someItem).toBe <span class="hljs-string">'someItem: value someDetail: detailValue'</span>
+        expect obj.debugTextItems.someItem
+          .toBe <span class="hljs-string">'someItem: value someDetail: detailValue'</span>
 
     describe <span class="hljs-string">'#_prettyPoint'</span>, <span class="hljs-function">-&gt;</span>
       it <span class="hljs-string">'converts a Phaser.Point to hash form'</span>, <span class="hljs-function">-&gt;</span>

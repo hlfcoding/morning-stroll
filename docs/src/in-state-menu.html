@@ -14,7 +14,8 @@ labels and handles common game shortkeys. Requires a couple mixins.</p></div></d
   <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">InStateMenu</span></span>
 
     <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(<span class="hljs-property">@textItems</span>, game, options = {})</span> -&gt;</span>
-      {<span class="hljs-property">@baseTextStyle</span>, <span class="hljs-property">@pauseHandler</span>, <span class="hljs-property">@layout</span>, <span class="hljs-property">@toggleKeyCode</span>} = _.defaults options,
+      {<span class="hljs-property">@baseTextStyle</span>, <span class="hljs-property">@pauseHandler</span>, <span class="hljs-property">@layout</span>, <span class="hljs-property">@toggleKeyCode</span>} =
+      _.defaults options,
         <span class="hljs-attribute">baseTextStyle</span>: { <span class="hljs-attribute">fill</span>: <span class="hljs-string">'#fff'</span>, <span class="hljs-attribute">font</span>: <span class="hljs-string">'Enriqueta'</span> }
         <span class="hljs-attribute">layout</span>: { <span class="hljs-attribute">y</span>: <span class="hljs-number">120</span>, <span class="hljs-attribute">baseline</span>: <span class="hljs-number">40</span> }
         <span class="hljs-attribute">pauseHandler</span>: <span class="hljs-function"><span class="hljs-params">(paused)</span> -&gt;</span> game.paused = paused

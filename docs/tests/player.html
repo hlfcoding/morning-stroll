@@ -139,7 +139,6 @@
           expect(player.playAnimation).toHaveBeenCalledWith <span class="hljs-number">31</span>, <span class="hljs-literal">yes</span>
 
     describe <span class="hljs-string">'when x cursor key was down but is up in same direction'</span>, <span class="hljs-function">-&gt;</span>
-
       it <span class="hljs-string">'will stop running and cancel turns'</span>, <span class="hljs-function">-&gt;</span>
         runRunUpdatesUntil <span class="hljs-string">'stop'</span>
 
@@ -257,7 +256,7 @@
         it <span class="hljs-string">'will be landed when animation finishes'</span>, <span class="hljs-function">-&gt;</span>
           endAnimation()
 
-          expect(player._isLanded()).toBe <span class="hljs-literal">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="supplemental-manual-tests-">Supplemental Manual Tests </h2>
+          expect(player._isLanded()).toBe <span class="hljs-literal">yes</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="supplemental-manual-tests">Supplemental Manual Tests</h2>
 <ul>
 <li>Mash left and right cursor keys in alternating fashion for a bit.
 Stop, then attempt to turn in other direction. Player should visualize

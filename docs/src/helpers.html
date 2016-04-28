@@ -1,16 +1,16 @@
 <!DOCTYPE html><html lang="en"><head><title>src/helpers</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="src/helpers"><meta name="groc-project-path" content="src/helpers.coffee"><meta name="groc-github-url" content="https://bitbucket.org/hlfcoding/morning-stroll"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path"><a href="https://bitbucket.org/hlfcoding/morning-stroll/blob/master/src/helpers.coffee">src/helpers.coffee</a></div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="helpers">Helpers</h1>
-<p>Misc. utilities and bits of custom functionality not specific to the game. For
-now it&#39;s all in this one file, but eventually may become a separate module.
-Ideally this file should be short because we shouldn&#39;t need to patch or extend
-vendor code.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>See</strong>: <a href="../tests/helpers.html">tests</a>.</p></div></div><div class="code"><div class="wrapper">define [], <span class="hljs-function"><span class="hljs-params">()</span> -&gt;</span>
+<p>Misc. utilities and bits of custom functionality not specific to the game.
+For now it&#39;s all in this one file, but eventually may become a separate
+module. Ideally this file should be short because we shouldn&#39;t need to patch
+or extend vendor code.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><strong>See</strong>: <a href="../tests/helpers.html">tests</a>.</p></div></div><div class="code"><div class="wrapper">define [], <span class="hljs-function"><span class="hljs-params">()</span> -&gt;</span>
 
   <span class="hljs-string">'use strict'</span>
 
   {Easing, Point, RenderTexture, Sprite, Timer} = Phaser</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Cache regex patterns.</p></div></div><div class="code"><div class="wrapper">  RegExps =
     <span class="hljs-attribute">PrettyHashRemove</span>: <span class="hljs-regexp">/[{}"]/g</span>
     <span class="hljs-attribute">PrettyHashPad</span>: <span class="hljs-regexp">/[:,]/g</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="animationmixin">AnimationMixin</h2>
-<p>Requires DebugMixin. Some higher-level operations over Phaser animation API.
-Apply this to any object that has an <code>animations</code> (<code>AnimationManager</code>)
+<p>Requires DebugMixin. Some higher-level operations over Phaser animation
+API. Apply this to any object that has an <code>animations</code> (<code>AnimationManager</code>)
 property. It will set a current <code>animation</code> property. An <code>add</code>
 (<code>GameObjectFactory</code>) property is also required.</p></div></div><div class="code"><div class="wrapper">  AnimationMixin =
 
@@ -105,7 +105,9 @@ render. Also sets and works with <code>debugging</code>, <code>tracing</code>, <
         <span class="hljs-keyword">if</span> details? <span class="hljs-keyword">then</span> <span class="hljs-built_in">console</span>.trace label, value, details
         <span class="hljs-keyword">else</span> <span class="hljs-built_in">console</span>.trace label, value
       <span class="hljs-keyword">else</span>
-        <span class="hljs-keyword">if</span> _.isArray(value) <span class="hljs-keyword">and</span> (_.isArray(value[<span class="hljs-number">0</span>]) <span class="hljs-keyword">or</span> _.isPlainObject(value[<span class="hljs-number">0</span>]))
+        <span class="hljs-keyword">if</span> (_.isArray(value) <span class="hljs-keyword">and</span>
+          (_.isArray(value[<span class="hljs-number">0</span>]) <span class="hljs-keyword">or</span> _.isPlainObject(value[<span class="hljs-number">0</span>]))
+        )
           label = <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-property">@debugNamespace</span>}</span>:<span class="hljs-subst">#{label}</span>"</span>
           <span class="hljs-built_in">console</span>.groupCollapsed label
           <span class="hljs-built_in">console</span>.table? value
@@ -125,8 +127,9 @@ render. Also sets and works with <code>debugging</code>, <code>tracing</code>, <
         .replace RegExps.PrettyHashRemove,<span class="hljs-string">''</span>
         .replace RegExps.PrettyHashPad, <span class="hljs-string">'$&amp; '</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Define Phaser-specific constants. Fragile.</p></div></div><div class="code"><div class="wrapper">  kPhaserLayoutX = -<span class="hljs-number">8</span>
   kPhaserLineRatio = <span class="hljs-number">1.8</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Renders to game&#39;s <code>Phaser.Utils.Debug</code> display, which isn&#39;t the easiest to
-extend correctly and requires manual layout bookkeeping. Sets and works with
-<code>debugFontSize</code>. Requires game object. Sets some internal layout properties.</p></div></div><div class="code"><div class="wrapper">  DebugDisplayMixin =</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Only do the minimal setup here, so it can always run.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-attribute">_initDebugDisplayMixin</span>: <span class="hljs-function"><span class="hljs-params">(game)</span> -&gt;</span>
+extend correctly and requires manual layout bookkeeping. Sets and works
+with <code>debugFontSize</code>. Requires game object. Sets some internal layout
+properties.</p></div></div><div class="code"><div class="wrapper">  DebugDisplayMixin =</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Only do the minimal setup here, so it can always run.</p></div></div><div class="code"><div class="wrapper">    <span class="hljs-attribute">_initDebugDisplayMixin</span>: <span class="hljs-function"><span class="hljs-params">(game)</span> -&gt;</span>
       <span class="hljs-property">@debugFontSize</span> ?= <span class="hljs-number">9</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Compute sizes.</p></div></div><div class="code"><div class="wrapper">      <span class="hljs-property">@_debugGutter</span> = <span class="hljs-number">2</span> * <span class="hljs-property">@debugFontSize</span>
       <span class="hljs-property">@_debugLine</span> = kPhaserLineRatio * <span class="hljs-property">@debugFontSize</span>
 
@@ -197,13 +200,15 @@ implementation.</p></div></div><div class="code"><div class="wrapper"><span clas
         row[c] = tile
 
     result</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="pointmixin">PointMixin</h2>
-<p>Basic Phaser class extension for less code.</p></div></div><div class="code"><div class="wrapper">  PointMixin = 
+<p>Basic Phaser class extension for less code.</p></div></div><div class="code"><div class="wrapper">  PointMixin =
     <span class="hljs-attribute">addPoint</span>: <span class="hljs-function"><span class="hljs-params">(point)</span> -&gt;</span> <span class="hljs-property">@add</span> point.x, point.y
     <span class="hljs-attribute">dividePoint</span>: <span class="hljs-function"><span class="hljs-params">(point)</span> -&gt;</span> <span class="hljs-property">@divide</span> point.x, point.y
     <span class="hljs-attribute">multiplyPoint</span>: <span class="hljs-function"><span class="hljs-params">(point)</span> -&gt;</span> <span class="hljs-property">@multiply</span> point.x, point.y
     <span class="hljs-attribute">subtractPoint</span>: <span class="hljs-function"><span class="hljs-params">(point)</span> -&gt;</span> <span class="hljs-property">@subtract</span> point.x, point.y</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><h2 id="statemanagermixin">StateManagerMixin</h2>
-<p>Adds transitioning that&#39;s heavily inspired by aaccurso/phaser-state-transition-plugin
-Given its complexity, coupling, and fragility, this one is manually tested. </p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>As far as what it does, it wraps the state&#39;s methods with logic to
+<p>Adds transitioning that&#39;s heavily inspired by aaccurso/phaser-state-
+transition-plugin.
+Given its complexity, coupling, and fragility, this one is manually
+tested.</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>As far as what it does, it wraps the state&#39;s methods with logic to
 screenshot the current viewport (with some weird offsetting logic). The
 screenshot becomes a sprite that covers the new state and fades out on
 create, giving the illusion of transitioning.</p></div></div><div class="code"><div class="wrapper">  StateManagerMixin =
@@ -219,7 +224,9 @@ create, giving the illusion of transitioning.</p></div></div><div class="code"><
 
       <span class="hljs-property">@game</span>.camera.unfollow() <span class="hljs-comment"># Prevent flickering.</span>
       <span class="hljs-property">@game</span>.paused = <span class="hljs-literal">yes</span>
-      texture = <span class="hljs-keyword">new</span> RenderTexture <span class="hljs-property">@game</span>, <span class="hljs-property">@game</span>.width, <span class="hljs-property">@game</span>.height, <span class="hljs-string">"transition-to-<span class="hljs-subst">#{stateName}</span>"</span>
+      texture = <span class="hljs-keyword">new</span> RenderTexture(
+        <span class="hljs-property">@game</span>, <span class="hljs-property">@game</span>.width, <span class="hljs-property">@game</span>.height, <span class="hljs-string">"transition-to-<span class="hljs-subst">#{stateName}</span>"</span>
+      )
       texture.renderXY <span class="hljs-property">@game</span>.world, -<span class="hljs-property">@game</span>.camera.x, -<span class="hljs-property">@game</span>.camera.y
       <span class="hljs-property">@game</span>.paused = <span class="hljs-literal">no</span>
 
