@@ -220,9 +220,12 @@ define [
       @music.play()
       @gui?.add(@music, 'mute').listen()
       increment = 0.1
-      @loudKey = @_addKey Keyboard.EQUALS, => @userVolume += increment; return
-      @muteKey = @_addKey Keyboard.ZERO, => @music.mute = not @music.mute; return
-      @quietKey = @_addKey Keyboard.UNDERSCORE, => @userVolume -= increment; return
+      @loudKey = @_addKey Keyboard.EQUALS, =>
+        @userVolume += increment; return
+      @muteKey = @_addKey Keyboard.ZERO, =>
+        @music.mute = not @music.mute; return
+      @quietKey = @_addKey Keyboard.UNDERSCORE, =>
+        @userVolume -= increment; return
       return
 
     _addPlatforms: ->
