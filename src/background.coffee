@@ -42,7 +42,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @_initDebugging()
       return
 
-    _initDebugging: () ->
+    _initDebugging: ->
       @debugNamespace = 'background'
 
       {@debugging} = defines

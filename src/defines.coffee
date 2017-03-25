@@ -2,7 +2,7 @@
 # =======
 # Constants that get shared throughout game logic.
 
-define [], () ->
+define [], ->
 
   'use strict'
 

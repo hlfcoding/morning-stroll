@@ -7,7 +7,7 @@
 
 # __See__: [tests](../tests/helpers.html).
 
-define [], () ->
+define [], ->
 
   'use strict'
 
