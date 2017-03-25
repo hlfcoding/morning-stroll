@@ -4,8 +4,6 @@
 
 define [], ->
 
-  'use strict'
-
   defines =
 
     # Turn off here to disable entirely (@release).

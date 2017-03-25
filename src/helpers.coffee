@@ -9,8 +9,6 @@
 
 define [], ->
 
-  'use strict'
-
   {Easing, Point, RenderTexture, Sprite, Timer} = Phaser
 
   # Cache regex patterns.

@@ -6,8 +6,6 @@
 
 define [], ->
 
-  'use strict'
-
   class BootState extends Phaser.State
 
     init: ->

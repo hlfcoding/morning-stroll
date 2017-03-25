@@ -5,8 +5,6 @@
 
 define ['defines', 'helpers'], (defines, Helpers) ->
 
-  'use strict'
-
   {State} = Phaser
 
   {domStateEvents, fontLarge, fontSmall} = defines

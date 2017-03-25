@@ -6,8 +6,6 @@
 
 define ['defines'], (defines) ->
 
-  'use strict'
-
   {State, Timer} = Phaser
 
   {developing} = defines

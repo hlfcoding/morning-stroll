@@ -9,8 +9,6 @@
 
 define ['defines', 'helpers'], (defines, Helpers) ->
 
-  'use strict'
-
   {Point} = Phaser
 
   {playerYOffset} = defines

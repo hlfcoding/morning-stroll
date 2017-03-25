@@ -14,8 +14,6 @@ define [
   'state-play'
 ], (defines, Helpers, Site, BootState, MenuState, PreloadState, PlayState) ->
 
-  'use strict'
-
   {Point} = Phaser
 
   {debugging, gameH, gameW} = defines

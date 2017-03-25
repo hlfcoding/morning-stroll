@@ -11,8 +11,6 @@ define [
   'background', 'defines', 'helpers', 'in-state-menu', 'platforms', 'player'
 ], (Background, defines, Helpers, InStateMenu, Platforms, Player) ->
 
-  'use strict'
-
   {Camera, Key, Keyboard, Physics, Point, Rectangle, State, Timer} = Phaser
 
   {domStateEvents, fontLarge, fontSmall} = defines

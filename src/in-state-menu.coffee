@@ -6,8 +6,6 @@
 
 define ['defines', 'helpers'], (defines, Helpers) ->
 
-  'use strict'
-
   {Keyboard} = Phaser
 
   {fontSmall} = defines

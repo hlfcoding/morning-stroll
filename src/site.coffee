@@ -5,8 +5,6 @@
 
 define ['defines'], (defines) ->
 
-  'use strict'
-
   # Use Modernizr to do browser feature detection. Except if a browser feature
   # does not exist, the related feature just gets disabled. Not worth it to
   # write fallback behavior mostly just for IE9.
