@@ -31,23 +31,23 @@ define ['defines', 'helpers'], (defines, Helpers) ->
     # -------------------------
 
     constructor: (@config, game, @cursors, gui) ->
-      @_initialize game, gui
+      @_initialize(game, gui)
 
     _initialize: (game, gui) ->
       {x, y} = @config.origin
-      @sprite = game.add.sprite x, y, 'player', 17
-      @sprite.anchor = new Point 0.5, 0.5
+      @sprite = game.add.sprite(x, y, 'player', 17)
+      @sprite.anchor = new Point(0.5, 0.5)
 
       @animations = @sprite.animations
       @_initAnimations()
 
-      game.physics.arcade.enable @sprite
+      game.physics.arcade.enable(@sprite)
       @gravity = game.physics.arcade.gravity
       @_initPhysics()
 
       @_initState()
 
-      @_initDebugging gui
+      @_initDebugging(gui)
       return
 
     destroy: ->
@@ -67,10 +67,10 @@ define ['defines', 'helpers'], (defines, Helpers) ->
 
     startEnding: (mate) ->
       @control = off
-      @sprite.position.setTo mate.x - 43, mate.y
-      @velocity.setTo 0
-      @acceleration.setTo 0
-      @physics.offset.setTo 0
+      @sprite.position.setTo(mate.x - 43, mate.y)
+      @velocity.setTo(0)
+      @acceleration.setTo(0)
+      @physics.offset.setTo(0)
       @physics.moves = no
       @_visualizeTurn Direction.Right
       animation = @playAnimation 'end'
@@ -81,8 +81,8 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       # First.
       @nextAction = 'none'
       @nextDirection = @_xDirectionInput()
-      @velocity.clampY -@maxVelocity.y, @maxVelocity.y
-      @velocity.clampX -@maxVelocity.x, @maxVelocity.x
+      @velocity.clampY(-@maxVelocity.y, @maxVelocity.y)
+      @velocity.clampX(-@maxVelocity.x, @maxVelocity.x)
 
       # Second.
       @nextState = 'running' if @_canKeepRunning()
@@ -112,12 +112,12 @@ define ['defines', 'helpers'], (defines, Helpers) ->
     # So unusually big it gets its own section.
 
     _initAnimations: ->
-      @animations.add 'run', [0..11], 30, on
-      @animations.add 'stop', [12..17], 24
-      @animations.add 'start', [17..12], 24
-      @animations.add 'jump', [18..31], 24
-      @animations.add 'land', [32,33,18,17], 24
-      @animations.add 'end', [34...53], 12
+      @animations.add('run', [0..11], 30, on)
+      @animations.add('stop', [12..17], 24)
+      @animations.add('start', [17..12], 24)
+      @animations.add('jump', [18..31], 24)
+      @animations.add('land', [32,33,18,17], 24)
+      @animations.add('end', [34...53], 12)
       @_nextActionOnComplete = null
       return
 
@@ -125,16 +125,16 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @debugNamespace = 'player'
 
       {@debugging} = defines
-      completedInit = @_initDebugMixin gui
+      completedInit = @_initDebugMixin(gui)
       return unless completedInit
 
-      @gui.addOpenFolder('drag').addRange @physics.drag, 'x'
+      @gui.addOpenFolder('drag').addRange(@physics.drag, 'x')
 
-      @gui.addOpenFolder 'maxVelocity'
-          .addRange @maxVelocity, 'x'
-          .addRange @maxVelocity, 'y'
+      @gui.addOpenFolder('maxVelocity')
+          .addRange(@maxVelocity, 'x')
+          .addRange(@maxVelocity, 'y')
 
-      @gui.addRange @, prop for prop in [
+      @gui.addRange(@, prop) for prop in [
         'jumpAcceleration'
         'jumpMaxDuration'
         'jumpVelocityFactor'
@@ -148,13 +148,13 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       {@velocity, @acceleration} = @physics
 
       @physics.collideWorldBounds = on
-      @physics.tilePadding = new Point 0, @sprite.height
+      @physics.tilePadding = new Point(0, @sprite.height)
 
       @physics.drag.x = 1500
 
       {height, width} = @sprite
       @_yOffset = playerYOffset
-      @physics.setSize (width / 2), (height / 2), @_xOffset(), @_yOffset
+      @physics.setSize(width / 2, height / 2, @_xOffset(), @_yOffset)
 
       @jumpAcceleration = -4250 # A burst of energy on launch.
       @jumpMaxDuration = 500
@@ -163,7 +163,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @airFrictionRatio = 1 / 20
       @runAcceleration = 300
 
-      @maxVelocity = new Point 200, 800 # Run and terminal velocities.
+      @maxVelocity = new Point(200, 800) # Run and terminal velocities.
 
       @_jumpTimer = @sprite.game.time.create() # This also acts like a flag.
       return
@@ -190,26 +190,26 @@ define ['defines', 'helpers'], (defines, Helpers) ->
 
     _changeAnimation: ->
       unless @_isInMidAir() or @nextAction is 'none'
-        animation = @playAnimation @nextAction, @animation?.loop
+        animation = @playAnimation(@nextAction, @animation?.loop)
         if animation and @_nextActionOnComplete?
-          animation.onComplete.addOnce @_nextActionOnComplete, @
+          animation.onComplete.addOnce(@_nextActionOnComplete, @)
           @_nextActionOnComplete = null
         return
 
       switch @nextState
-        when 'running' then @playAnimation 'run', no
-        when 'still' then @playAnimation 17, @animation?.loop
-        when 'falling' then @playAnimation 31, @animation?.loop
-        when 'landing' then @playAnimation 'land'
+        when 'running' then @playAnimation('run', no)
+        when 'still' then @playAnimation(17, @animation?.loop)
+        when 'falling' then @playAnimation(31, @animation?.loop)
+        when 'landing' then @playAnimation('land')
       return
 
     _changeState: ->
       return if @nextState is @state
 
-      @debug 'jump:peak', @physics.y if @state is 'rising'
+      @debug('jump:peak', @physics.y) if @state is 'rising'
 
-      @debug 'state', @nextState
-      @debug 'jump:start', @physics.position if @nextState is 'rising'
+      @debug('state', @nextState)
+      @debug('jump:start', @physics.position) if @nextState is 'rising'
 
       if @nextState is 'falling'
         @_fallingPoint ?= @physics.position?.clone()
@@ -276,13 +276,13 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       # The longer the hold, the higher the final jump, but power decays
       # quickly. Also note that negative is up, positive is down.
       kEasing = (1000 - @jumpMaxDuration) + (@jumpMaxDuration - @_jumpTimer.ms)
-      kEasing = Math.pow kEasing / 1000, 2
+      kEasing = Math.pow(kEasing / 1000, 2)
       @acceleration.y *= kEasing
-      @debug 'jump:build', kEasing
+      @debug('jump:build', kEasing)
       return
 
     _endJump: ->
-      @debug 'jump:end', @_jumpTimer.ms, { position: @physics.position }
+      @debug('jump:end', @_jumpTimer.ms, position: @physics.position)
       @acceleration.y = @gravity.y # Reset.
       @_jumpTimer.stop()
       return
@@ -336,8 +336,8 @@ define ['defines', 'helpers'], (defines, Helpers) ->
     _beginTurn: ->
       @nextAction = 'stop' unless @_isFullyStill()
       @_turnDirection = @nextDirection
-      @debug 'turn:start', @velocity.x
-      @debug 'facing', @nextDirection
+      @debug('turn:start', @velocity.x)
+      @debug('facing', @nextDirection)
       return
 
     _endTurn: ->
@@ -346,14 +346,14 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @nextAction = 'start'
       @direction = @_turnDirection
       @_turnDirection = null
-      @debug 'turn:end', @velocity.x
+      @debug('turn:end', @velocity.x)
       return
 
     _visualizeTurn: (direction = @_turnDirection) ->
       @sprite.scale.x = direction
-      @physics.offset.set @_xOffset(direction), @_yOffset
+      @physics.offset.set(@_xOffset(direction), @_yOffset)
       return
 
-  _.extend Player::, AnimationMixin, DebugMixin
+  _.extend(Player::, AnimationMixin, DebugMixin)
 
   Player
