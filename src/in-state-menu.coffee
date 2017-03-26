@@ -27,21 +27,21 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       @_initialize()
 
     _initialize: ->
-      @group = @add.group null, 'in-state-menu', yes
+      @group = @add.group(null, 'in-state-menu', yes)
 
-      @overlay = @add.graphics 0, 0, @group
-      @overlay.beginFill 0x000000, 0.8
-      @overlay.drawRect 0, 0, @width, @height
+      @overlay = @add.graphics(0, 0, @group)
+      @overlay.beginFill(0x000000, 0.8)
+      @overlay.drawRect(0, 0, @width, @height)
       @overlay.endFill()
 
-      @_addText text, style for [text, style] in @textItems
-      @_addText 'Press P again to continue', { fontSize: fontSmall }
+      @_addText(text, style) for [text, style] in @textItems
+      @_addText('Press P again to continue', { fontSize: fontSmall })
 
-      @toggleKey = @input.keyboard.addKey @toggleKeyCode
-      @toggleKey.onDown.add @toggle, @
-      @input.keyboard.removeKeyCapture @toggleKeyCode
+      @toggleKey = @input.keyboard.addKey(@toggleKeyCode)
+      @toggleKey.onDown.add(@toggle, @)
+      @input.keyboard.removeKeyCapture(@toggleKeyCode)
 
-      @toggle off
+      @toggle(off)
 
       @_initDebugging()
       return
@@ -54,7 +54,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
 
     destroy: ->
       @group.destroy() # Because we added it to the stage.
-      @toggleKey.onDown.removeAll @
+      @toggleKey.onDown.removeAll(@)
       return
 
     toggle: (toggled) ->
@@ -64,9 +64,9 @@ define ['defines', 'helpers'], (defines, Helpers) ->
       return
 
     _addText: (text, style) ->
-      _.defaults style, @baseTextStyle
-      @addCenteredText text, @layout, style, @group
+      _.defaults(style, @baseTextStyle)
+      @addCenteredText(text, @layout, style, @group)
 
-  _.extend InStateMenu::, DebugMixin, TextMixin
+  _.extend(InStateMenu::, DebugMixin, TextMixin)
 
   InStateMenu

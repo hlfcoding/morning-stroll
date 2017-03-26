@@ -7,7 +7,7 @@
 # ------------
 # Configure RequireJS. We're using CoffeeScript, so our `app` package code is in
 # the compiled js directory `release`.
-requirejs.config { baseUrl: './release' }
+requirejs.config({ baseUrl: './release' })
 
 define [
   'defines', 'helpers', 'site', 'state-boot', 'state-menu', 'state-preload',
@@ -23,7 +23,7 @@ define [
   # Framework Extensions
   # --------------------
 
-  _.extend Point::, PointMixin
+  _.extend(Point::, PointMixin)
 
   # Main
   # ----
@@ -32,14 +32,14 @@ define [
     gameW, gameH, Phaser.AUTO, document.getElementById('morning-stroll')
   )
 
-  _.extend game.state, StateManagerMixin
+  _.extend(game.state, StateManagerMixin)
 
-  game.state.add 'boot', BootState
-  game.state.add 'preload', PreloadState
-  game.state.add 'menu', MenuState
-  game.state.add 'play', PlayState
+  game.state.add('boot', BootState)
+  game.state.add('preload', PreloadState)
+  game.state.add('menu', MenuState)
+  game.state.add('play', PlayState)
 
-  game.state.start 'boot'
+  game.state.start('boot')
 
   # Site
   # ----
@@ -47,7 +47,7 @@ define [
   # Add a class for use in styling.
   document.body.className = 'ready'
 
-  Site.initFiddle game
+  Site.initFiddle(game)
   Site.initAbout()
 
   # Debug

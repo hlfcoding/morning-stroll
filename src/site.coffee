@@ -20,20 +20,20 @@ define ['defines'], (defines) ->
 
     # The History API will be required. Start off with fiddle flag off.
     return unless history
-    window.history.replaceState { fiddle: off }, document.title
+    window.history.replaceState({ fiddle: off }, document.title)
 
     # The fiddle button just allows access to global developing flag, which is
     # used throughout the game code. State is visually represented by the url
     # updating and the button disabling (it's styled to become invisible).
     # Note that because there's no server code, going directly to the
     # `/fiddle`-appended url won't work.
-    fiddle = document.querySelector '#fiddle'
+    fiddle = document.querySelector('#fiddle')
     fiddle.addEventListener 'click', ->
       defines.developing = on
       window.history.pushState(
         { fiddle: on }, "#{document.title} (fiddling)", 'fiddle'
       )
-      fiddle.setAttribute 'disabled', ''
+      fiddle.setAttribute('disabled', '')
       return
 
     # With url integration, hitting the back button will turn off fiddling,
@@ -45,20 +45,20 @@ define ['defines'], (defines) ->
         window.location.reload()
       else if e.state.fiddle is off
         defines.developing = off
-        fiddle.removeAttribute 'disabled'
+        fiddle.removeAttribute('disabled')
       return
 
     # When the game's play state starts, the button becomes pointless (given
     # this necessary reload) and should hide even if fiddling is off.
-    gameParent = document.querySelector '#morning-stroll'
+    gameParent = document.querySelector('#morning-stroll')
     gameParent.addEventListener 'state:play', ->
-      fiddle.setAttribute 'disabled', ''
+      fiddle.setAttribute('disabled', '')
       return
 
     # Lastly, whenever going (returning) to the menu state, history and button
     # states should return to initial values: button visible, fiddling off.
     gameParent.addEventListener 'state:menu', ->
-      fiddle.removeAttribute 'disabled'
+      fiddle.removeAttribute('disabled')
       window.history.back() if window.history.state.fiddle is on
       return
 
@@ -78,26 +78,26 @@ define ['defines'], (defines) ->
     # Being able to toggle `flipping` means knowing the transition durations,
     # which requires using `getComputedStyle` and a Modernizr vendor-prefix
     # helper.
-    style = window.getComputedStyle document.querySelector('#framed')
+    style = window.getComputedStyle(document.querySelector('#framed'))
     flipDuration = (
       parseFloat(style[prefixedCSS('transition-duration')]) +
       parseFloat(style[prefixedCSS('transition-delay')])
     ) * 1000
-    frame = document.querySelector '#frame'
+    frame = document.querySelector('#frame')
 
     # The about button simply (optimistically) toggles `flipped`. When
     # flipping, the button disables itself.
-    toggleAbout = document.querySelector '#toggle-about'
+    toggleAbout = document.querySelector('#toggle-about')
     toggleAbout.addEventListener 'click', ->
-      frame.classList.toggle 'flipped'
+      frame.classList.toggle('flipped')
 
-      frame.classList.add 'flipping'
-      toggleAbout.setAttribute 'disabled', ''
-      setTimeout ->
-        frame.classList.remove 'flipping'
-        toggleAbout.removeAttribute 'disabled'
+      frame.classList.add('flipping')
+      toggleAbout.setAttribute('disabled', '')
+      setTimeout( ->
+        frame.classList.remove('flipping')
+        toggleAbout.removeAttribute('disabled')
         return
-      , flipDuration
+      , flipDuration)
       return
     return
 

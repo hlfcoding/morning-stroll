@@ -29,7 +29,7 @@ define ['defines', 'helpers'], (defines, Helpers) ->
 
       @_topZIndex = 1
 
-      @_initialize game
+      @_initialize(game)
 
     _initialize: (game) ->
       {@add, @camera} = game
@@ -56,25 +56,25 @@ define ['defines', 'helpers'], (defines, Helpers) ->
     addImages: (nameTemplate, topZIndex, bottomZIndex = 1) ->
       @_topZIndex = topZIndex
       for zIndex in [bottomZIndex..topZIndex]
-        name = nameTemplate { zIndex }
-        image = @add.image 0, 0, name, @group
+        name = nameTemplate({ zIndex })
+        image = @add.image(0, 0, name, @group)
         image.autoCull = on
-        @layers.push { image, zIndex }
+        @layers.push({ image, zIndex })
       return
 
     layout: ->
       # Set vertical scroll factor and offset.
       for layer in @layers
-        {image, zIndex} = layer
+        {zIndex} = layer
         # Factor in z-index exponentially and constrain.
         factor = (zIndex / @layers.length) ** 2 * @parallaxFactor
         # Add buffer to further constrain.
         factor = (factor + @parallaxBuffer / 2) / @parallaxBuffer
         # Set scroll factor and inverse.
-        layer.scrollFactor = Math.min 1, factor
-        layer.scrollResistance = Math.max 0, (1 - factor)
+        layer.scrollFactor = Math.min(1, factor)
+        layer.scrollResistance = Math.max(0, (1 - factor))
 
-      @debug 'layers', @layers
+      @debug('layers', @layers)
       return
 
     update: ->
@@ -89,6 +89,6 @@ define ['defines', 'helpers'], (defines, Helpers) ->
             image.y -= @parallaxTolerance * scrollFactor ** (1 / 3)
       return
 
-  _.extend Background::, DebugMixin
+  _.extend(Background::, DebugMixin)
 
   Background
