@@ -14,12 +14,12 @@ define [], ->
       return
 
     preload: ->
-      @load.image 'progress-bar-bg', 'assets/progress-bar-bg.png'
-      @load.image 'progress-bar-fg', 'assets/progress-bar-fg.png'
+      @load.image('progress-bar-bg', 'assets/progress-bar-bg.png')
+      @load.image('progress-bar-fg', 'assets/progress-bar-fg.png')
       return
 
     create: ->
-      @state.start 'preload'
+      @state.start('preload')
       return
 
   BootState

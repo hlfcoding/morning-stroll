@@ -15,36 +15,36 @@ define ['defines', 'helpers'], (defines, Helpers) ->
 
     init: ->
       if domStateEvents
-        e = document.createEvent 'CustomEvent'
-        e.initCustomEvent 'state:menu', no, no, undefined
-        @game.parent.dispatchEvent e
+        e = document.createEvent('CustomEvent')
+        e.initCustomEvent('state:menu', no, no, undefined)
+        @game.parent.dispatchEvent(e)
       return
 
     create: ->
-      @add.image 0, 0, 'bg-start'
+      @add.image(0, 0, 'bg-start')
 
       @layout = { y: (@game.height / 4), baseline: 40 }
-      @_addText 'Morning Stroll', { fontSize: fontLarge }
-      @_addText 'Climb and see!', { fontSize: fontSmall }
+      @_addText('Morning Stroll', { fontSize: fontLarge })
+      @_addText('Climb and see!', { fontSize: fontSmall })
 
       @layout.y += 2 * @layout.baseline
       buttonX = (@game.width - defines.buttonW) / 2
       buttonY = @layout.y - (defines.buttonH / 2)
-      @add.button buttonX, buttonY, 'button', @play, @, 1, 0, 2
+      @add.button(buttonX, buttonY, 'button', @play, @, 1, 0, 2)
       # Note the text isn't actually 'in' the button.
-      @_addText 'start', { fontSize: fontSmall }
+      @_addText('start', { fontSize: fontSmall })
       return
 
     update: ->
 
     play: ->
-      @state.startWithTransition null, 'play'
+      @state.startWithTransition(null, 'play')
       return
 
     _addText: (text, style) ->
-      _.defaults style, { fill: '#fff', font: 'Enriqueta' }
-      text = @addCenteredText text, @layout, style
+      _.defaults(style, { fill: '#fff', font: 'Enriqueta' })
+      text = @addCenteredText(text, @layout, style)
 
-  _.extend MenuState::, TextMixin
+  _.extend(MenuState::, TextMixin)
 
   MenuState
