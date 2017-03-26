@@ -43,8 +43,8 @@ define [], ->
       @animation
 
     fadeTo: (gameObject, duration, alpha, init = yes) ->
-      if init then gameObject.alpha = (if alpha is 0 then 1 else 0)
-      tween = @add.tween(gameObject).to { alpha }, duration, 'Cubic', yes
+      gameObject.alpha = (if alpha is 0 then 1 else 0) if init
+      tween = @add.tween(gameObject).to({ alpha }, duration, 'Cubic', yes)
 
   # CameraMixin
   # -----------
@@ -81,32 +81,32 @@ define [], ->
 
       toggle = @gui.add(@, 'debugging')
       toggle.listen()
-      toggle.onFinishChange => @debugTextItems = {}
+      toggle.onFinishChange( => @debugTextItems = {}; return )
 
-      @gui.add @, 'tracing'
+      @gui.add(@, 'tracing')
 
       yes
 
     debug: (label, value, details) ->
       return unless @debugging
 
-      value = parseFloat value.toFixed(2) if _.isNumber(value)
-      value = @_prettyHash @_prettyPoint(value) if value instanceof Point
+      value = parseFloat(value.toFixed(2)) if _.isNumber(value)
+      value = @_prettyHash(@_prettyPoint(value)) if value instanceof Point
 
       if details?.position and details.position instanceof Point
-        details.position = @_prettyPoint details.position
+        details.position = @_prettyPoint(details.position)
 
       if @tracing
         label = "#{@debugNamespace}:#{label}"
-        if details? then console.trace label, value, details
-        else console.trace label, value
+        if details? then console.trace(label, value, details)
+        else console.trace(label, value)
       else
         if (_.isArray(value) and
           (_.isArray(value[0]) or _.isPlainObject(value[0]))
         )
           label = "#{@debugNamespace}:#{label}"
-          console.groupCollapsed label
-          console.table? value
+          console.groupCollapsed(label)
+          console.table?(value)
           console.groupEnd()
         else
           details = if details? then @_prettyHash(details) else ''
@@ -114,15 +114,15 @@ define [], ->
       return
 
     _prettyPoint: (point) ->
-      _.chain point
-        .pick 'x', 'y'
-        .mapObject (n) -> parseFloat n.toFixed(2)
+      _.chain(point)
+        .pick('x', 'y')
+        .mapObject( (n) -> parseFloat(n.toFixed(2)) )
         .value()
 
     _prettyHash: (hash) ->
-      JSON.stringify hash
-        .replace RegExps.PrettyHashRemove,''
-        .replace RegExps.PrettyHashPad, '$& '
+      JSON.stringify(hash)
+        .replace(RegExps.PrettyHashRemove, '')
+        .replace(RegExps.PrettyHashPad, '$& ')
 
   # Define Phaser-specific constants. Fragile.
   kPhaserLayoutX = -8
@@ -152,11 +152,11 @@ define [], ->
 
     renderDebugDisplayItems: (items, lines) ->
       if _.isFunction(items) and lines?
-        items @_layoutX, @_layoutY
+        items(@_layoutX, @_layoutY)
         @_layoutY += lines * @_debugLine
 
       else for own label, text of items
-        @debugDisplay.text text, @_layoutX, @_layoutY, null, @debugDisplay.font
+        @debugDisplay.text(text, @_layoutX, @_layoutY, null, @debugDisplay.font)
         @_layoutY += @_debugLine
       return
 
@@ -165,7 +165,7 @@ define [], ->
   # Basic dat.GUI extensions to require less code.
 
   addOpenFolder = ->
-    folder = @addFolder.apply @, arguments
+    folder = @addFolder.apply(@, arguments)
     folder.open()
     folder
 
@@ -173,13 +173,13 @@ define [], ->
     value = obj[prop]
     [min, max] = [value / 2, 2 * value]
 
-    if value < 0 then gui = @.add obj, prop, max, min
-    else if value > 0 then gui = @.add obj, prop, min, max
-    else gui = @.add obj, prop
+    if value < 0 then gui = @.add(obj, prop, max, min)
+    else if value > 0 then gui = @.add(obj, prop, min, max)
+    else gui = @.add(obj, prop)
 
     if chain then @ else gui
 
-  _.extend dat.GUI::, { addOpenFolder, addRange }
+  _.extend(dat.GUI::, { addOpenFolder, addRange })
 
   # Flixel Tilemap AUTO Layout Shim
   # -------------------------------
@@ -187,7 +187,7 @@ define [], ->
   # implementation.
 
   autoSetTiles = (tiles) ->
-    result = (_.clone row for row in tiles)
+    result = (_.clone(row) for row in tiles)
 
     for row, r in result
       for col, c in row when col is 1
@@ -225,10 +225,10 @@ define [], ->
   # Basic Phaser class extension for less code.
 
   PointMixin =
-    addPoint: (point) -> @add point.x, point.y
-    dividePoint: (point) -> @divide point.x, point.y
-    multiplyPoint: (point) -> @multiply point.x, point.y
-    subtractPoint: (point) -> @subtract point.x, point.y
+    addPoint: (point) -> @add(point.x, point.y)
+    dividePoint: (point) -> @divide(point.x, point.y)
+    multiplyPoint: (point) -> @multiply(point.x, point.y)
+    subtractPoint: (point) -> @subtract(point.x, point.y)
 
   # StateManagerMixin
   # -----------------
@@ -258,10 +258,10 @@ define [], ->
       texture = new RenderTexture(
         @game, @game.width, @game.height, "transition-to-#{stateName}"
       )
-      texture.renderXY @game.world, -@game.camera.x, -@game.camera.y
+      texture.renderXY(@game.world, -@game.camera.x, -@game.camera.y)
       @game.paused = no
 
-      interstitial = new Sprite @game, 0, 0, texture
+      interstitial = new Sprite(@game, 0, 0, texture)
       interstitial.fixedToCamera = on
 
       destroy = ->
@@ -274,21 +274,21 @@ define [], ->
         return
 
       state.init = =>
-        init?.apply state, arguments
-        @game.add.existing interstitial
+        init?.apply(state, arguments)
+        @game.add.existing(interstitial)
         return
 
       state.create = =>
-        create?.apply state, arguments
+        create?.apply(state, arguments)
         interstitial.bringToTop()
-        @game.add.tween interstitial
-          .to properties, duration, easing, yes
-          .onComplete.addOnce destroy
+        @game.add.tween(interstitial)
+          .to(properties, duration, easing, yes)
+          .onComplete.addOnce(destroy)
         return
 
-      _.delay destroy, 2 * duration # In case of failure.
+      _.delay(destroy, 2 * duration) # In case of failure.
 
-      @start.apply @, startArgs
+      @start.apply(@, startArgs)
       return
 
   # TextMixin
@@ -299,9 +299,9 @@ define [], ->
   TextMixin =
 
     addCenteredText: (text, layout, style, group) ->
-      _.defaults style, { boundsAlignH: 'center', boundsAlignV: 'middle' }
-      text = @add.text @world.centerX, layout.y, text, style, group
-      text.anchor.setTo 0.5
+      _.defaults(style, { boundsAlignH: 'center', boundsAlignV: 'middle' })
+      text = @add.text(@world.centerX, layout.y, text, style, group)
+      text.anchor.setTo(0.5)
       layout.y += text.height + layout.baseline
       text
 
@@ -310,7 +310,7 @@ define [], ->
 
   isPlainObject = (arg) -> _.isObject(arg) and not _.isFunction(arg)
 
-  _.mixin { isPlainObject }
+  _.mixin({ isPlainObject })
 
   # Export.
 
